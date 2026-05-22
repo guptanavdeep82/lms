@@ -249,43 +249,34 @@ export default function StudentCoursesPage() {
           </section>
 
           <section className="grid gap-6 xl:grid-cols-[1fr_340px]">
-            <div className="grid gap-5">
+            <div className="grid gap-4">
               {purchasedCourses.map((course) => (
-                <article key={course.title} className="overflow-hidden rounded-[26px] border border-[#dfe5ef] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-                  <div className="grid lg:grid-cols-[280px_1fr]">
-                    <div className={`relative min-h-[220px] bg-gradient-to-br ${course.gradient} p-6 text-white`}>
-                      <span className="rounded-full bg-white/16 px-3 py-1 text-xs font-extrabold backdrop-blur">{course.status}</span>
-                      <BookOpen className="absolute bottom-6 right-6 text-white/75" size={58} />
-                      <div className="absolute bottom-6 left-6">
-                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/68">{course.category}</p>
-                        <p className="mt-1 text-lg font-extrabold">{course.rating} Rating</p>
+                <article key={course.title} className="overflow-hidden rounded-[20px] border border-[#dfe5ef] bg-white shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
+                  <div className="grid lg:grid-cols-[190px_1fr]">
+                    <div className={`relative min-h-[132px] bg-gradient-to-br ${course.gradient} p-4 text-white lg:min-h-0`}>
+                      <span className="rounded-full bg-white/16 px-2.5 py-1 text-[11px] font-extrabold backdrop-blur">{course.status}</span>
+                      <BookOpen className="absolute bottom-4 right-4 text-white/75" size={42} />
+                      <div className="absolute bottom-4 left-4">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/68">{course.category}</p>
+                        <p className="mt-0.5 text-sm font-extrabold">{course.rating} Rating</p>
                       </div>
                     </div>
-                    <div className="p-6">
-                      <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div>
-                          <h2 className="text-[22px] font-extrabold tracking-[-0.03em] text-[#172a69]">{course.title}</h2>
+                    <div className="p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{course.title}</h2>
                           <p className="mt-1 text-sm font-semibold text-[#7d8799]">by {course.teacher}</p>
                         </div>
-                        <span className="rounded-full bg-[#e9f9f3] px-3 py-1.5 text-xs font-extrabold text-[#0f9f78]">{course.validity}</span>
+                        <span className="rounded-full bg-[#e9f9f3] px-3 py-1 text-[11px] font-extrabold text-[#0f9f78]">{course.validity}</span>
                       </div>
 
-                      <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                        <div className="rounded-2xl bg-[#f7f9fd] p-4">
-                          <p className="text-xs font-bold text-[#7d8799]">Lessons</p>
-                          <p className="mt-1 text-sm font-extrabold text-[#111827]">{course.lessons}</p>
-                        </div>
-                        <div className="rounded-2xl bg-[#f7f9fd] p-4">
-                          <p className="text-xs font-bold text-[#7d8799]">Tests</p>
-                          <p className="mt-1 text-sm font-extrabold text-[#111827]">{course.tests}</p>
-                        </div>
-                        <div className="rounded-2xl bg-[#f7f9fd] p-4">
-                          <p className="text-xs font-bold text-[#7d8799]">Next Lesson</p>
-                          <p className="mt-1 text-sm font-extrabold text-[#111827]">{course.nextLesson}</p>
-                        </div>
+                      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-[#f7f9fd] px-3 py-2 text-xs font-extrabold">
+                        <span className="text-[#111827]"><span className="font-bold text-[#7d8799]">Lessons:</span> {course.lessons}</span>
+                        <span className="text-[#111827]"><span className="font-bold text-[#7d8799]">Tests:</span> {course.tests}</span>
+                        <span className="min-w-0 max-w-full truncate text-[#111827]"><span className="font-bold text-[#7d8799]">Next:</span> {course.nextLesson}</span>
                       </div>
 
-                      <div className="mt-5">
+                      <div className="mt-3">
                         <div className="flex items-center justify-between text-xs font-extrabold">
                           <span className="text-[#7d8799]">Course progress</span>
                           <span className="text-[#172a69]">{course.progress}%</span>
@@ -295,12 +286,12 @@ export default function StudentCoursesPage() {
                         </div>
                       </div>
 
-                      <div className="mt-6 flex flex-wrap gap-3">
-                        <button className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#172a69] px-5 text-sm font-extrabold text-white">
-                          Continue Course <PlayCircle size={17} />
+                      <div className="mt-3 flex gap-2">
+                        <button className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#172a69] px-3 text-xs font-extrabold text-white sm:flex-none">
+                          Continue <PlayCircle size={16} />
                         </button>
-                        <button className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#fff8dc] px-5 text-sm font-extrabold text-[#8a6100]">
-                          View Certificate <Award size={17} />
+                        <button className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#fff8dc] px-3 text-xs font-extrabold text-[#8a6100] sm:flex-none">
+                          Certificate <Award size={16} />
                         </button>
                       </div>
                     </div>
