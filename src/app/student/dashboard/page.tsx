@@ -187,6 +187,21 @@ export default function StudentDashboardPage() {
           </div>
         </header>
 
+        <nav className="sticky top-[70px] z-20 flex gap-2 overflow-x-auto border-b border-[#e4e8f1] bg-white px-4 py-3 [scrollbar-width:none] sm:px-8 lg:hidden [&::-webkit-scrollbar]:hidden">
+          {navGroups.flatMap((group) => group.items).slice(0, 6).map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl px-3 text-xs font-extrabold ${
+                item.active ? "bg-[#172a69] text-white" : "bg-[#f3f6fb] text-[#334155]"
+              }`}
+            >
+              <item.icon size={15} />
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
         <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-8">
           <section className="mb-6 overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
             <div className="flex items-center gap-3 border-b border-[#edf1f7] bg-[#172a69] px-5 py-3 text-white">

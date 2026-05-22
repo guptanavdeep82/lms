@@ -61,3 +61,237 @@ body {
     radial-gradient(circle at 80% 10%, rgba(32, 125, 126, 0.16), transparent 28%),
     #fbfaf6;
 }
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+/* Responsive safety layer for imported public HTML pages. */
+@media (max-width: 1180px) {
+  .kr-logics-reference-home .header-inner,
+  .topbar {
+    gap: 14px !important;
+  }
+
+  .kr-logics-reference-home nav,
+  .topbar-nav,
+  .nav-links {
+    gap: 14px !important;
+  }
+
+  .kr-logics-reference-home .hero-inner,
+  .about-grid,
+  .mock-layout,
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .kr-logics-reference-home .hero {
+    min-height: auto !important;
+    padding-bottom: 56px !important;
+  }
+
+  .courses-grid,
+  .faculty-grid,
+  .testi-grid,
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .featured-strip {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .kr-logics-reference-home header,
+  .topbar {
+    padding-inline: 16px !important;
+  }
+
+  .kr-logics-reference-home .header-inner,
+  .topbar {
+    height: auto !important;
+    min-height: 68px !important;
+    flex-wrap: wrap !important;
+    padding-block: 10px !important;
+  }
+
+  .kr-logics-reference-home nav,
+  .topbar-nav,
+  .nav-links {
+    order: 3 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow-x: auto !important;
+    padding: 8px 0 2px !important;
+    scrollbar-width: none;
+  }
+
+  .kr-logics-reference-home nav::-webkit-scrollbar,
+  .topbar-nav::-webkit-scrollbar,
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .kr-logics-reference-home nav a,
+  .topbar-nav a,
+  .nav-links a {
+    white-space: nowrap !important;
+  }
+
+  .hdr-btns,
+  .topbar-btns,
+  .nav-btns {
+    margin-left: auto !important;
+  }
+
+  .exam-mega {
+    display: none !important;
+  }
+
+  .kr-logics-reference-home section,
+  .hero-strip,
+  .main-wrap {
+    padding-inline: 18px !important;
+  }
+
+  .kr-logics-reference-home .hero h1 {
+    font-size: clamp(34px, 11vw, 48px) !important;
+  }
+
+  .sec-title,
+  .hero-strip h1 {
+    font-size: clamp(28px, 8vw, 38px) !important;
+  }
+
+  .page-layout {
+    display: block !important;
+  }
+
+  .sidebar {
+    position: static !important;
+    width: auto !important;
+    min-width: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 16px !important;
+  }
+
+  .courses-area {
+    padding: 18px !important;
+  }
+
+  .filter-bar,
+  .sub-filters,
+  .search-bar-wrap {
+    padding-inline: 18px !important;
+  }
+
+  .filter-right,
+  .sort-wrap {
+    margin-left: 0 !important;
+    width: 100% !important;
+    flex-wrap: wrap !important;
+  }
+
+  .search-wrap,
+  .search-inp,
+  .search-input-wrap,
+  .sort-select {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .hero-right,
+  .hs-stats,
+  .featured-strip,
+  .form-row {
+    grid-template-columns: 1fr !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .kr-logics-reference-home .logo-text-group .tagline,
+  .logo-sub,
+  .logo-tag {
+    display: none !important;
+  }
+
+  .btn-ghost,
+  .btn-primary,
+  .btn-sm,
+  .nbtn {
+    padding-inline: 12px !important;
+    font-size: 11px !important;
+  }
+
+  .kr-logics-reference-home .hero,
+  .kr-logics-reference-home section {
+    padding-block: 48px !important;
+  }
+
+  .kr-logics-reference-home .hero-inner,
+  .about-grid,
+  .mock-layout,
+  .contact-grid {
+    gap: 28px !important;
+  }
+
+  .courses-grid,
+  .faculty-grid,
+  .testi-grid,
+  .footer-grid,
+  .tests-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .course-bottom,
+  .cc-footer,
+  .tc-footer,
+  .mock-header-bar,
+  .courses-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .hero-btn-main,
+  .hero-btn-sec,
+  .mock-cta,
+  .view-all-btn,
+  .cf-submit,
+  .tc-btn,
+  .cc-enroll {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .contact-form-box,
+  .about-main-card,
+  .mock-ui,
+  .feat-card {
+    padding: 20px !important;
+    border-radius: 16px !important;
+  }
+
+  .filter-tab {
+    padding-inline: 12px !important;
+  }
+
+  .hero-stat-card {
+    min-width: 0 !important;
+  }
+}

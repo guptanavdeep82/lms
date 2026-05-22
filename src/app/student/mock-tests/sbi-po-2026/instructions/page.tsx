@@ -15,13 +15,13 @@ export default function MockInstructionsPage() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
 
       <header className="bg-[#3378b9] text-white shadow-sm">
-        <div className="flex h-14 items-center justify-between px-5">
+        <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
           <div className="flex items-center gap-3">
             <div className="grid h-9 w-9 place-items-center rounded-full bg-white/12">
               <BookOpen size={19} />
             </div>
             <div>
-              <h1 className="text-[16px] font-semibold">SBI PO 2026 Prelims Mock Test - 1</h1>
+              <h1 className="text-[14px] font-semibold sm:text-[16px]">SBI PO 2026 Prelims Mock Test - 1</h1>
               <p className="text-xs text-white/70">Instructions configured by admin</p>
             </div>
           </div>
@@ -34,7 +34,7 @@ export default function MockInstructionsPage() {
       <section className="p-4">
         <div className="overflow-hidden rounded-[22px] border border-[#ccd6e2] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
           <div className="grid min-h-[calc(100vh-120px)] grid-rows-[1fr_auto]">
-            <div className="grid gap-6 p-5 lg:grid-cols-[1fr_340px]">
+            <div className="grid gap-6 p-4 sm:p-5 lg:grid-cols-[1fr_340px]">
               <div>
                 <div className="mb-5 flex items-center gap-3">
                   <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#eaf3ff] text-[#2268aa]">
@@ -42,7 +42,7 @@ export default function MockInstructionsPage() {
                   </div>
                   <div>
                     <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#2268aa]">Instructions</p>
-                    <h2 className="text-2xl font-extrabold tracking-[-0.03em] text-[#172a69]">Read before you begin</h2>
+                    <h2 className="text-xl font-extrabold tracking-[-0.03em] text-[#172a69] sm:text-2xl">Read before you begin</h2>
                   </div>
                 </div>
 
@@ -112,7 +112,7 @@ export default function MockInstructionsPage() {
               </aside>
             </div>
 
-            <footer className="flex items-center justify-center gap-4 border-t border-[#d8dee8] bg-[#e4e4e4] px-5 py-4">
+            <footer className="flex flex-col items-stretch justify-center gap-3 border-t border-[#d8dee8] bg-[#e4e4e4] px-5 py-4 sm:flex-row sm:items-center">
               <Link href="/student/mock-tests" className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#111827] bg-white px-6 text-sm font-bold text-[#111827]">
                 <ArrowLeft size={16} /> Previous
               </Link>

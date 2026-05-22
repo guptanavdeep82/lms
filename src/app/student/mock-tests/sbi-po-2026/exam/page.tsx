@@ -7,13 +7,13 @@ const options = ["negligible", "marginal", "significant", "arbitrary", "tentativ
 export default function MockExamPage() {
   return (
     <main className="min-h-screen bg-white text-[#111827]" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
-      <header className="flex h-[50px] items-center justify-between bg-[#3378b9] px-5 text-white">
+      <header className="flex min-h-[50px] flex-wrap items-center justify-between gap-2 bg-[#3378b9] px-3 py-2 text-white sm:px-5">
         <div className="flex items-center gap-3">
           <div className="grid h-9 w-9 place-items-center rounded-full bg-[#c4008f] text-sm font-bold">DG</div>
-          <h1 className="text-[14px] font-medium">SBI PO 2026 Prelims Mock Test - 1</h1>
+          <h1 className="text-[13px] font-medium sm:text-[14px]">SBI PO 2026 Prelims Mock Test - 1</h1>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 items-center rounded bg-white px-2 text-sm text-[#1f4f86]">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex h-9 items-center rounded bg-white px-2 text-xs text-[#1f4f86] sm:text-sm">
             Time Left: <span className="ml-2 rounded bg-[#d8ebff] px-2 py-1 font-mono font-bold text-[#174b82]">00 : 17 : 31</span>
           </div>
           <button className="grid h-9 w-[60px] place-items-center rounded bg-white text-sm text-[#2768a5]"><Pause size={15} />Pause</button>
@@ -21,9 +21,9 @@ export default function MockExamPage() {
         </div>
       </header>
 
-      <div className="grid h-[calc(100vh-50px)] grid-cols-[1fr_260px]">
-        <section className="grid grid-rows-[40px_1fr_58px] overflow-hidden">
-          <div className="flex items-center justify-between border-b border-[#cfd7df] bg-[#f6f6f6] px-2 text-sm">
+      <div className="grid min-h-[calc(100vh-50px)] lg:h-[calc(100vh-50px)] lg:grid-cols-[1fr_260px]">
+        <section className="grid min-h-[calc(100vh-50px)] grid-rows-[auto_1fr_auto] overflow-hidden lg:min-h-0">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] bg-[#f6f6f6] px-2 py-2 text-sm">
             <a href="#" className="font-bold text-[#0f60b5] underline">English Language</a>
             <div className="flex items-center gap-3">
               <select className="h-28px rounded border border-[#111827] bg-white px-2 py-1 text-base">
@@ -33,17 +33,17 @@ export default function MockExamPage() {
             </div>
           </div>
 
-          <div className="grid grid-rows-[40px_1fr] overflow-hidden">
-            <div className="flex items-center justify-between border-b border-[#cfd7df] px-2 text-sm">
+          <div className="grid grid-rows-[auto_1fr] overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] px-2 py-2 text-sm">
               <span>Q: 7 / 100</span>
-              <div className="flex items-center gap-5">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-5">
                 <span className="rounded border border-[#cfd7df] px-3 py-1">Qn. Time : <Clock3 size={12} className="inline" /></span>
                 <span><b>Marks :</b> <span className="text-[#00a651]">+1</span> | <span className="text-[#ff3950]">-0.25</span></span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 overflow-hidden">
-              <div className="overflow-y-auto border-r border-[#cfd7df] p-3 text-[18px] leading-8">
+            <div className="grid overflow-auto lg:grid-cols-2 lg:overflow-hidden">
+              <div className="border-b border-[#cfd7df] p-3 text-[15px] leading-7 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:text-[18px] lg:leading-8">
                 <p className="mb-4 font-bold">In the given question, sentences are given in jumbled form. Rearrange them in proper order and answer the questions that follow.</p>
                 <p><b>A)</b> This initial capital is crucial as it allows entrepreneurs to move beyond the ideation phase and into product development.</p>
                 <p className="mt-4"><b>B)</b> Venture capital serves as the lifeblood for early-stage companies that lack access to traditional bank loans due to their high-risk nature.</p>
@@ -52,7 +52,7 @@ export default function MockExamPage() {
                 <p className="mt-4"><b>E)</b> It typically begins with &quot;Seed Funding,&quot; where investors provide small amounts of money to test a business concept.</p>
               </div>
 
-              <div className="overflow-y-auto p-4 text-[18px] leading-8">
+              <div className="p-4 text-[15px] leading-7 lg:overflow-y-auto lg:text-[18px] lg:leading-8">
                 <h2 className="mb-3 font-bold">Fill in the blank.</h2>
                 <p>However, the risk of failure remains high at this stage, often leading investors to demand ________ equity in exchange for their support.</p>
                 <div className="mt-4 space-y-4">
@@ -67,18 +67,18 @@ export default function MockExamPage() {
             </div>
           </div>
 
-          <footer className="flex items-center justify-between border-t border-[#cfd7df] bg-[#efefef] px-4">
-            <div className="flex gap-5">
+          <footer className="flex flex-col items-stretch justify-between gap-3 border-t border-[#cfd7df] bg-[#efefef] px-4 py-3 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-5">
               <button className="h-40px rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm">Mark for review &amp; next</button>
               <button className="h-40px rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm">Clear Response</button>
             </div>
-            <Link href="/student/mock-tests/sbi-po-2026/exam" className="rounded-lg bg-[#2f78bf] px-5 py-2 text-sm font-bold text-white shadow">
+            <Link href="/student/mock-tests/sbi-po-2026/exam" className="rounded-lg bg-[#2f78bf] px-5 py-2 text-center text-sm font-bold text-white shadow">
               Save &amp; Next
             </Link>
           </footer>
         </section>
 
-        <aside className="grid grid-rows-[50px_88px_1fr_58px] border-l border-[#cfd7df] bg-[#eef9ff]">
+        <aside className="grid border-t border-[#cfd7df] bg-[#eef9ff] lg:grid-rows-[50px_88px_1fr_58px] lg:border-l lg:border-t-0">
           <div className="flex items-center gap-3 bg-[#dff5ff] px-4">
             <div className="grid h-10 w-10 place-items-center rounded-full bg-white text-[#607d8b]"><UserRound size={24} /></div>
             <span className="text-sm">Navdeepgupta</span>
@@ -86,7 +86,7 @@ export default function MockExamPage() {
 
           <div className="bg-[#f2f2f2] px-4 py-2 text-sm">
             <p className="mb-2 text-right">Time Left: <b className="ml-2 rounded bg-white px-2 py-1 font-mono">00 : 17 : 31</b></p>
-            <div className="grid grid-cols-2 gap-x-5 gap-y-2 text-xs">
+            <div className="grid grid-cols-1 gap-x-5 gap-y-2 text-xs sm:grid-cols-2">
               <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded bg-[#6bbd21] text-white">0</b> Answered</span>
               <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded bg-[#d83a0c] text-white">7</b> Not Answered</span>
               <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded bg-[#e8e8e8] text-[#111]">33</b> Not Visited</span>
@@ -96,7 +96,7 @@ export default function MockExamPage() {
 
           <div className="overflow-y-auto p-4">
             <h3 className="mb-4 bg-[#e8e8e8] py-2 text-center text-sm font-bold">English Language</h3>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-5 gap-2 sm:grid-cols-7 lg:grid-cols-4 lg:gap-3">
               {questionNumbers.map((num) => (
                 <button
                   key={num}

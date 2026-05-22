@@ -60,8 +60,8 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-8 backdrop-blur">
-      <div className="flex h-[72px] items-center justify-between gap-6">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6 lg:px-8">
+      <div className="flex min-h-[72px] flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3 lg:flex-nowrap lg:py-0">
         <Link href="/" className="flex shrink-0 items-center gap-3">
           <div className="grid size-11 place-items-center rounded-full border-2 border-[#f5c518] bg-white">
             <GraduationCap className="size-6 text-[#1b2e6b]" />
@@ -76,7 +76,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
           </div>
         </Link>
 
-        <nav className="flex h-full items-center gap-6">
+        <nav className="order-3 flex h-full w-full items-center gap-5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:order-none lg:w-auto lg:overflow-visible lg:pb-0">
           {navLink("/", "Home", "home")}
           {navLink("/courses", "Courses", "courses")}
 
@@ -87,7 +87,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
             >
               Exams <ChevronDown className="size-3 transition group-hover:rotate-180" />
             </Link>
-            <div className="invisible fixed left-0 right-0 top-[72px] grid translate-y-2 grid-cols-[230px_1fr] gap-8 border-y border-slate-200 bg-white px-8 py-6 opacity-0 shadow-2xl shadow-slate-900/10 transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+            <div className="invisible fixed left-0 right-0 top-[72px] hidden translate-y-2 grid-cols-[230px_1fr] gap-8 border-y border-slate-200 bg-white px-8 py-6 opacity-0 shadow-2xl shadow-slate-900/10 transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 lg:grid">
               <div className="flex flex-col gap-3">
                 {categories.map((category, index) => (
                   <Link
@@ -129,7 +129,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
           {navLink("/contact", "Contact", "contact")}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <Link
             href="/login"
             className="rounded-md border border-[#1b2e6b] px-4 py-2 text-xs font-bold text-[#1b2e6b] transition hover:bg-[#1b2e6b] hover:text-white"

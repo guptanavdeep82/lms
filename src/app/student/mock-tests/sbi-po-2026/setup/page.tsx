@@ -13,9 +13,9 @@ export default function MockSetupPage() {
     <main className="min-h-screen bg-[#eef3f8] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
       <header className="bg-[#3378b9] text-white shadow-sm">
-        <div className="flex h-14 items-center justify-between px-5">
-          <h1 className="text-[16px] font-semibold">SBI PO 2026 Prelims Mock Test - 1</h1>
-          <div className="flex items-center gap-3 text-sm font-bold">
+        <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
+          <h1 className="text-[14px] font-semibold sm:text-[16px]">SBI PO 2026 Prelims Mock Test - 1</h1>
+          <div className="flex flex-wrap items-center gap-2 text-xs font-bold sm:gap-3 sm:text-sm">
             <span className="rounded-lg bg-white/14 px-3 py-1.5">Language: English</span>
             <span className="rounded-lg bg-white/14 px-3 py-1.5">Time: 20 min</span>
           </div>
@@ -23,11 +23,11 @@ export default function MockSetupPage() {
       </header>
 
       <section className="mx-auto grid min-h-[calc(100vh-56px)] max-w-6xl items-center gap-6 px-4 py-8 lg:grid-cols-[1fr_420px]">
-        <div className="rounded-[28px] bg-white p-7 shadow-[0_20px_60px_rgba(15,23,42,0.09)] ring-1 ring-[#d9e2ee]">
+        <div className="rounded-[24px] bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.09)] ring-1 ring-[#d9e2ee] sm:rounded-[28px] sm:p-7">
           <span className="inline-flex items-center gap-2 rounded-full bg-[#eaf3ff] px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.16em] text-[#2268aa]">
             <MonitorCheck size={15} /> Test Setup
           </span>
-          <h2 className="mt-5 text-[34px] font-extrabold tracking-[-0.04em] text-[#172a69]">Ready screen before exam starts</h2>
+          <h2 className="mt-5 text-[28px] font-extrabold tracking-[-0.04em] text-[#172a69] sm:text-[34px]">Ready screen before exam starts</h2>
 
           <div className="mt-7 grid gap-4 sm:grid-cols-2">
             {[
@@ -54,7 +54,7 @@ export default function MockSetupPage() {
           </div>
         </div>
 
-        <aside className="rounded-[28px] bg-[#172a69] p-7 text-white shadow-[0_24px_70px_rgba(23,42,105,0.24)]">
+        <aside className="rounded-[24px] bg-[#172a69] p-5 text-white shadow-[0_24px_70px_rgba(23,42,105,0.24)] sm:rounded-[28px] sm:p-7">
           <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/12 text-[#f5c518]">
             <ShieldCheck size={28} />
           </div>
@@ -72,7 +72,7 @@ export default function MockSetupPage() {
               ))}
             </div>
           </div>
-          <div className="mt-7 flex gap-3">
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Link href="/student/mock-tests/sbi-po-2026/instructions" className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-white/10 text-sm font-bold ring-1 ring-white/16">
               <ArrowLeft size={16} /> Back
             </Link>

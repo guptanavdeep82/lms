@@ -1000,3 +1000,32 @@
  GET /mock-tests?fresh=1779303341415 200 in 262ms (next.js: 78ms, application-code: 184ms)
  GET / 200 in 753ms (next.js: 410ms, application-code: 342ms)
  GET /mock-tests?fresh=1779303341415 200 in 164ms (next.js: 33ms, application-code: 131ms)
+ GET /login 200 in 4.6s (next.js: 2.4s, application-code: 2.2s)
+ GET / 200 in 420ms (next.js: 58ms, application-code: 362ms)
+ GET /login 200 in 453ms (next.js: 15ms, application-code: 438ms)
+ GET /student/dashboard 200 in 2.4s (next.js: 841ms, application-code: 1557ms)
+ GET /register 200 in 4.8s (next.js: 2.0s, application-code: 2.8s)
+ GET /student/dashboard 200 in 1319ms (next.js: 243ms, application-code: 1076ms)
+✓ Compiled in 2.8s
+✓ Compiled in 898ms
+ GET /student/dashboard 200 in 6.3s (next.js: 2.1s, application-code: 4.2s)
+ GET /student/dashboard 200 in 2.5s (next.js: 16ms, application-code: 2.5s)
+ GET /student/dashboard 200 in 1208ms (next.js: 24ms, application-code: 1185ms)
+ GET /student/dashboard 200 in 1206ms (next.js: 489ms, application-code: 717ms)
+ GET /student/dashboard 200 in 1737ms (next.js: 574ms, application-code: 1163ms)
+ GET /student/dashboard 200 in 744ms (next.js: 385ms, application-code: 359ms)
+✓ Compiled in 461ms
+ GET /student/dashboard 200 in 1543ms (next.js: 533ms, application-code: 1011ms)
+ GET /student/dashboard 200 in 505ms (next.js: 12ms, application-code: 493ms)
+✓ Compiled in 575ms
+ GET /student/dashboard 200 in 1253ms (next.js: 16ms, application-code: 1237ms)
+ GET /student/dashboard 200 in 915ms (next.js: 505ms, application-code: 409ms)
+✓ Compiled in 972ms
+ GET /student/dashboard 200 in 1290ms (next.js: 557ms, application-code: 733ms)
+ GET /student/dashboard 200 in 387ms (next.js: 13ms, application-code: 374ms)
+✓ Compiled in 706ms
+ GET /student/dashboard 200 in 1288ms (next.js: 548ms, application-code: 740ms)
+ GET /student/dashboard 200 in 371ms (next.js: 17ms, application-code: 354ms)
+✓ Compiled in 812ms
+ GET /student/dashboard 200 in 1695ms (next.js: 907ms, application-code: 788ms)
+ GET /student/dashboard 200 in 572ms (next.js: 75ms, application-code: 497ms)
