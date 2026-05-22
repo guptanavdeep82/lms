@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --background: #1b1f20;
+  --foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Montserrat", "Montserrat Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bebas Neue", Impact, sans-serif;
+  --font-rajdhani: "Rajdhani", "Rajdhani Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: #ffd400;
+  color: #001f63;
+}
+
+.gold-ring {
+  box-shadow: 0 0 0 1px rgba(255, 212, 0, 0.22), 0 24px 80px rgba(0, 31, 99, 0.2);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(20, 20, 15, 0.08);
+}
+
+.font-display {
+  font-family: var(--font-bebas), Impact, sans-serif;
+}
+
+.font-rajdhani {
+  font-family: var(--font-rajdhani), ui-sans-serif, system-ui, sans-serif;
+}
+
+.hero-cut {
+  clip-path: polygon(8% 0, 100% 0, 92% 90%, 0 100%);
+}
+
+.arch-cut {
+  border-radius: 48% 48% 10px 10px;
+}
+
+.soft-cut {
+  clip-path: polygon(0 11%, 88% 0, 100% 82%, 12% 100%);
+}
+
+.diagonal-band {
+  background:
+    linear-gradient(115deg, rgba(247, 200, 67, 0.16), transparent 34%),
+    radial-gradient(circle at 80% 10%, rgba(32, 125, 126, 0.16), transparent 28%),
+    #fbfaf6;
+}
