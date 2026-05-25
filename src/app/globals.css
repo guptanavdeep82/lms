@@ -75,6 +75,23 @@ canvas {
   max-width: 100%;
 }
 
+.topbar .logo-wrap > svg,
+.topbar .logo-row > svg {
+  display: none !important;
+}
+
+.topbar .logo-wrap::before,
+.topbar .logo-row::before {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 50%;
+  background: url("/logics-logo.jpeg") center / cover no-repeat;
+  box-shadow: 0 0 0 2px rgba(255, 210, 31, 0.32), 0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
 /* Responsive safety layer for imported public HTML pages. */
 @media (max-width: 1180px) {
   .kr-logics-reference-home .header-inner,

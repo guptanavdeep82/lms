@@ -1,10 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   Award,
   Building2,
   ChevronDown,
   ChevronRight,
-  GraduationCap,
   Landmark,
   MapPin,
   ShieldCheck,
@@ -63,12 +63,16 @@ export function PublicHeader({ active }: PublicHeaderProps) {
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6 lg:px-8">
       <div className="flex min-h-[72px] flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3 lg:flex-nowrap lg:py-0">
         <Link href="/" className="flex shrink-0 items-center gap-3">
-          <div className="grid size-11 place-items-center rounded-full border-2 border-[#f5c518] bg-white">
-            <GraduationCap className="size-6 text-[#1b2e6b]" />
-          </div>
+          <Image
+            src="/logics-logo.jpeg"
+            alt="KR Logics logo"
+            width={48}
+            height={48}
+            className="size-12 rounded-full border-2 border-[#ffd21f] object-cover shadow-lg shadow-black/10"
+          />
           <div className="leading-tight">
-            <div className="font-rajdhani text-xl font-bold text-[#1b2e6b]">
-              KR <span className="text-[#e8a800]">Logics</span>
+            <div className="font-rajdhani text-xl font-bold text-[#050808]">
+              KR <span className="text-[#ffc400]">Logics</span>
             </div>
             <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-slate-500">
               Banking Exam Prep
