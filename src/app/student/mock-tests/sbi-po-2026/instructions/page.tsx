@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Clock3, FileText, Globe2, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, FileText, Globe2, ShieldCheck } from "lucide-react";
 
 const adminInstructions = [
   "This is a mock test for practice purpose only. Question paper should not be treated as final sample paper.",
@@ -17,9 +18,7 @@ export default function MockInstructionsPage() {
       <header className="bg-[#3378b9] text-white shadow-sm">
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
           <div className="flex items-center gap-3">
-            <div className="grid h-9 w-9 place-items-center rounded-full bg-white/12">
-              <BookOpen size={19} />
-            </div>
+            <Image src="/logics-logo.jpeg" alt="KR Logics logo" width={36} height={36} className="h-9 w-9 rounded-full border border-[#ffd21f] object-cover shadow-lg shadow-black/20" />
             <div>
               <h1 className="text-[14px] font-semibold sm:text-[16px]">SBI PO 2026 Prelims Mock Test - 1</h1>
               <p className="text-xs text-white/70">Instructions configured by admin</p>

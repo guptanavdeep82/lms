@@ -96,7 +96,7 @@ export default function ContactPage() {
                   <option>IBPS PO Complete Course</option>
                   <option>SBI PO / Clerk Course</option>
                   <option>RBI Grade B Preparation</option>
-                  <option>Mock Test Series</option>
+                  <option>Mock Tests</option>
                 </select>
               </label>
               <label className="space-y-2">
@@ -105,7 +105,7 @@ export default function ContactPage() {
                   <option>Online Classes</option>
                   <option>Offline Classes</option>
                   <option>Recorded Course</option>
-                  <option>Only Test Series</option>
+                  <option>Only Mock Tests</option>
                 </select>
               </label>
             </div>
@@ -133,7 +133,7 @@ export default function ContactPage() {
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             <ShieldCheck className="mb-4 size-8 text-[#1b2e6b]" />
             <h3 className="font-rajdhani text-2xl font-bold text-[#1b2e6b]">Admission Help</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Our team helps students compare courses, test series, batches and subscription plans.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Our team helps students compare courses, mock tests, batches and subscription plans.</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-[#1b2e6b] p-6 text-white">
             <MessageCircle className="mb-4 size-8 text-[#f5c518]" />

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   Award,
   Bell,
@@ -120,9 +121,7 @@ export default function StudentCoursesPage() {
 
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[282px] border-r border-[#e4e8f1] bg-white lg:block">
         <div className="flex h-[78px] items-center gap-3 border-b border-[#e4e8f1] px-6">
-          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#172a69] text-white shadow-xl shadow-blue-100">
-            <BookOpen size={22} strokeWidth={2.2} />
-          </div>
+          <Image src="/logics-logo.jpeg" alt="KR Logics logo" width={48} height={48} className="h-12 w-12 rounded-2xl border-2 border-[#ffd21f] object-cover shadow-xl shadow-black/10" />
           <div className="min-w-0">
             <p className="text-[16px] font-extrabold leading-tight text-[#172a69]">KR Logics</p>
             <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#8791a5]">Student LMS</p>

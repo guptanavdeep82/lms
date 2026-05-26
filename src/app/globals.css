@@ -92,6 +92,292 @@ canvas {
   box-shadow: 0 0 0 2px rgba(255, 210, 31, 0.32), 0 10px 24px rgba(0, 0, 0, 0.16);
 }
 
+/* KR Logics brand theme layer: keeps every route aligned with the black/gold logo. */
+:root {
+  --kr-black: #050808;
+  --kr-ink: #151a18;
+  --kr-gold: #ffd21f;
+  --kr-gold-strong: #ffc400;
+  --kr-cream: #f7f6ef;
+  --kr-cream-2: #fff8dc;
+  --kr-border: #ded9c8;
+}
+
+[class*="bg-[#1b2e6b]"],
+[class*="bg-[#0f1e4a]"],
+[class*="bg-[#243580]"],
+[class*="bg-[#172a69]"],
+[class*="bg-[#10215a]"],
+[class*="bg-[#3378b9]"],
+[class*="bg-[#2f78bf]"],
+[class*="bg-[#2768a5]"],
+[class*="bg-[#2268aa]"],
+[class*="bg-[#1f4f86]"],
+[class*="bg-[#174b82]"],
+.topbar,
+.hero-strip,
+.btn-fill-sm,
+.cc-enroll,
+.tc-btn,
+.nbtn.fill,
+.nbtn-teal,
+.nbtn.primary,
+.cf-submit,
+.feat-card.primary,
+.feat-card.teal,
+.feat-card.amber,
+.filter-tab.active,
+.sf-chip.active,
+.tc-btn.start,
+.tc-btn.review {
+  background-color: var(--kr-black) !important;
+}
+
+[class*="hover:bg-[#1b2e6b]"]:hover,
+[class*="hover:bg-[#0f1e4a]"]:hover,
+[class*="hover:bg-[#10215a]"]:hover,
+[class*="hover:bg-[#3378b9]"]:hover,
+[class*="hover:bg-[#2f78bf]"]:hover,
+.btn-fill-sm:hover,
+.cc-enroll:hover,
+.tc-btn:hover,
+.nbtn.fill:hover,
+.nbtn-teal:hover,
+.nbtn.primary:hover,
+.cf-submit:hover,
+.feat-card.primary:hover,
+.feat-card.teal:hover,
+.feat-card.amber:hover,
+.tc-btn.start:hover,
+.tc-btn.review:hover {
+  background-color: var(--kr-ink) !important;
+}
+
+[class*="bg-[#f5c518]"],
+[class*="bg-[#e8a800]"],
+[class*="bg-[#f7c843]"],
+[class*="bg-yellow-400"],
+[class*="bg-[#ffd21f]"],
+.mock-cta,
+.hero-btn-main,
+.btn-primary {
+  background-color: var(--kr-gold) !important;
+  color: var(--kr-black) !important;
+}
+
+[class*="hover:bg-[#ffd844]"]:hover,
+[class*="hover:bg-[#ffd85b]"]:hover,
+[class*="hover:bg-[#ffe164]"]:hover,
+[class*="hover:bg-[#f5c518]"]:hover,
+[class*="hover:bg-[#e8a800]"]:hover,
+.mock-cta:hover,
+.hero-btn-main:hover,
+.btn-primary:hover {
+  background-color: #ffe164 !important;
+  color: var(--kr-black) !important;
+}
+
+[class*="text-[#1b2e6b]"],
+[class*="text-[#0f1e4a]"],
+[class*="text-[#243580]"],
+[class*="text-[#172a69]"],
+[class*="text-[#10215a]"],
+[class*="text-[#3378b9]"],
+[class*="text-[#2f78bf]"],
+[class*="text-[#2768a5]"],
+[class*="text-[#2268aa]"],
+[class*="text-[#1f4f86]"],
+[class*="text-[#174b82]"],
+[class*="text-blue-700"],
+[class*="text-sky-700"],
+[class*="text-cyan-700"],
+.topbar .logo-text,
+.topbar-nav a:hover,
+.topbar-nav a.active,
+.results-count,
+.cc-title,
+.cc-price,
+.tc-title,
+.sec-title {
+  color: var(--kr-black) !important;
+}
+
+[class*="text-[#f5c518]"],
+[class*="text-[#e8a800]"],
+[class*="text-[#f7c843]"],
+[class*="text-[#9c7411]"],
+[class*="text-[#b78600]"],
+.topbar .logo-text span,
+.hs-stat strong,
+.cc-category,
+.sec-eyebrow,
+.footer-col h5 {
+  color: var(--kr-gold-strong) !important;
+}
+
+[class*="border-[#1b2e6b]"],
+[class*="border-[#0f1e4a]"],
+[class*="border-[#172a69]"],
+[class*="border-[#3378b9]"],
+[class*="focus:border-[#1b2e6b]"]:focus,
+[class*="hover:border-[#1b2e6b]"]:hover,
+[class*="hover:border-[#e8a800]"]:hover,
+.topbar,
+.course-card:hover,
+.tc-card:hover,
+.fchip:hover,
+.fchip.active {
+  border-color: var(--kr-black) !important;
+}
+
+[class*="border-[#f5c518]"],
+[class*="border-[#e8a800]"],
+[class*="border-[#ffd21f]"] {
+  border-color: var(--kr-gold) !important;
+}
+
+[class*="bg-[#f8f9fc]"],
+[class*="bg-[#f6f8fc]"],
+[class*="bg-[#f3f6fb]"],
+[class*="bg-[#f7f9fd]"],
+[class*="bg-[#fbfdff]"],
+[class*="bg-[#eef3f8]"],
+[class*="bg-[#fff9e0]"],
+[class*="bg-[#eef2ff]"],
+[class*="bg-[#eaf3ff]"],
+[class*="bg-[#d8ebff]"],
+.search-bar-wrap,
+.sidebar,
+.courses-section,
+.faculty-section,
+.contact-section {
+  background-color: var(--kr-cream) !important;
+}
+
+[class*="bg-[#fff8dc]"],
+[class*="bg-[#fff8d6]"],
+[class*="bg-[#fff9e0]"],
+.level-item.active,
+.rating-item.active,
+.fchip.active {
+  background-color: var(--kr-cream-2) !important;
+}
+
+[class*="from-[#1b2e6b]"],
+[class*="from-[#172a69]"],
+[class*="from-[#243580]"],
+[class*="from-[#3378b9]"] {
+  --tw-gradient-from: var(--kr-black) var(--tw-gradient-from-position) !important;
+}
+
+[class*="via-[#6d5dfc]"],
+[class*="via-[#3ac2ff]"],
+[class*="via-[#0ea5e9]"],
+[class*="via-[#3378b9]"] {
+  --tw-gradient-via: var(--kr-ink) var(--tw-gradient-via-position) !important;
+}
+
+[class*="to-[#e8a800]"],
+[class*="to-[#f5c518]"],
+[class*="to-[#ffcf33]"] {
+  --tw-gradient-to: var(--kr-gold) var(--tw-gradient-to-position) !important;
+}
+
+.topbar {
+  min-height: 72px !important;
+  background: rgba(5, 8, 8, 0.96) !important;
+  border-bottom-color: rgba(255, 210, 31, 0.28) !important;
+  box-shadow: 0 12px 30px rgba(5, 8, 8, 0.12) !important;
+}
+
+.topbar .logo-text,
+.topbar-nav > a,
+.nav-links > a,
+.topbar .exam-menu-trigger {
+  color: rgba(255, 255, 255, 0.74) !important;
+}
+
+.topbar .logo-sub,
+.topbar .logo-tag {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+
+.topbar-nav > a:hover,
+.topbar-nav > a.active,
+.nav-links > a:hover,
+.nav-links > a.active,
+.topbar .exam-menu-trigger:hover {
+  color: var(--kr-gold) !important;
+}
+
+.topbar .btn-outline-sm,
+.topbar .nbtn {
+  border-color: var(--kr-gold) !important;
+  color: var(--kr-gold) !important;
+}
+
+.topbar .btn-fill-sm,
+.topbar .nbtn.fill,
+.topbar .nbtn-teal {
+  background: var(--kr-gold) !important;
+  color: var(--kr-black) !important;
+}
+
+.topbar .btn-outline-sm:hover,
+.topbar .nbtn:hover {
+  background: var(--kr-gold) !important;
+  color: var(--kr-black) !important;
+}
+
+.exam-mega {
+  background: #ffffff !important;
+  border-color: rgba(255, 210, 31, 0.22) !important;
+  box-shadow: 0 24px 60px rgba(5, 8, 8, 0.16) !important;
+}
+
+.exam-mega a,
+.topbar .exam-mega a,
+.topbar-nav .exam-mega a,
+.nav-links .exam-mega a {
+  color: var(--kr-black) !important;
+}
+
+.exam-cat,
+.exam-link {
+  background: #ffffff !important;
+  color: var(--kr-black) !important;
+  border-color: var(--kr-border) !important;
+}
+
+.exam-cat.active {
+  background: var(--kr-cream-2) !important;
+  border-color: rgba(255, 210, 31, 0.45) !important;
+  color: var(--kr-black) !important;
+  box-shadow: 0 12px 28px rgba(255, 210, 31, 0.12) !important;
+}
+
+.exam-link:hover {
+  border-color: var(--kr-black) !important;
+  color: var(--kr-black) !important;
+  box-shadow: 0 10px 24px rgba(5, 8, 8, 0.12) !important;
+}
+
+.exam-icon.sky,
+.exam-icon.blue,
+.exam-icon.gray,
+.exam-icon.purple,
+.exam-icon.red,
+.exam-icon.soft {
+  background: var(--kr-black) !important;
+  color: var(--kr-gold) !important;
+  border-color: rgba(255, 210, 31, 0.3) !important;
+}
+
+.exam-icon.gold {
+  background: var(--kr-gold) !important;
+  color: var(--kr-black) !important;
+}
+
 /* Responsive safety layer for imported public HTML pages. */
 @media (max-width: 1180px) {
   .kr-logics-reference-home .header-inner,

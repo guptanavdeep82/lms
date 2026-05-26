@@ -47,7 +47,7 @@ export const courses = [
   },
   {
     slug: "competitive-test-series",
-    title: "Competitive Test Series",
+    title: "Competitive Mock Tests",
     category: "All Exams",
     price: "₹1,499",
     duration: "12 Months",
@@ -78,7 +78,7 @@ export const stats = [
 export const plans = [
   { name: "Starter", price: "₹999", term: "1 Month", items: ["Free notes", "Basic mock tests", "Forum access"] },
   { name: "Pro Learner", price: "₹3,499", term: "3 Months", items: ["Recorded courses", "Paid notes", "Live classes", "Analytics dashboard"], featured: true },
-  { name: "Rank Builder", price: "₹6,999", term: "12 Months", items: ["All courses", "Full test series", "1 year notes", "Priority support"] },
+  { name: "Rank Builder", price: "₹6,999", term: "12 Months", items: ["All courses", "Full mock tests", "1 year notes", "Priority support"] },
 ];
 
 export const blogs = [

@@ -105,6 +105,20 @@ const brandStyles = `
   border-color: var(--gold);
   color: var(--gold);
 }
+.kr-logics-reference-home .exam-mega .exam-cat,
+.kr-logics-reference-home .exam-mega .exam-link {
+  background: #ffffff !important;
+  color: #050808 !important;
+  border-color: #ded9c8 !important;
+}
+.kr-logics-reference-home .exam-mega .exam-cat.active {
+  background: #fff8dc !important;
+  border-color: rgba(255, 210, 31, 0.45) !important;
+}
+.kr-logics-reference-home .exam-mega .exam-link:hover {
+  color: #050808 !important;
+  border-color: #050808 !important;
+}
 .kr-logics-reference-home .hero-card,
 .kr-logics-reference-home .mini-card-light,
 .kr-logics-reference-home .course-card,
@@ -120,11 +134,90 @@ const brandStyles = `
 .kr-logics-reference-home footer {
   background: #050808;
 }
+.kr-logics-reference-home .hero-right {
+  align-items: center;
+  justify-content: center;
+  min-height: 560px;
+  padding-bottom: 0;
+  position: relative;
+}
+.kr-logics-reference-home .hero-right > * {
+  display: none;
+}
+.kr-logics-reference-home .hero-right::before {
+  content: "";
+  width: min(100%, 620px);
+  aspect-ratio: 1 / 1;
+  display: block;
+  border-radius: 38px 120px 38px 120px;
+  background: url("/hero-students.png") center / cover no-repeat;
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.24);
+}
+.kr-logics-reference-home .about-grid {
+  grid-template-columns: minmax(340px, 1.05fr) minmax(320px, 0.95fr);
+  align-items: center;
+}
+.kr-logics-reference-home .about-grid::before {
+  content: "";
+  display: block;
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  aspect-ratio: 1536 / 1024;
+  border-radius: 30px 110px 30px 110px;
+  background: url("/building-professionals.png") center / cover no-repeat;
+  box-shadow: 0 24px 70px rgba(5, 8, 8, 0.18);
+}
+.kr-logics-reference-home .about-grid > div:first-child {
+  display: none;
+}
+.kr-logics-reference-home .about-grid > div:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+.kr-logics-reference-home .about-main-card {
+  display: none;
+}
 @media (max-width: 1180px) {
   .kr-logics-reference-home .hero {
     background:
       radial-gradient(circle at 80% 0%, rgba(255, 210, 31, 0.18), transparent 34%),
       #050808;
+  }
+  .kr-logics-reference-home .hero-right {
+    min-height: auto;
+    margin-top: 20px;
+  }
+  .kr-logics-reference-home .hero-right::before {
+    width: min(100%, 520px);
+    border-radius: 30px 86px 30px 86px;
+  }
+  .kr-logics-reference-home .about-grid::before {
+    max-width: 760px;
+    margin: 0;
+  }
+}
+@media (min-width: 901px) {
+  .kr-logics-reference-home .about-grid {
+    grid-template-columns: minmax(360px, 1.05fr) minmax(320px, 0.95fr) !important;
+  }
+  .kr-logics-reference-home .about-grid::before {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+  .kr-logics-reference-home .about-grid > div:nth-child(2) {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+}
+@media (max-width: 900px) {
+  .kr-logics-reference-home .about-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .kr-logics-reference-home .about-grid::before,
+  .kr-logics-reference-home .about-grid > div:nth-child(2) {
+    grid-column: auto !important;
+    grid-row: auto !important;
   }
 }
 `;

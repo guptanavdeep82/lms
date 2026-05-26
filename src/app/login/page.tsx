@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
-  BookOpen,
   CheckCircle2,
   Eye,
   LockKeyhole,
@@ -33,9 +33,7 @@ export default function LoginPage() {
       <header className="border-b border-[#e4e8f1] bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
-            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#172a69] text-white shadow-xl shadow-blue-100">
-              <BookOpen size={22} />
-            </div>
+            <Image src="/logics-logo.jpeg" alt="KR Logics logo" width={48} height={48} className="h-12 w-12 rounded-2xl border-2 border-[#ffd21f] object-cover shadow-xl shadow-black/10" />
             <div>
               <p className="text-lg font-extrabold leading-tight text-[#172a69]">KR Logics</p>
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#8791a5]">Student LMS</p>

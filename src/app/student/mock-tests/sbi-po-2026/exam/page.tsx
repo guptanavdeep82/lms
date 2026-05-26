@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronRight, Clock3, Expand, Flag, HelpCircle, Pause, UserRound, X } from "lucide-react";
 
 const questionNumbers = Array.from({ length: 28 }, (_, index) => index + 1);
@@ -9,7 +10,7 @@ export default function MockExamPage() {
     <main className="min-h-screen bg-white text-[#111827]" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
       <header className="flex min-h-[50px] flex-wrap items-center justify-between gap-2 bg-[#3378b9] px-3 py-2 text-white sm:px-5">
         <div className="flex items-center gap-3">
-          <div className="grid h-9 w-9 place-items-center rounded-full bg-[#c4008f] text-sm font-bold">DG</div>
+          <Image src="/logics-logo.jpeg" alt="KR Logics logo" width={36} height={36} className="h-9 w-9 rounded-full border border-[#ffd21f] object-cover shadow-lg shadow-black/20" />
           <h1 className="text-[13px] font-medium sm:text-[14px]">SBI PO 2026 Prelims Mock Test - 1</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
