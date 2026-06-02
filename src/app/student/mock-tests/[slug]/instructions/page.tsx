@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, FileText, Globe2, Loader2, ShieldCheck } from "lucide-react";
 import { isStudentLoggedIn } from "@/lib/student-auth";
-import type { MockTestDetailResponse } from "@/lib/mock-tests";
+import { mockTestsApiUrl, type MockTestDetailResponse } from "@/lib/mock-tests";
 
 export default function DynamicMockInstructionsPage() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function DynamicMockInstructionsPage() {
       return;
     }
 
-    fetch(`/api/mock-tests/${slug}`)
+    fetch(mockTestsApiUrl(slug))
       .then((response) => {
         if (!response.ok) throw new Error("Not found");
         return response.json();

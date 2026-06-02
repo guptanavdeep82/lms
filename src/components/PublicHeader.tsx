@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import type { MockCategory, MockTest, MockTestsResponse } from "@/lib/mock-tests";
+import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
 
 const fallbackCategories: MockCategory[] = [
   {
@@ -70,7 +70,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   useEffect(() => {
     let mounted = true;
 
-    fetch("/api/mock-tests")
+    fetch(mockTestsApiUrl())
       .then((response) => {
         if (!response.ok) throw new Error("Unable to load mock tests");
         return response.json();

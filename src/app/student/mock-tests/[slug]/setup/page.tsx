@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, FileText, Globe2, Loader2, MonitorCheck, ShieldCheck, UserRound } from "lucide-react";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
-import type { MockTestDetailResponse } from "@/lib/mock-tests";
+import { mockTestsApiUrl, type MockTestDetailResponse } from "@/lib/mock-tests";
 
 export default function DynamicMockSetupPage() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function DynamicMockSetupPage() {
       return;
     }
 
-    fetch(`/api/mock-tests/${slug}`)
+    fetch(mockTestsApiUrl(slug))
       .then((response) => response.json())
       .then((payload: MockTestDetailResponse) => {
         if (payload.test.is_locked) {

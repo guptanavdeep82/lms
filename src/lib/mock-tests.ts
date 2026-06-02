@@ -47,4 +47,11 @@ export type MockTestDetailResponse = {
   questions: MockQuestion[];
 };
 
-export const backendBaseUrl = process.env.LMS_BACKEND_URL ?? "https://lms.eventsbyan.com";
+const defaultBackendBaseUrl = "https://lms.eventsbyan.com";
+
+export const backendBaseUrl = process.env.LMS_BACKEND_URL ?? defaultBackendBaseUrl;
+export const publicBackendBaseUrl = process.env.NEXT_PUBLIC_LMS_BACKEND_URL ?? defaultBackendBaseUrl;
+
+export function mockTestsApiUrl(slug?: string) {
+  return `${publicBackendBaseUrl}/api/mock-tests${slug ? `/${slug}` : ""}`;
+}

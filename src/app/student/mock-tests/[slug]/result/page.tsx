@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, BarChart3, CheckCircle2, Loader2, RotateCcw, Trophy } from "lucide-react";
 import { getMockResult, type MockResult } from "@/lib/mock-results";
 import { isStudentLoggedIn } from "@/lib/student-auth";
-import type { MockTestDetailResponse } from "@/lib/mock-tests";
+import { mockTestsApiUrl, type MockTestDetailResponse } from "@/lib/mock-tests";
 
 export default function MockResultPage() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function MockResultPage() {
       return;
     }
 
-    fetch(`/api/mock-tests/${slug}`)
+    fetch(mockTestsApiUrl(slug))
       .then((response) => response.json())
       .then((payload: MockTestDetailResponse) => {
         setCategorySlug(payload.test.category_slug);

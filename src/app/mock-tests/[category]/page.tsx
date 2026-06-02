@@ -7,7 +7,7 @@ import { BarChart3, Check, ChevronRight, Clock3, FileText, Languages, Loader2, L
 import { PublicHeader } from "@/components/PublicHeader";
 import { hasCompletedMock } from "@/lib/mock-results";
 import { isStudentLoggedIn } from "@/lib/student-auth";
-import type { MockCategory, MockTest, MockTestsResponse } from "@/lib/mock-tests";
+import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
 
 const tabs = [
   { key: "full_length", label: "Full Length Test" },
@@ -27,7 +27,7 @@ export default function MockSeriesDetailPage() {
   useEffect(() => {
     let mounted = true;
 
-    fetch("/api/mock-tests")
+    fetch(mockTestsApiUrl())
       .then((response) => response.json())
       .then((data: MockTestsResponse) => {
         if (!mounted) return;

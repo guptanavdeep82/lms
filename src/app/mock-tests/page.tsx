@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, FileText, Loader2, Search } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
-import type { MockCategory, MockTestsResponse } from "@/lib/mock-tests";
+import { mockTestsApiUrl, type MockCategory, type MockTestsResponse } from "@/lib/mock-tests";
 
 export default function MockTestsPage() {
   const [categories, setCategories] = useState<MockCategory[]>([]);
@@ -14,7 +14,7 @@ export default function MockTestsPage() {
   useEffect(() => {
     let mounted = true;
 
-    fetch("/api/mock-tests")
+    fetch(mockTestsApiUrl())
       .then((response) => response.json())
       .then((data: MockTestsResponse) => {
         if (mounted) setCategories(data.categories ?? []);
