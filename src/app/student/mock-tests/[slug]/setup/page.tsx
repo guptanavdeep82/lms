@@ -40,6 +40,22 @@ export default function DynamicMockSetupPage() {
 
   const test = data.test;
 
+  const openExamWindow = () => {
+    const examUrl = `/student/mock-tests/${slug}/exam?examWindow=1`;
+    const popup = window.open(
+      examUrl,
+      "mockExamWindow",
+      `popup=yes,fullscreen=yes,width=${window.screen.availWidth},height=${window.screen.availHeight},left=0,top=0,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+    );
+
+    if (popup) {
+      popup.focus();
+      return;
+    }
+
+    router.push(examUrl);
+  };
+
   return (
     <main className="min-h-screen bg-[#eef3f8] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
@@ -108,9 +124,9 @@ export default function DynamicMockSetupPage() {
             <Link href={`/student/mock-tests/${slug}/instructions`} className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-white/10 text-sm font-bold ring-1 ring-white/16">
               <ArrowLeft size={16} /> Back
             </Link>
-            <Link href={`/student/mock-tests/${slug}/exam`} className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[#f5c518] text-sm font-extrabold text-[#172a69]">
+            <button type="button" onClick={openExamWindow} className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[#f5c518] text-sm font-extrabold text-[#172a69]">
               Next <ArrowRight size={16} />
-            </Link>
+            </button>
           </div>
         </aside>
       </section>

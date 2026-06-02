@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
+import { getStudentSession, logoutStudent } from "@/lib/student-auth";
 
 const fallbackCategories: MockCategory[] = [
   {
@@ -49,7 +50,7 @@ const headerStyles = `
 .public-home-header .exam-icon.sky,.public-home-header .exam-icon.blue,.public-home-header .exam-icon.gray,.public-home-header .exam-icon.purple,.public-home-header .exam-icon.red,.public-home-header .exam-icon.soft{background:#050808!important;color:#ffd21f!important}
 .public-home-header .exam-empty{grid-column:1/-1!important;border:1px dashed #ded9c8!important;border-radius:8px!important;padding:18px!important;color:#667085!important;font-size:13px!important;font-weight:700!important;text-align:center!important}
 .public-home-header .hdr-btns{display:flex!important;align-items:center!important;gap:10px!important;flex-shrink:0!important}
-.public-home-header .btn-ghost,.public-home-header .btn-primary{display:inline-flex!important;align-items:center!important;justify-content:center!important;border-radius:8px!important;font-size:13px!important;font-weight:700!important;min-height:36px!important;padding:8px 20px!important;text-decoration:none!important;transition:all .2s!important}
+.public-home-header .btn-ghost,.public-home-header .btn-primary{display:inline-flex!important;align-items:center!important;justify-content:center!important;border-radius:8px!important;font-size:13px!important;font-weight:700!important;min-height:36px!important;padding:8px 20px!important;text-decoration:none!important;transition:all .2s!important;cursor:pointer!important;font-family:inherit!important}
 .public-home-header .btn-ghost{border:1.5px solid #ffd21f!important;color:#ffd21f!important;background:transparent!important}
 .public-home-header .btn-ghost:hover{background:#ffd21f!important;color:#050808!important}
 .public-home-header .btn-primary{border:0!important;background:#ffd21f!important;color:#050808!important}
@@ -67,6 +68,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   const [mockCategories, setMockCategories] = useState<MockCategory[]>(fallbackCategories);
   const [activeCategorySlug, setActiveCategorySlug] = useState(fallbackCategories[0].slug);
   const [registerHref, setRegisterHref] = useState("/register");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -99,6 +101,18 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   useEffect(() => {
     const redirect = new URLSearchParams(window.location.search).get("redirect");
     setRegisterHref(redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : "/register");
+    setIsLoggedIn(Boolean(getStudentSession()));
+  }, []);
+
+  useEffect(() => {
+    const syncSession = () => setIsLoggedIn(Boolean(getStudentSession()));
+    window.addEventListener("storage", syncSession);
+    window.addEventListener("focus", syncSession);
+
+    return () => {
+      window.removeEventListener("storage", syncSession);
+      window.removeEventListener("focus", syncSession);
+    };
   }, []);
 
   const activeCategory = useMemo(() => {
@@ -106,6 +120,11 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   }, [activeCategorySlug, mockCategories]);
 
   const activeTests = activeCategory?.tests ?? [];
+
+  const handleLogout = () => {
+    logoutStudent();
+    setIsLoggedIn(false);
+  };
 
   const navLink = (href: string, label: string, key?: PublicHeaderProps["active"]) => (
     <Link href={href} className={key && active === key ? "active" : ""}>
@@ -170,8 +189,14 @@ export function PublicHeader({ active }: PublicHeaderProps) {
           </nav>
 
           <div className="hdr-btns">
-            <Link href="/login" className="btn-ghost">Login</Link>
-            <Link href={registerHref} className="btn-primary">Enroll Free →</Link>
+            {isLoggedIn ? (
+              <button type="button" onClick={handleLogout} className="btn-ghost">Logout</button>
+            ) : (
+              <>
+                <Link href="/login" className="btn-ghost">Login</Link>
+                <Link href={registerHref} className="btn-primary">Enroll Free →</Link>
+              </>
+            )}
           </div>
         </div>
       </header>

@@ -18,9 +18,6 @@ export default function DynamicMockExamPage() {
   const [validationMessage, setValidationMessage] = useState("");
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [isExamWindow, setIsExamWindow] = useState(false);
-  const [popupBlocked, setPopupBlocked] = useState(false);
-  const [popupOpened, setPopupOpened] = useState(false);
   const student = getStudentSession();
 
   useEffect(() => {
@@ -31,29 +28,9 @@ export default function DynamicMockExamPage() {
     }
 
     const params = new URLSearchParams(window.location.search);
-    const openedExamWindow = params.get("examWindow") === "1" || window.name === "mockExamWindow";
-    setIsExamWindow(openedExamWindow);
-
-    if (!openedExamWindow) {
-      const launchKey = `mock_exam_window_${slug}`;
-      if (!window.sessionStorage.getItem(launchKey)) {
-        window.sessionStorage.setItem(launchKey, "1");
-        const examUrl = `${window.location.origin}${window.location.pathname}?examWindow=1`;
-        const popup = window.open(
-          examUrl,
-          "mockExamWindow",
-          `popup=yes,fullscreen=yes,width=${window.screen.availWidth},height=${window.screen.availHeight},left=0,top=0,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`
-        );
-
-        if (popup) {
-          popup.focus();
-          setPopupOpened(true);
-        } else {
-          setPopupBlocked(true);
-        }
-      } else {
-        setPopupBlocked(true);
-      }
+    if (params.get("examWindow") !== "1" && window.name !== "mockExamWindow") {
+      window.location.replace(`${window.location.pathname}?examWindow=1`);
+      return;
     }
 
     fetch(mockTestsApiUrl(slug))
@@ -114,50 +91,12 @@ export default function DynamicMockExamPage() {
     }
   }, [data, remainingSeconds, submitTest]);
 
-  const openExamWindow = () => {
-    const examUrl = `${window.location.origin}${window.location.pathname}?examWindow=1`;
-    const popup = window.open(
-      examUrl,
-      "mockExamWindow",
-      `popup=yes,fullscreen=yes,width=${window.screen.availWidth},height=${window.screen.availHeight},left=0,top=0,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`
-    );
-
-    if (popup) {
-      popup.focus();
-      setPopupBlocked(false);
-      setPopupOpened(true);
-    }
-  };
-
   const enterFullscreen = () => {
     document.documentElement.requestFullscreen?.().catch(() => undefined);
   };
 
   if (!data || !question || !test) {
     return <main className="grid min-h-screen place-items-center bg-white"><Loader2 className="animate-spin text-[#3378b9]" size={34} /></main>;
-  }
-
-  if (!isExamWindow) {
-    return (
-      <main className="grid min-h-screen place-items-center bg-[#eef3f8] px-4 text-center" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
-        <div className="max-w-lg rounded-3xl border border-[#d9e2ee] bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.1)]">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#172a69] text-white">
-            <Expand size={26} />
-          </div>
-          <h1 className="mt-5 text-2xl font-extrabold text-[#172a69]">Mock test opens in a dedicated exam window</h1>
-          <p className="mt-3 text-sm font-semibold leading-7 text-[#667085]">
-            {popupOpened
-              ? "Exam window has been opened. Continue the test there for a cleaner full-screen experience."
-              : "Your browser blocked the automatic exam window. Click below to open it manually."}
-          </p>
-          {popupBlocked && (
-            <button onClick={openExamWindow} className="mt-6 inline-flex h-12 items-center justify-center rounded-2xl bg-[#172a69] px-6 text-sm font-extrabold text-white">
-              Open Full Screen Exam Window
-            </button>
-          )}
-        </div>
-      </main>
-    );
   }
 
   const goToNext = (allowSkip = false) => {
