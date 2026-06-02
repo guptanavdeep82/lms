@@ -1,66 +1,161 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CheckCircle2, PlayCircle, ShieldCheck, ShoppingBag } from "lucide-react";
-import { PageShell } from "@/components/site-shell";
-import { courses } from "@/lib/data";
+import {
+  BookOpen,
+  CheckCircle2,
+  Clock3,
+  FileText,
+  PlayCircle,
+  ShieldCheck,
+  ShoppingBag,
+  Star,
+  UsersRound,
+  Video,
+} from "lucide-react";
+import { PublicHeader } from "@/components/PublicHeader";
+import { courseCatalog, getCourseBySlug } from "@/lib/course-catalog";
 
 export function generateStaticParams() {
-  return courses.map((course) => ({ slug: course.slug }));
+  return courseCatalog.map((course) => ({ slug: course.slug }));
 }
 
 export default async function CourseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const course = courses.find((item) => item.slug === slug);
+  const course = getCourseBySlug(slug);
   if (!course) notFound();
 
+  const price = course.price === 0 ? "Free" : `Rs ${course.price.toLocaleString("en-IN")}`;
+  const original = course.original ? `Rs ${course.original.toLocaleString("en-IN")}` : null;
+
   return (
-    <PageShell>
-      <section className="bg-[#10100d] px-4 py-14 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_0.85fr]">
+    <main className="min-h-screen bg-[#f7f6ef] text-[#151515]">
+      <PublicHeader active="courses" />
+
+      <section className="bg-[#050808] px-4 py-12 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_0.82fr]">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f7c843]">{course.category}</p>
-            <h1 className="mt-4 text-5xl font-black tracking-tight">{course.title}</h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/70">Recorded video library, notes, mock tests, live sessions and discussion support bundled into one student subscription.</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/login" className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#f7c843] px-6 text-sm font-black text-black">
-                <ShoppingBag size={18} /> Login and Buy
-              </Link>
-              <Link href="/student/dashboard" className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-white/15 px-6 text-sm font-bold">
-                <PlayCircle size={18} /> Preview Dashboard
-              </Link>
+            <Link href="/courses" className="text-sm font-bold text-[#ffd21f]">← Back to courses</Link>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {[course.category, course.exam, course.level, course.badge].filter(Boolean).map((item) => (
+                <span key={item} className="rounded-full border border-[#ffd21f]/25 bg-white/8 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#ffd21f]">
+                  {item}
+                </span>
+              ))}
+            </div>
+            <h1 className="mt-5 max-w-4xl font-['Sora'] text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">{course.title}</h1>
+            <p className="mt-5 max-w-3xl text-base leading-8 text-white/70">{course.desc}</p>
+
+            <div className="mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                [Clock3, `${course.hours}+ hrs`, "Video content"],
+                [FileText, `${course.tests}+`, "Tests"],
+                [UsersRound, course.students.toLocaleString("en-IN"), "Students"],
+                [Star, course.rating.toFixed(1), `${course.reviews} reviews`],
+              ].map(([Icon, value, label]) => (
+                <div key={label as string} className="rounded-lg border border-white/10 bg-white/8 p-4">
+                  <Icon className="mb-3 size-5 text-[#ffd21f]" />
+                  <div className="font-['Sora'] text-xl font-extrabold text-white">{value as string}</div>
+                  <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-white/45">{label as string}</div>
+                </div>
+              ))}
             </div>
           </div>
-          <div className="overflow-hidden rounded-md border border-white/10 bg-white/10 p-3">
-            <div className="relative h-80 rounded-md">
-              <Image src={course.image} alt={course.title} fill className="rounded-md object-cover" />
+
+          <aside className="overflow-hidden rounded-2xl border border-[#ffd21f]/20 bg-white p-3 text-[#050808] shadow-2xl shadow-black/30">
+            <div className="relative h-72 overflow-hidden rounded-xl bg-[#f7f6ef]">
+              <Image src={course.image} alt={course.title} fill className="object-cover" priority />
             </div>
-          </div>
+            <div className="p-5">
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#8a6500]">Course Price</p>
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <span className="font-['Sora'] text-4xl font-extrabold">{price}</span>
+                    {original ? <span className="text-sm font-bold text-slate-400 line-through">{original}</span> : null}
+                  </div>
+                </div>
+                <span className="rounded-full bg-[#fff8dc] px-3 py-1 text-xs font-extrabold text-[#050808]">Limited offer</span>
+              </div>
+
+              <div className="mt-5 grid gap-3">
+                <Link href="/login" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#ffd21f] text-sm font-extrabold text-[#050808] transition hover:bg-[#ffe164]">
+                  <ShoppingBag className="size-4" /> Purchase Course
+                </Link>
+                <Link href="/register" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[#050808] text-sm font-extrabold text-[#050808] transition hover:bg-[#050808] hover:text-white">
+                  <PlayCircle className="size-4" /> Register and Preview
+                </Link>
+              </div>
+
+              <div className="mt-5 grid gap-2 text-sm font-semibold text-slate-700">
+                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Secure payment and student login</span>
+                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Course access starts after purchase</span>
+                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Mock tests and notes included</span>
+              </div>
+            </div>
+          </aside>
         </div>
       </section>
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[0.75fr_0.25fr] lg:px-8">
-        <div className="rounded-md border border-black/10 bg-white p-6 shadow-sm">
-          <h2 className="text-3xl font-black">What students get</h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {["Course-wise video library", "Subject categorization", "Continue watching", "Speed and resolution controls", "Mock tests with ranks", "Paid notes access", "Live class notifications", "Forum doubt support"].map((item) => (
-              <div key={item} className="flex items-center gap-3 rounded-md bg-[#fbfaf6] p-3">
-                <CheckCircle2 className="text-[#9c7411]" size={20} />
-                <span className="font-semibold">{item}</span>
-              </div>
-            ))}
-          </div>
+
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_360px] lg:px-8">
+        <div className="grid gap-6">
+          <article className="rounded-xl border border-[#ded9c8] bg-white p-6 shadow-sm">
+            <h2 className="font-['Sora'] text-3xl font-extrabold text-[#050808]">What you will learn</h2>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {course.outcomes.map((item) => (
+                <div key={item} className="flex gap-3 rounded-lg bg-[#f7f6ef] p-4">
+                  <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-[#8a6500]" />
+                  <span className="text-sm font-semibold leading-6 text-slate-700">{item}</span>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-xl border border-[#ded9c8] bg-white p-6 shadow-sm">
+            <h2 className="font-['Sora'] text-3xl font-extrabold text-[#050808]">Course curriculum</h2>
+            <div className="mt-6 grid gap-3">
+              {course.curriculum.map((item, index) => (
+                <div key={item} className="flex items-center justify-between rounded-lg border border-[#ded9c8] p-4">
+                  <div className="flex items-center gap-3">
+                    <span className="grid size-8 place-items-center rounded-full bg-[#050808] text-xs font-extrabold text-[#ffd21f]">{index + 1}</span>
+                    <span className="font-bold text-[#050808]">{item}</span>
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Lessons included</span>
+                </div>
+              ))}
+            </div>
+          </article>
         </div>
-        <aside className="rounded-md border border-black/10 bg-black p-6 text-white shadow-sm">
-          <p className="text-sm text-white/55">Subscription</p>
-          <p className="mt-2 text-4xl font-black text-[#f7c843]">{course.price}</p>
-          <p className="mt-1 text-white/60">{course.duration} dynamic access</p>
-          <div className="mt-6 grid gap-3 text-sm text-white/70">
-            <span className="flex gap-2"><ShieldCheck size={17} className="text-[#f7c843]" /> Secure access control</span>
-            <span className="flex gap-2"><ShieldCheck size={17} className="text-[#f7c843]" /> Download-protected videos</span>
-            <span className="flex gap-2"><ShieldCheck size={17} className="text-[#f7c843]" /> OTP and Google login</span>
+
+        <aside className="grid content-start gap-5">
+          <div className="rounded-xl border border-[#ded9c8] bg-white p-6 shadow-sm">
+            <h3 className="font-['Sora'] text-xl font-extrabold text-[#050808]">This course includes</h3>
+            <div className="mt-5 grid gap-4 text-sm font-semibold text-slate-700">
+              {[
+                [Video, `${course.hours}+ hours recorded videos`],
+                [BookOpen, "Structured subject-wise learning"],
+                [FileText, "Downloadable notes and PDFs"],
+                [PlayCircle, `${course.tests}+ mock and practice tests`],
+                [UsersRound, "Doubt support and mentoring"],
+              ].map(([Icon, label]) => (
+                <span key={label as string} className="flex items-center gap-3">
+                  <Icon className="size-5 text-[#8a6500]" />
+                  {label as string}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-[#050808] p-6 text-white">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#ffd21f]">Need Guidance?</p>
+            <h3 className="mt-3 font-['Sora'] text-2xl font-extrabold">Not sure this course is right?</h3>
+            <p className="mt-3 text-sm leading-6 text-white/65">Talk to counselling team and pick the right batch, mock test pack and study plan.</p>
+            <Link href="/contact" className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-lg bg-[#ffd21f] text-sm font-extrabold text-[#050808]">
+              Contact Counsellor
+            </Link>
           </div>
         </aside>
       </section>
-    </PageShell>
+    </main>
   );
 }

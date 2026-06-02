@@ -1,16 +1,59 @@
-import Link from "next/link";
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, FileText, Globe2, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, FileText, Globe2, Loader2, ShieldCheck } from "lucide-react";
+import { isStudentLoggedIn } from "@/lib/student-auth";
+import type { MockTestDetailResponse } from "@/lib/mock-tests";
 
-const adminInstructions = [
-  "This is a mock test for practice purpose only. Question paper should not be treated as final sample paper.",
-  "Total duration is 20 minutes. Timer will start as soon as you begin the test.",
-  "You can change the question language during the exam where translation is available.",
-  "Do not refresh, close, or switch tabs during the exam. Such activity may be recorded by the system.",
-  "Every correct answer carries +1 mark and every wrong answer carries -0.25 marks.",
-];
+export default function DynamicMockInstructionsPage() {
+  const router = useRouter();
+  const params = useParams<{ slug: string }>();
+  const slug = params.slug;
+  const [data, setData] = useState<MockTestDetailResponse | null>(null);
+  const [accepted, setAccepted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-export default function MockInstructionsPage() {
+  useEffect(() => {
+    const target = `/student/mock-tests/${slug}/instructions`;
+    if (!isStudentLoggedIn()) {
+      router.replace(`/login?redirect=${encodeURIComponent(target)}`);
+      return;
+    }
+
+    fetch(`/api/mock-tests/${slug}`)
+      .then((response) => {
+        if (!response.ok) throw new Error("Not found");
+        return response.json();
+      })
+      .then((payload: MockTestDetailResponse) => {
+        if (payload.test.is_locked) {
+          router.replace(`/mock-tests/${payload.test.category_slug ?? ""}`);
+          return;
+        }
+
+        setData(payload);
+      })
+      .catch(() => router.replace("/mock-tests"))
+      .finally(() => setLoading(false));
+  }, [router, slug]);
+
+  if (loading || !data) {
+    return <LoadingScreen />;
+  }
+
+  const test = data.test;
+  const sections = Array.from(new Set(data.questions.map((question) => question.section_name))).join(", ") || "General";
+  const instructions = [
+    test.instructions || "Read all instructions carefully before starting the exam.",
+    `Total duration is ${test.duration_minutes} minutes. Timer will start as soon as you begin the test.`,
+    `This test has ${test.questions_count} questions and total marks are ${test.total_marks}.`,
+    "Do not refresh, close, or switch tabs during the exam.",
+    "You can change your answer before final submission.",
+  ];
+
   return (
     <main className="min-h-screen bg-[#eef3f8] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
@@ -20,12 +63,12 @@ export default function MockInstructionsPage() {
           <div className="flex items-center gap-3">
             <Image src="/logics-logo.jpeg" alt="KR Logics logo" width={36} height={36} className="h-9 w-9 rounded-full border border-[#ffd21f] object-cover shadow-lg shadow-black/20" />
             <div>
-              <h1 className="text-[14px] font-semibold sm:text-[16px]">SBI PO 2026 Prelims Mock Test - 1</h1>
+              <h1 className="text-[14px] font-semibold sm:text-[16px]">{test.title}</h1>
               <p className="text-xs text-white/70">Instructions configured by admin</p>
             </div>
           </div>
           <div className="hidden items-center gap-2 rounded-xl bg-white/12 px-3 py-2 text-xs font-bold sm:flex">
-            <Clock3 size={15} /> 20 min
+            <Clock3 size={15} /> {test.duration_minutes} min
           </div>
         </div>
       </header>
@@ -46,12 +89,9 @@ export default function MockInstructionsPage() {
                 </div>
 
                 <div className="h-[300px] overflow-y-auto rounded-2xl border border-[#dfe5ef] bg-[#fbfdff] p-5">
-                  <p className="mb-5 text-[15px] leading-7 text-[#111827]">
-                    This is a Mock test. Question Paper displayed is for practice purpose only. Under no circumstances should this be presumed as a sample paper.
-                  </p>
                   <div className="space-y-3">
-                    {adminInstructions.map((instruction, index) => (
-                      <div key={instruction} className="flex gap-3 rounded-2xl bg-white p-4 ring-1 ring-[#e5eaf2]">
+                    {instructions.map((instruction, index) => (
+                      <div key={`${instruction}-${index}`} className="flex gap-3 rounded-2xl bg-white p-4 ring-1 ring-[#e5eaf2]">
                         <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#3378b9] text-xs font-extrabold text-white">{index + 1}</span>
                         <p className="text-sm font-semibold leading-6 text-[#344054]">{instruction}</p>
                       </div>
@@ -65,20 +105,14 @@ export default function MockInstructionsPage() {
                     <span className="flex h-10 items-center gap-2 rounded-xl border border-[#cdd6e2] bg-white px-3">
                       <Globe2 size={16} className="text-[#3378b9]" />
                       <select className="bg-transparent text-sm font-bold outline-none">
-                        <option>-- Select --</option>
                         <option>English</option>
                         <option>Hindi</option>
                       </select>
                     </span>
                   </label>
-                  <p className="mt-3 text-sm font-semibold text-red-600">
-                    Please note all questions will appear in your default language. This language can be changed for a particular question later on.
-                  </p>
                   <label className="mt-6 flex gap-3 text-sm font-semibold leading-6 text-[#111827]">
-                    <input type="checkbox" className="mt-1 h-5 w-5 rounded border-[#9aa8ba]" />
-                    <span>
-                      I have read and understood the instructions. All computer hardware allotted to me are in proper working condition. I declare that I am not carrying any prohibited gadget or material. I agree that in case of not adhering to the instructions, I shall be liable to disciplinary action.
-                    </span>
+                    <input checked={accepted} onChange={(event) => setAccepted(event.target.checked)} type="checkbox" className="mt-1 h-5 w-5 rounded border-[#9aa8ba]" />
+                    <span>I have read and understood the instructions and I am ready to start this mock test.</span>
                   </label>
                 </div>
               </div>
@@ -90,10 +124,10 @@ export default function MockInstructionsPage() {
                 <h3 className="mt-5 text-xl font-extrabold tracking-[-0.02em] text-[#172a69]">Test Summary</h3>
                 <div className="mt-5 space-y-3">
                   {[
-                    ["Exam", "SBI PO Prelims"],
-                    ["Questions", "100"],
-                    ["Sections", "English, Quant, Reasoning"],
-                    ["Marks", "+1 / -0.25"],
+                    ["Exam", test.title],
+                    ["Questions", String(test.questions_count)],
+                    ["Sections", sections],
+                    ["Marks", String(test.total_marks)],
                     ["Mode", "Online Practice"],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between gap-4 rounded-2xl bg-white px-4 py-3 text-sm ring-1 ring-[#e5eaf2]">
@@ -105,23 +139,35 @@ export default function MockInstructionsPage() {
                 <div className="mt-5 rounded-2xl bg-[#fff8dc] p-4">
                   <div className="flex gap-3">
                     <CheckCircle2 size={19} className="text-[#b77900]" />
-                    <p className="text-sm font-bold leading-6 text-[#745100]">Admin can replace this instruction content from backend later.</p>
+                    <p className="text-sm font-bold leading-6 text-[#745100]">This content is loaded from admin-created mock test data.</p>
                   </div>
                 </div>
               </aside>
             </div>
 
             <footer className="flex flex-col items-stretch justify-center gap-3 border-t border-[#d8dee8] bg-[#e4e4e4] px-5 py-4 sm:flex-row sm:items-center">
-              <Link href="/student/mock-tests" className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#111827] bg-white px-6 text-sm font-bold text-[#111827]">
+              <Link href="/mock-tests" className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#111827] bg-white px-6 text-sm font-bold text-[#111827]">
                 <ArrowLeft size={16} /> Previous
               </Link>
-              <Link href="/student/mock-tests/sbi-po-2026/setup" className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#3378b9] px-6 text-sm font-bold text-white shadow-lg shadow-blue-100">
+              <button
+                disabled={!accepted}
+                onClick={() => router.push(`/student/mock-tests/${slug}/setup`)}
+                className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#3378b9] px-6 text-sm font-bold text-white shadow-lg shadow-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 I&apos;m ready to begin <ArrowRight size={16} />
-              </Link>
+              </button>
             </footer>
           </div>
         </div>
       </section>
+    </main>
+  );
+}
+
+function LoadingScreen() {
+  return (
+    <main className="grid min-h-screen place-items-center bg-[#eef3f8]">
+      <Loader2 className="animate-spin text-[#3378b9]" size={34} />
     </main>
   );
 }

@@ -1,8 +1,10 @@
 "use client";
 
+import type { FormEvent } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { PublicHeader } from "@/components/PublicHeader";
+import { loginStudent } from "@/lib/student-auth";
 import {
   ArrowRight,
   CheckCircle2,
@@ -24,24 +26,20 @@ const steps = [
 export default function RegisterPage() {
   const router = useRouter();
 
+  const handleRegister = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const email = form.querySelector<HTMLInputElement>('input[name="email"]')?.value || "student@email.com";
+    loginStudent(email);
+    const params = new URLSearchParams(window.location.search);
+    router.push(params.get("redirect") || "/student/dashboard");
+  };
+
   return (
     <main className="min-h-screen bg-[#f6f8fc] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
 
-      <header className="border-b border-[#e4e8f1] bg-white/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-3">
-            <Image src="/logics-logo.jpeg" alt="KR Logics logo" width={48} height={48} className="h-12 w-12 rounded-2xl border-2 border-[#ffd21f] object-cover shadow-xl shadow-black/10" />
-            <div>
-              <p className="text-lg font-extrabold leading-tight text-[#172a69]">KR Logics</p>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#8791a5]">Student LMS</p>
-            </div>
-          </Link>
-          <Link href="/login" className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#172a69] px-5 text-sm font-extrabold text-white">
-            Login <ArrowRight size={16} />
-          </Link>
-        </div>
-      </header>
+      <PublicHeader />
 
       <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[470px_1fr] lg:px-8">
         <div className="rounded-[32px] border border-[#dfe5ef] bg-white p-6 shadow-[0_22px_60px_rgba(15,23,42,0.08)] sm:p-8">
@@ -51,16 +49,13 @@ export default function RegisterPage() {
 
           <form
             className="mt-7 grid gap-4"
-            onSubmit={(event) => {
-              event.preventDefault();
-              router.push("/student/dashboard");
-            }}
+            onSubmit={handleRegister}
           >
             <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
               Full Name
               <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
                 <User size={18} className="text-[#7d8799]" />
-                <input className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="Enter student name" />
+                <input name="name" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="Enter student name" />
               </span>
             </label>
 
@@ -69,14 +64,14 @@ export default function RegisterPage() {
                 Mobile
                 <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
                   <Phone size={18} className="text-[#7d8799]" />
-                  <input className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="+91" />
+                  <input name="mobile" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="+91" />
                 </span>
               </label>
               <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
                 Email
                 <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
                   <Mail size={18} className="text-[#7d8799]" />
-                  <input type="email" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="Email" />
+                  <input name="email" type="email" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="Email" defaultValue="student@email.com" />
                 </span>
               </label>
             </div>
@@ -116,9 +111,9 @@ export default function RegisterPage() {
               I agree to receive course updates, mock test notifications and account related communication.
             </label>
 
-            <Link href="/student/dashboard" className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#172a69] text-sm font-extrabold text-white shadow-lg shadow-blue-100">
+            <button type="submit" className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#172a69] text-sm font-extrabold text-white shadow-lg shadow-blue-100">
               Register Student <ArrowRight size={17} />
-            </Link>
+            </button>
           </form>
 
           <p className="mt-6 text-center text-sm font-semibold text-[#667085]">

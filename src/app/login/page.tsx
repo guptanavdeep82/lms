@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { PublicHeader } from "@/components/PublicHeader";
+import { loginStudent } from "@/lib/student-auth";
 import {
   ArrowRight,
   CheckCircle2,
@@ -22,28 +23,18 @@ const benefits = [
 export default function LoginPage() {
   const router = useRouter();
 
-  const handleLogin = () => {
-    router.push("/student/dashboard");
+  const handleLogin = (email = "student@email.com") => {
+    loginStudent(email);
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get("redirect");
+    router.push(redirect || "/student/dashboard");
   };
 
   return (
     <main className="min-h-screen bg-[#f6f8fc] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
 
-      <header className="border-b border-[#e4e8f1] bg-white/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-3">
-            <Image src="/logics-logo.jpeg" alt="KR Logics logo" width={48} height={48} className="h-12 w-12 rounded-2xl border-2 border-[#ffd21f] object-cover shadow-xl shadow-black/10" />
-            <div>
-              <p className="text-lg font-extrabold leading-tight text-[#172a69]">KR Logics</p>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#8791a5]">Student LMS</p>
-            </div>
-          </Link>
-          <Link href="/register" className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#172a69] px-5 text-sm font-extrabold text-white">
-            Register <ArrowRight size={16} />
-          </Link>
-        </div>
-      </header>
+      <PublicHeader />
 
       <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_480px] lg:px-8">
         <div className="relative overflow-hidden rounded-[32px] bg-[#172a69] p-7 text-white shadow-[0_24px_70px_rgba(23,42,105,0.24)] sm:p-10">
@@ -81,14 +72,16 @@ export default function LoginPage() {
             className="mt-7 grid gap-4"
             onSubmit={(event) => {
               event.preventDefault();
-              handleLogin();
+              const form = event.currentTarget;
+              const input = form.querySelector<HTMLInputElement>('input[name="email"]');
+              handleLogin(input?.value || "student@email.com");
             }}
           >
             <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
               Email or Mobile Number
               <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
                 <Mail size={18} className="text-[#7d8799]" />
-                <input className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="student@email.com or +91 XXXXX XXXXX" />
+                <input name="email" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="student@email.com or +91 XXXXX XXXXX" defaultValue="student@email.com" />
               </span>
             </label>
 
@@ -109,10 +102,10 @@ export default function LoginPage() {
               <a href="#" className="font-extrabold text-[#172a69]">Forgot password?</a>
             </div>
 
-            <Link href="/student/dashboard" className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#172a69] text-sm font-extrabold text-white shadow-lg shadow-blue-100">
+            <button type="submit" className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#172a69] text-sm font-extrabold text-white shadow-lg shadow-blue-100">
               Login Now <ArrowRight size={17} />
-            </Link>
-            <button type="button" onClick={handleLogin} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-[#dfe5ef] bg-white text-sm font-extrabold text-[#172a69]">
+            </button>
+            <button type="button" onClick={() => handleLogin()} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-[#dfe5ef] bg-white text-sm font-extrabold text-[#172a69]">
               <Phone size={17} /> Login with OTP
             </button>
           </form>
