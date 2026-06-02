@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
@@ -22,6 +23,12 @@ const benefits = [
 
 export default function LoginPage() {
   const router = useRouter();
+  const [registerHref, setRegisterHref] = useState("/register");
+
+  useEffect(() => {
+    const redirect = new URLSearchParams(window.location.search).get("redirect");
+    setRegisterHref(redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : "/register");
+  }, []);
 
   const handleLogin = (email = "student@email.com") => {
     loginStudent(email);
@@ -111,7 +118,7 @@ export default function LoginPage() {
           </form>
 
           <p className="mt-6 text-center text-sm font-semibold text-[#667085]">
-            Account nahi hai? <Link href="/register" className="font-extrabold text-[#172a69]">Create student account</Link>
+            Account nahi hai? <Link href={registerHref} className="font-extrabold text-[#172a69]">Create student account</Link>
           </p>
         </div>
       </section>

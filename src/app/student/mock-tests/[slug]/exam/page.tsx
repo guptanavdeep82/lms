@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronRight, Clock3, Expand, Flag, HelpCircle, Loader2, Pause, UserRound, X } from "lucide-react";
+import { ChevronRight, Clock3, Expand, HelpCircle, Loader2, Pause, Play, UserRound, X } from "lucide-react";
 import { saveMockResult } from "@/lib/mock-results";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 import { mockTestsApiUrl, type MockQuestion, type MockTestDetailResponse } from "@/lib/mock-tests";
@@ -16,6 +16,11 @@ export default function DynamicMockExamPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [validationMessage, setValidationMessage] = useState("");
+  const [remainingSeconds, setRemainingSeconds] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isExamWindow, setIsExamWindow] = useState(false);
+  const [popupBlocked, setPopupBlocked] = useState(false);
+  const [popupOpened, setPopupOpened] = useState(false);
   const student = getStudentSession();
 
   useEffect(() => {
@@ -23,6 +28,32 @@ export default function DynamicMockExamPage() {
     if (!isStudentLoggedIn()) {
       router.replace(`/login?redirect=${encodeURIComponent(target)}`);
       return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const openedExamWindow = params.get("examWindow") === "1" || window.name === "mockExamWindow";
+    setIsExamWindow(openedExamWindow);
+
+    if (!openedExamWindow) {
+      const launchKey = `mock_exam_window_${slug}`;
+      if (!window.sessionStorage.getItem(launchKey)) {
+        window.sessionStorage.setItem(launchKey, "1");
+        const examUrl = `${window.location.origin}${window.location.pathname}?examWindow=1`;
+        const popup = window.open(
+          examUrl,
+          "mockExamWindow",
+          `popup=yes,fullscreen=yes,width=${window.screen.availWidth},height=${window.screen.availHeight},left=0,top=0,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+        );
+
+        if (popup) {
+          popup.focus();
+          setPopupOpened(true);
+        } else {
+          setPopupBlocked(true);
+        }
+      } else {
+        setPopupBlocked(true);
+      }
     }
 
     fetch(mockTestsApiUrl(slug))
@@ -34,18 +65,100 @@ export default function DynamicMockExamPage() {
         }
 
         setData(payload);
+        setRemainingSeconds(payload.test.duration_minutes * 60);
       });
   }, [router, slug]);
 
   const questions = data?.questions ?? [];
   const question = questions[currentIndex];
   const answeredCount = useMemo(() => Object.keys(answers).length, [answers]);
+  const test = data?.test;
 
-  if (!data || !question) {
+  const submitTest = useCallback(() => {
+    if (!data) return;
+
+    const correct = questions.reduce((sum, item) => sum + (answers[item.id] === item.correct_answer ? 1 : 0), 0);
+    const score = questions.reduce((sum, item) => {
+      const answer = answers[item.id];
+      if (!answer) return sum;
+      if (answer === item.correct_answer) return sum + item.marks;
+      return sum - item.negative_marks;
+    }, 0);
+
+    saveMockResult({
+      slug,
+      testTitle: data.test.title,
+      total: questions.length,
+      answered: answeredCount,
+      correct,
+      score,
+      submittedAt: new Date().toISOString(),
+    });
+
+    router.push(`/student/mock-tests/${slug}/result`);
+  }, [answeredCount, answers, data, questions, router, slug]);
+
+  useEffect(() => {
+    if (!data || isPaused || remainingSeconds <= 0) return;
+
+    const timer = window.setInterval(() => {
+      setRemainingSeconds((seconds) => Math.max(seconds - 1, 0));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [data, isPaused, remainingSeconds]);
+
+  useEffect(() => {
+    if (data && remainingSeconds === 0) {
+      submitTest();
+    }
+  }, [data, remainingSeconds, submitTest]);
+
+  const openExamWindow = () => {
+    const examUrl = `${window.location.origin}${window.location.pathname}?examWindow=1`;
+    const popup = window.open(
+      examUrl,
+      "mockExamWindow",
+      `popup=yes,fullscreen=yes,width=${window.screen.availWidth},height=${window.screen.availHeight},left=0,top=0,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+    );
+
+    if (popup) {
+      popup.focus();
+      setPopupBlocked(false);
+      setPopupOpened(true);
+    }
+  };
+
+  const enterFullscreen = () => {
+    document.documentElement.requestFullscreen?.().catch(() => undefined);
+  };
+
+  if (!data || !question || !test) {
     return <main className="grid min-h-screen place-items-center bg-white"><Loader2 className="animate-spin text-[#3378b9]" size={34} /></main>;
   }
 
-  const test = data.test;
+  if (!isExamWindow) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-[#eef3f8] px-4 text-center" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
+        <div className="max-w-lg rounded-3xl border border-[#d9e2ee] bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.1)]">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#172a69] text-white">
+            <Expand size={26} />
+          </div>
+          <h1 className="mt-5 text-2xl font-extrabold text-[#172a69]">Mock test opens in a dedicated exam window</h1>
+          <p className="mt-3 text-sm font-semibold leading-7 text-[#667085]">
+            {popupOpened
+              ? "Exam window has been opened. Continue the test there for a cleaner full-screen experience."
+              : "Your browser blocked the automatic exam window. Click below to open it manually."}
+          </p>
+          {popupBlocked && (
+            <button onClick={openExamWindow} className="mt-6 inline-flex h-12 items-center justify-center rounded-2xl bg-[#172a69] px-6 text-sm font-extrabold text-white">
+              Open Full Screen Exam Window
+            </button>
+          )}
+        </div>
+      </main>
+    );
+  }
 
   const goToNext = (allowSkip = false) => {
     if (!allowSkip && !answers[question.id]) {
@@ -71,33 +184,12 @@ export default function DynamicMockExamPage() {
   };
 
   const clearResponse = () => {
+    setValidationMessage("");
     setAnswers((previous) => {
       const next = { ...previous };
       delete next[question.id];
       return next;
     });
-  };
-
-  const submitTest = () => {
-    const correct = questions.reduce((sum, item) => sum + (answers[item.id] === item.correct_answer ? 1 : 0), 0);
-    const score = questions.reduce((sum, item) => {
-      const answer = answers[item.id];
-      if (!answer) return sum;
-      if (answer === item.correct_answer) return sum + item.marks;
-      return sum - item.negative_marks;
-    }, 0);
-
-    saveMockResult({
-      slug,
-      testTitle: test.title,
-      total: questions.length,
-      answered: answeredCount,
-      correct,
-      score,
-      submittedAt: new Date().toISOString(),
-    });
-
-    router.push(`/student/mock-tests/${slug}/result`);
   };
 
   return (
@@ -109,10 +201,12 @@ export default function DynamicMockExamPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex h-9 items-center rounded bg-white px-2 text-xs text-[#1f4f86] sm:text-sm">
-            Time Left: <span className="ml-2 rounded bg-[#d8ebff] px-2 py-1 font-mono font-bold text-[#174b82]">{String(test.duration_minutes).padStart(2, "0")} : 00 : 00</span>
+            Time Left: <span className="ml-2 rounded bg-[#d8ebff] px-2 py-1 font-mono font-bold text-[#174b82]">{formatDuration(remainingSeconds)}</span>
           </div>
-          <button className="grid h-9 w-[60px] place-items-center rounded bg-white text-sm text-[#2768a5]"><Pause size={15} />Pause</button>
-          <button className="grid h-9 w-9 place-items-center rounded bg-white text-[#2768a5]"><Expand size={17} /></button>
+          <button onClick={() => setIsPaused((value) => !value)} className="flex h-9 min-w-[76px] items-center justify-center gap-1 rounded bg-white px-2 text-sm text-[#2768a5]">
+            {isPaused ? <Play size={15} /> : <Pause size={15} />}{isPaused ? "Resume" : "Pause"}
+          </button>
+          <button onClick={enterFullscreen} className="grid h-9 w-9 place-items-center rounded bg-white text-[#2768a5]"><Expand size={17} /></button>
         </div>
       </header>
 
@@ -192,7 +286,7 @@ export default function DynamicMockExamPage() {
           </div>
 
           <div className="bg-[#f2f2f2] px-4 py-2 text-sm">
-            <p className="mb-2 text-right">Time Left: <b className="ml-2 rounded bg-white px-2 py-1 font-mono">{String(test.duration_minutes).padStart(2, "0")} : 00</b></p>
+            <p className="mb-2 text-right">Time Left: <b className="ml-2 rounded bg-white px-2 py-1 font-mono">{formatDuration(remainingSeconds)}</b></p>
             <div className="grid grid-cols-1 gap-x-5 gap-y-2 text-xs sm:grid-cols-2">
               <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded bg-[#6bbd21] text-white">{answeredCount}</b> Answered</span>
               <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded bg-[#d83a0c] text-white">{questions.length - answeredCount}</b> Not Answered</span>
@@ -237,9 +331,14 @@ export default function DynamicMockExamPage() {
       <div className="fixed bottom-4 right-4 hidden rounded-full bg-[#3378b9] p-3 text-white shadow-lg md:block">
         <HelpCircle size={20} />
       </div>
-      <div className="fixed bottom-4 left-4 hidden rounded-full bg-[#3378b9] p-3 text-white shadow-lg md:block">
-        <Flag size={20} />
-      </div>
     </main>
   );
+}
+
+function formatDuration(totalSeconds: number) {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${String(hours).padStart(2, "0")} : ${String(minutes).padStart(2, "0")} : ${String(seconds).padStart(2, "0")}`;
 }

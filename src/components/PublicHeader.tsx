@@ -66,6 +66,7 @@ type PublicHeaderProps = {
 export function PublicHeader({ active }: PublicHeaderProps) {
   const [mockCategories, setMockCategories] = useState<MockCategory[]>(fallbackCategories);
   const [activeCategorySlug, setActiveCategorySlug] = useState(fallbackCategories[0].slug);
+  const [registerHref, setRegisterHref] = useState("/register");
 
   useEffect(() => {
     let mounted = true;
@@ -93,6 +94,11 @@ export function PublicHeader({ active }: PublicHeaderProps) {
     return () => {
       mounted = false;
     };
+  }, []);
+
+  useEffect(() => {
+    const redirect = new URLSearchParams(window.location.search).get("redirect");
+    setRegisterHref(redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : "/register");
   }, []);
 
   const activeCategory = useMemo(() => {
@@ -165,7 +171,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
 
           <div className="hdr-btns">
             <Link href="/login" className="btn-ghost">Login</Link>
-            <Link href="/register" className="btn-primary">Enroll Free →</Link>
+            <Link href={registerHref} className="btn-primary">Enroll Free →</Link>
           </div>
         </div>
       </header>
