@@ -67,8 +67,7 @@ type PublicHeaderProps = {
 export function PublicHeader({ active }: PublicHeaderProps) {
   const [mockCategories, setMockCategories] = useState<MockCategory[]>(fallbackCategories);
   const [activeCategorySlug, setActiveCategorySlug] = useState(fallbackCategories[0].slug);
-  const [registerHref, setRegisterHref] = useState("/register");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => (typeof window === "undefined" ? false : Boolean(getStudentSession())));
 
   useEffect(() => {
     let mounted = true;
@@ -99,12 +98,6 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   }, []);
 
   useEffect(() => {
-    const redirect = new URLSearchParams(window.location.search).get("redirect");
-    setRegisterHref(redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : "/register");
-    setIsLoggedIn(Boolean(getStudentSession()));
-  }, []);
-
-  useEffect(() => {
     const syncSession = () => setIsLoggedIn(Boolean(getStudentSession()));
     window.addEventListener("storage", syncSession);
     window.addEventListener("focus", syncSession);
@@ -120,6 +113,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   }, [activeCategorySlug, mockCategories]);
 
   const activeTests = activeCategory?.tests ?? [];
+  const registerHref = getRegisterHref();
 
   const handleLogout = () => {
     logoutStudent();
@@ -154,7 +148,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
           </Link>
 
           <nav>
-            {navLink("/#about", "About")}
+            <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer">Blog</a>
             {navLink("/courses", "Courses", "courses")}
             <div className="exam-menu-wrap">
               <Link href="/mock-tests" className="exam-menu-trigger">Exams <span className="chev">⌄</span></Link>
@@ -222,6 +216,15 @@ function fallbackTest(title: string, slug: string): MockTest {
     status: "published",
     questions_count: 0,
   };
+}
+
+function getRegisterHref() {
+  if (typeof window === "undefined") {
+    return "/register";
+  }
+
+  const redirect = new URLSearchParams(window.location.search).get("redirect");
+  return redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : "/register";
 }
 
 function cleanTestTitle(title: string) {
