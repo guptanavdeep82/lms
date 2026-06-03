@@ -562,9 +562,9 @@ const brandStyles = `
 }
 .kr-logics-reference-home .trending-strip {
   align-items: center;
-  background: #ffffff;
-  border-bottom: 1px solid #ded9c8;
-  border-top: 1px solid #ded9c8;
+  background: linear-gradient(90deg, #f7c600 0%, #ffd84d 48%, #f5b800 100%);
+  border-bottom: 1px solid rgba(5, 8, 8, 0.16);
+  border-top: 1px solid rgba(5, 8, 8, 0.16);
   display: flex;
   gap: 18px;
   overflow: hidden;
@@ -589,7 +589,7 @@ const brandStyles = `
   white-space: nowrap;
 }
 .kr-logics-reference-home .trending-track a {
-  color: #0576ff;
+  color: #050808;
   font-size: 15px;
   font-weight: 800;
 }
@@ -640,7 +640,7 @@ const brandStyles = `
   background: #ffffff;
   border-radius: 50%;
   box-shadow: 0 12px 28px rgba(5, 8, 8, 0.10);
-  color: #980091;
+  color: #d4a017;
   display: flex;
   font-size: 42px;
   height: 120px;
@@ -661,6 +661,45 @@ const brandStyles = `
   line-height: 1.65;
   margin-top: 14px;
   max-width: 280px;
+}
+.kr-logics-reference-home .faculty-section .faculty-card {
+  background: #ffffff;
+}
+.kr-logics-reference-home .faculty-section .faculty-top {
+  height: 230px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+}
+.kr-logics-reference-home .faculty-section .faculty-top::before {
+  background-position: center top;
+  background-size: cover;
+  content: "";
+  display: block;
+  height: 100%;
+  transition: transform 0.35s ease;
+  width: 100%;
+}
+.kr-logics-reference-home .faculty-section .faculty-card:hover .faculty-top::before {
+  transform: scale(1.05);
+}
+.kr-logics-reference-home .faculty-section .faculty-card:nth-child(1) .faculty-top::before {
+  background-image: url("https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=520&q=80");
+}
+.kr-logics-reference-home .faculty-section .faculty-card:nth-child(2) .faculty-top::before {
+  background-image: url("https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=520&q=80");
+}
+.kr-logics-reference-home .faculty-section .faculty-card:nth-child(3) .faculty-top::before {
+  background-image: url("https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=520&q=80");
+}
+.kr-logics-reference-home .faculty-section .faculty-card:nth-child(4) .faculty-top::before {
+  background-image: url("https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=520&q=80");
+}
+.kr-logics-reference-home .faculty-section .faculty-avatar {
+  display: none;
+}
+.kr-logics-reference-home .faculty-section .faculty-body {
+  padding: 22px 16px 24px;
 }
 .kr-logics-reference-home .about-grid {
   grid-template-columns: minmax(340px, 1.05fr) minmax(320px, 0.95fr);
