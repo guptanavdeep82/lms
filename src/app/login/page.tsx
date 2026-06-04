@@ -9,9 +9,6 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
-  Eye,
-  LockKeyhole,
-  Mail,
   Phone,
   ShieldCheck,
 } from "lucide-react";
@@ -37,9 +34,9 @@ declare global {
 }
 
 const benefits = [
-  "Gmail se quick student login",
-  "New Gmail profile par mobile OTP verification",
-  "Mock tests aur courses ke redirect flow preserve honge",
+  "Quick login with Gmail or mobile OTP",
+  "New Gmail profiles complete mobile OTP verification",
+  "Mock test and course redirects continue after login",
 ];
 
 function decodeGoogleCredential(credential: string): GoogleStudent | null {
@@ -82,7 +79,7 @@ export default function LoginPage() {
 
     setPendingStudent(student);
     setMobile(profile?.mobile || "");
-    setError("Is Gmail ke liye mobile verification pending hai. OTP verify karke login complete karein.");
+    setError("Mobile verification is pending for this Gmail account. Please verify OTP to complete login.");
   };
 
   useEffect(() => {
@@ -116,15 +113,17 @@ export default function LoginPage() {
     document.head.appendChild(script);
   }, []);
 
-  const handleLogin = (email = "student@email.com") => {
-    const profile = getStudentProfile(email);
-    loginStudent({
-      name: profile?.name,
-      email,
-      mobile: profile?.mobile,
-      provider: profile?.provider || "password",
-    });
-    redirectAfterLogin();
+  const startMobileOtpLogin = (mobileNumber: string) => {
+    const cleanedMobile = mobileNumber.replace(/\D/g, "").slice(-10);
+    if (!/^[6-9]\d{9}$/.test(cleanedMobile)) {
+      setError("Please enter a valid 10 digit mobile number.");
+      return;
+    }
+
+    setPendingStudent({ name: "Student", email: `student-${cleanedMobile}@krlogics.local` });
+    setMobile(cleanedMobile);
+    setOtpSent(true);
+    setError("");
   };
 
   const startGoogleLogin = () => {
@@ -139,7 +138,7 @@ export default function LoginPage() {
 
   const sendOtp = () => {
     if (!/^[6-9]\d{9}$/.test(mobile.replace(/\D/g, "").slice(-10))) {
-      setError("Please valid 10 digit mobile number enter karein.");
+      setError("Please enter a valid 10 digit mobile number.");
       return;
     }
     setOtpSent(true);
@@ -149,7 +148,7 @@ export default function LoginPage() {
   const verifyOtp = () => {
     if (!pendingStudent) return;
     if (!/^\d{6}$/.test(otp)) {
-      setError("Please 6 digit OTP enter karein.");
+      setError("Please enter the 6 digit OTP.");
       return;
     }
 
@@ -176,7 +175,7 @@ export default function LoginPage() {
 
       <PublicHeader />
 
-      <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_480px] lg:px-8">
+      <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_540px] lg:px-8">
         <div className="relative overflow-hidden rounded-[32px] bg-[#172a69] p-7 text-white shadow-[0_24px_70px_rgba(23,42,105,0.24)] sm:p-10">
           <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#f5c518]/18" />
           <div className="absolute bottom-0 right-12 hidden h-44 w-44 rounded-t-full border-[24px] border-[#f5c518]/18 lg:block" />
@@ -188,7 +187,7 @@ export default function LoginPage() {
               Continue your banking exam preparation.
             </h1>
             <p className="mt-5 max-w-xl text-[16px] leading-8 text-white/72">
-              Login ke baad student apne purchased courses, mock tests, notes, certificates aur learning progress access kar payega.
+              After login, students can access purchased courses, mock tests, notes, certificates, and learning progress from one dashboard.
             </p>
             <div className="mt-8 grid gap-3">
               {benefits.map((benefit) => (
@@ -201,63 +200,55 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="rounded-[32px] border border-[#dfe5ef] bg-white p-6 shadow-[0_22px_60px_rgba(15,23,42,0.08)] sm:p-8">
+        <div className="relative min-h-[540px] overflow-hidden rounded-[34px] border border-[#ead694] bg-gradient-to-br from-white via-[#fffaf0] to-[#fff0b8] p-7 shadow-[0_28px_80px_rgba(95,71,0,0.16)] sm:p-9">
+          <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-[#050808] via-[#f5c518] to-[#050808]" />
+          <div className="absolute -right-24 -top-20 h-56 w-56 rounded-full bg-[#f5c518]/28 blur-2xl" />
+          <div className="absolute -bottom-28 -left-24 h-64 w-64 rounded-full bg-[#172a69]/10 blur-2xl" />
+          <div className="relative z-10">
           {!pendingStudent ? (
             <>
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f0a500]">Welcome Back</p>
-                <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-[#172a69]">Login to LMS</h2>
-                <p className="mt-2 text-sm leading-6 text-[#667085]">Gmail se login karein ya email/mobile password use karein.</p>
+                <div className="inline-flex rounded-full bg-[#050808] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.2em] text-[#f5c518] shadow-lg shadow-black/10">Welcome Back</div>
+                <h2 className="mt-7 text-4xl font-black tracking-[-0.05em] text-[#050808] sm:text-5xl">Login to LMS</h2>
+                <p className="mt-4 text-[15px] font-semibold leading-7 text-[#4c4f5d]">Use Gmail or mobile OTP to access your student account.</p>
               </div>
 
-              <button type="button" onClick={startGoogleLogin} className="mt-7 inline-flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#dfe5ef] bg-white text-sm font-extrabold text-[#172a69] shadow-sm transition hover:bg-[#f8fafc]">
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-lg shadow-sm">G</span>
-                Continue with Google
-              </button>
+              <div className="mt-8 rounded-[28px] border border-[#ead694] bg-white/78 p-5 shadow-[0_18px_44px_rgba(95,71,0,0.12)] backdrop-blur">
+                <div className="flex items-start gap-3">
+                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#050808] text-lg font-black text-[#f5c518]">G</span>
+                  <div>
+                    <p className="text-sm font-black text-[#050808]">Continue with Gmail</p>
+                    <p className="mt-1 text-xs font-semibold leading-5 text-[#667085]">Use your Google account for quick student access.</p>
+                  </div>
+                </div>
+                <button type="button" onClick={startGoogleLogin} className="mt-5 inline-flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl bg-[#f5c518] px-5 text-sm font-black text-[#050808] shadow-[0_14px_32px_rgba(245,197,24,0.35)] transition hover:bg-[#ffd84d]">
+                  Continue with Google <ArrowRight size={17} />
+                </button>
+              </div>
 
               <div className="my-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-[#98a2b3]">
                 <span className="h-px flex-1 bg-[#e5e7eb]" /> or <span className="h-px flex-1 bg-[#e5e7eb]" />
               </div>
 
               <form
-                className="grid gap-4"
+                className="grid gap-4 rounded-[28px] border border-[#ead694] bg-white/62 p-5 ring-1 ring-white/60"
                 onSubmit={(event) => {
                   event.preventDefault();
                   const form = event.currentTarget;
-                  const input = form.querySelector<HTMLInputElement>('input[name="email"]');
-                  handleLogin(input?.value || "student@email.com");
+                  const input = form.querySelector<HTMLInputElement>('input[name="mobile"]');
+                  startMobileOtpLogin(input?.value || "");
                 }}
               >
                 <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
-                  Email or Mobile Number
+                  Mobile Number
                   <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
-                    <Mail size={18} className="text-[#7d8799]" />
-                    <input name="email" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="student@email.com or +91 XXXXX XXXXX" defaultValue="student@email.com" />
+                    <Phone size={18} className="text-[#7d8799]" />
+                    <input name="mobile" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="10 digit mobile number" />
                   </span>
                 </label>
-
-                <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
-                  Password
-                  <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
-                    <LockKeyhole size={18} className="text-[#7d8799]" />
-                    <input type="password" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="Enter password" />
-                    <Eye size={18} className="text-[#98a2b3]" />
-                  </span>
-                </label>
-
-                <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-                  <label className="flex items-center gap-2 font-semibold text-[#667085]">
-                    <input type="checkbox" className="h-4 w-4 rounded border-[#d0d5dd]" />
-                    Remember me
-                  </label>
-                  <a href="#" className="font-extrabold text-[#172a69]">Forgot password?</a>
-                </div>
 
                 <button type="submit" className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#172a69] text-sm font-extrabold text-white shadow-lg shadow-blue-100">
-                  Login Now <ArrowRight size={17} />
-                </button>
-                <button type="button" onClick={() => handleLogin()} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-[#dfe5ef] bg-white text-sm font-extrabold text-[#172a69]">
-                  <Phone size={17} /> Login with OTP
+                  Send OTP <ArrowRight size={17} />
                 </button>
               </form>
             </>
@@ -302,8 +293,9 @@ export default function LoginPage() {
           {error && <p className="mt-4 rounded-2xl bg-[#fff8d6] px-4 py-3 text-sm font-bold leading-6 text-[#7a5b00]">{error}</p>}
 
           <p className="mt-6 text-center text-sm font-semibold text-[#667085]">
-            Account nahi hai? <Link href={registerHref} className="font-extrabold text-[#172a69]">Create student account</Link>
+            Do not have an account? <Link href={registerHref} className="font-extrabold text-[#172a69]">Create student account</Link>
           </p>
+          </div>
         </div>
       </section>
     </main>
