@@ -43,9 +43,9 @@ declare global {
 }
 
 const steps = [
-  "Continue with Google se name aur Gmail fetch hoga",
-  "Mobile number OTP se verify hoga",
-  "Verified student profile ke saath dashboard open hoga",
+  "Continue with Google to use your name and Gmail automatically",
+  "Verify your mobile number with a secure OTP",
+  "Open your student dashboard with a verified profile",
 ];
 
 function decodeGoogleCredential(credential: string): GoogleStudent | null {
@@ -195,18 +195,39 @@ export default function RegisterPage() {
 
       <PublicHeader />
 
-      <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[470px_1fr] lg:px-8">
-        <div className="rounded-[32px] border border-[#dfe5ef] bg-white p-6 shadow-[0_22px_60px_rgba(15,23,42,0.08)] sm:p-8">
+      <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[540px_1fr] lg:px-8">
+        <div className="relative min-h-[520px] overflow-hidden rounded-[34px] border border-[#ead694] bg-gradient-to-br from-white via-[#fffaf0] to-[#fff0b8] p-7 shadow-[0_28px_80px_rgba(95,71,0,0.16)] sm:p-9">
+          <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-[#050808] via-[#f5c518] to-[#050808]" />
+          <div className="absolute -right-24 -top-20 h-56 w-56 rounded-full bg-[#f5c518]/28 blur-2xl" />
+          <div className="absolute -bottom-28 -left-24 h-64 w-64 rounded-full bg-[#172a69]/10 blur-2xl" />
+          <div className="relative z-10">
           {!pendingStudent ? (
             <>
-              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f0a500]">Student Registration</p>
-              <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-[#172a69]">Create Account</h1>
-              <p className="mt-2 text-sm leading-6 text-[#667085]">Google signup se Gmail aur name auto fetch hoga. Uske baad mobile OTP verification complete karein.</p>
+              <div className="inline-flex rounded-full bg-[#050808] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.2em] text-[#f5c518] shadow-lg shadow-black/10">Student Registration</div>
+              <h1 className="mt-7 text-4xl font-black tracking-[-0.05em] text-[#050808] sm:text-5xl">Create Account</h1>
+              <p className="mt-4 text-[15px] font-semibold leading-7 text-[#4c4f5d]">Google signup se Gmail aur name auto fetch hoga. Uske baad mobile OTP verification complete karein.</p>
 
-              <button type="button" onClick={startGoogleSignup} className="mt-7 inline-flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#dfe5ef] bg-white text-sm font-extrabold text-[#172a69] shadow-sm transition hover:bg-[#f8fafc]">
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-lg shadow-sm">G</span>
-                Continue with Google
-              </button>
+              <div className="mt-8 rounded-[28px] border border-[#ead694] bg-white/78 p-5 shadow-[0_18px_44px_rgba(95,71,0,0.12)] backdrop-blur">
+                <div className="flex items-start gap-3">
+                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#050808] text-lg font-black text-[#f5c518]">G</span>
+                  <div>
+                    <p className="text-sm font-black text-[#050808]">Signup using Gmail</p>
+                    <p className="mt-1 text-xs font-semibold leading-5 text-[#667085]">Name aur email Google account se auto fill hoga.</p>
+                  </div>
+                </div>
+                <button type="button" onClick={startGoogleSignup} className="mt-5 inline-flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl bg-[#f5c518] px-5 text-sm font-black text-[#050808] shadow-[0_14px_32px_rgba(245,197,24,0.35)] transition hover:bg-[#ffd84d]">
+                  Continue with Google <ArrowRight size={17} />
+                </button>
+              </div>
+
+              <div className="mt-7 grid gap-3">
+                {steps.slice(0, 2).map((step) => (
+                  <div key={step} className="flex items-center gap-3 rounded-2xl bg-white/62 px-4 py-3 ring-1 ring-[#ead694]">
+                    <CheckCircle2 size={18} className="text-[#172a69]" />
+                    <span className="text-sm font-bold text-[#344054]">{step}</span>
+                  </div>
+                ))}
+              </div>
             </>
           ) : (
             <>
@@ -264,6 +285,7 @@ export default function RegisterPage() {
           <p className="mt-6 text-center text-sm font-semibold text-[#667085]">
             Already registered? <Link href="/login" className="font-extrabold text-[#172a69]">Login here</Link>
           </p>
+          </div>
         </div>
 
         <div className="relative overflow-hidden rounded-[32px] bg-[#172a69] p-7 text-white shadow-[0_24px_70px_rgba(23,42,105,0.24)] sm:p-10">
