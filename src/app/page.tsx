@@ -321,11 +321,21 @@ const brandStyles = `
   box-shadow: 0 20px 45px rgba(5, 8, 8, 0.16);
   padding: 20px 18px;
 }
+.kr-logics-reference-home .hero-quick-card {
+  background:
+    linear-gradient(135deg, rgba(255, 248, 214, 0.96), rgba(255, 216, 77, 0.92)),
+    #ffd84d;
+  border-color: rgba(5, 8, 8, 0.12);
+  box-shadow: 0 20px 45px rgba(159, 115, 0, 0.22);
+}
 .kr-logics-reference-home .hero-quick-card h3,
 .kr-logics-reference-home .hero-card-head h3 {
   color: #252525;
   font-size: 16px;
   font-weight: 800;
+}
+.kr-logics-reference-home .hero-quick-card h3 {
+  color: #050808;
 }
 .kr-logics-reference-home .hero-icon-row {
   display: grid;
@@ -342,6 +352,9 @@ const brandStyles = `
   justify-items: center;
   text-align: center;
 }
+.kr-logics-reference-home .hero-quick-card .hero-product {
+  color: #050808;
+}
 .kr-logics-reference-home .hero-product-icon {
   border-radius: 12px;
   display: grid;
@@ -350,12 +363,20 @@ const brandStyles = `
   place-items: center;
   width: 54px;
 }
-.kr-logics-reference-home .hero-product-icon.orange { background: #fff0e8; color: #f05a28; }
-.kr-logics-reference-home .hero-product-icon.violet { background: #f1ebff; color: #6551d6; }
-.kr-logics-reference-home .hero-product-icon.purple { background: #f1e0ff; color: #6d3b91; }
-.kr-logics-reference-home .hero-product-icon.teal { background: #e9f6f4; color: #08766c; }
-.kr-logics-reference-home .hero-product-icon.pink { background: #fff0f7; color: #ee2388; }
-.kr-logics-reference-home .hero-product-icon.red { background: #fff0f0; color: #e33128; }
+.kr-logics-reference-home .hero-quick-card .hero-product-icon {
+  background: rgba(5, 8, 8, 0.88);
+  color: #ffd84d;
+  box-shadow: 0 10px 22px rgba(5, 8, 8, 0.18);
+}
+.kr-logics-reference-home .hero-product-icon.orange,
+.kr-logics-reference-home .hero-product-icon.violet,
+.kr-logics-reference-home .hero-product-icon.purple,
+.kr-logics-reference-home .hero-product-icon.teal,
+.kr-logics-reference-home .hero-product-icon.pink,
+.kr-logics-reference-home .hero-product-icon.red {
+  background: rgba(5, 8, 8, 0.88);
+  color: #ffd84d;
+}
 .kr-logics-reference-home .hero-admin-ad-slider {
   border-radius: 20px;
   box-shadow: 0 20px 45px rgba(5, 8, 8, 0.16);
