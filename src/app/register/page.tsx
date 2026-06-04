@@ -1,6 +1,5 @@
 "use client";
 
-import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,12 +11,9 @@ import {
   ArrowRight,
   CheckCircle2,
   GraduationCap,
-  LockKeyhole,
-  Mail,
   MapPin,
   Phone,
   ShieldCheck,
-  User,
 } from "lucide-react";
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -175,18 +171,6 @@ export default function RegisterPage() {
     setPendingStudent({ name: "Student", email: "student@gmail.com" });
   };
 
-  const handleManualRegister = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const name = form.querySelector<HTMLInputElement>('input[name="name"]')?.value || "Student";
-    const email = form.querySelector<HTMLInputElement>('input[name="email"]')?.value || "student@gmail.com";
-    const mobileValue = form.querySelector<HTMLInputElement>('input[name="mobile"]')?.value || "";
-    setPendingStudent({ name, email });
-    setMobile(mobileValue);
-    setStateId("");
-    setError("");
-  };
-
   const sendOtp = () => {
     if (!/^[6-9]\d{9}$/.test(mobile.replace(/\D/g, "").slice(-10))) {
       setError("Please valid 10 digit mobile number enter karein.");
@@ -223,70 +207,6 @@ export default function RegisterPage() {
                 <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-lg shadow-sm">G</span>
                 Continue with Google
               </button>
-
-              <div className="my-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-[#98a2b3]">
-                <span className="h-px flex-1 bg-[#e5e7eb]" /> or fill manually <span className="h-px flex-1 bg-[#e5e7eb]" />
-              </div>
-
-              <form className="grid gap-4" onSubmit={handleManualRegister}>
-                <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
-                  Full Name
-                  <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
-                    <User size={18} className="text-[#7d8799]" />
-                    <input name="name" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="Enter student name" />
-                  </span>
-                </label>
-
-                <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
-                  Gmail
-                  <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
-                    <Mail size={18} className="text-[#7d8799]" />
-                    <input name="email" type="email" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="student@gmail.com" defaultValue="student@gmail.com" />
-                  </span>
-                </label>
-
-                <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
-                  Mobile
-                  <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
-                    <Phone size={18} className="text-[#7d8799]" />
-                    <input name="mobile" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="10 digit mobile number" />
-                  </span>
-                </label>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
-                    Target Exam
-                    <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
-                      <GraduationCap size={18} className="text-[#7d8799]" />
-                      <select className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none">
-                        <option>IBPS PO / Clerk</option>
-                        <option>SBI PO / Clerk</option>
-                        <option>RBI Grade B</option>
-                        <option>Insurance Exams</option>
-                      </select>
-                    </span>
-                  </label>
-                  <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
-                    City
-                    <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
-                      <MapPin size={18} className="text-[#7d8799]" />
-                      <input className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="City" />
-                    </span>
-                  </label>
-                </div>
-
-                <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
-                  Password
-                  <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
-                    <LockKeyhole size={18} className="text-[#7d8799]" />
-                    <input type="password" className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="Create password" />
-                  </span>
-                </label>
-
-                <button type="submit" className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#172a69] text-sm font-extrabold text-white shadow-lg shadow-blue-100">
-                  Continue to Mobile OTP <ArrowRight size={17} />
-                </button>
-              </form>
             </>
           ) : (
             <>
