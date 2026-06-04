@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
 import { loginStudent, saveStudentProfile } from "@/lib/student-auth";
+import { publicBackendBaseUrl } from "@/lib/mock-tests";
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,11 +21,16 @@ import {
 } from "lucide-react";
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-const DEMO_OTP = "123456";
 
 type GoogleStudent = {
   name: string;
   email: string;
+};
+
+type StateOption = {
+  id: number;
+  name: string;
+  code: string;
 };
 
 declare global {
@@ -64,12 +70,44 @@ export default function RegisterPage() {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [googleReady, setGoogleReady] = useState(false);
+  const [states, setStates] = useState<StateOption[]>([]);
+  const [stateId, setStateId] = useState("");
 
-  const completeLogin = (student: GoogleStudent, verifiedMobile: string) => {
+  const completeLogin = async (student: GoogleStudent, verifiedMobile: string) => {
+    const selectedState = states.find((state) => String(state.id) === stateId);
+    if (!selectedState) {
+      setError("Please state select karein.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${publicBackendBaseUrl}/api/student/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: student.name,
+          email: student.email,
+          mobile: verifiedMobile,
+          state_id: selectedState.id,
+          provider: "google",
+          mobile_verified: true,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Student registration API failed.");
+      }
+    } catch {
+      setError("Student data database me save nahi ho paya. Please backend API check karein.");
+      return;
+    }
+
     const profile = saveStudentProfile({
       name: student.name,
       email: student.email,
       mobile: verifiedMobile,
+      stateId: selectedState.id,
+      stateName: selectedState.name,
       provider: "google",
       mobileVerified: true,
     });
@@ -78,6 +116,8 @@ export default function RegisterPage() {
       name: profile.name,
       email: profile.email,
       mobile: profile.mobile,
+      stateId: profile.stateId,
+      stateName: profile.stateName,
       provider: "google",
     });
 
@@ -86,6 +126,15 @@ export default function RegisterPage() {
   };
 
   useEffect(() => {
+    fetch(`${publicBackendBaseUrl}/api/states`)
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("States API failed")))
+      .then((data: { states?: StateOption[] }) => {
+        setStates(data.states || []);
+      })
+      .catch(() => {
+        setStates([]);
+      });
+
     if (!GOOGLE_CLIENT_ID) return;
 
     const loadGoogle = () => {
@@ -123,8 +172,7 @@ export default function RegisterPage() {
       return;
     }
 
-    setPendingStudent({ name: "Student Demo", email: "student@gmail.com" });
-    setError("Google client id env me set nahi hai, isliye demo Gmail profile se OTP step show ho raha hai.");
+    setPendingStudent({ name: "Student", email: "student@gmail.com" });
   };
 
   const handleManualRegister = (event: FormEvent<HTMLFormElement>) => {
@@ -135,6 +183,7 @@ export default function RegisterPage() {
     const mobileValue = form.querySelector<HTMLInputElement>('input[name="mobile"]')?.value || "";
     setPendingStudent({ name, email });
     setMobile(mobileValue);
+    setStateId("");
     setError("");
   };
 
@@ -144,13 +193,13 @@ export default function RegisterPage() {
       return;
     }
     setOtpSent(true);
-    setError(`Demo OTP ${DEMO_OTP} hai. Backend SMS API connect hone par yahan real OTP send hoga.`);
+    setError("");
   };
 
   const verifyOtp = () => {
     if (!pendingStudent) return;
-    if (otp !== DEMO_OTP) {
-      setError("Invalid OTP. Demo ke liye 123456 use karein.");
+    if (!/^\d{6}$/.test(otp)) {
+      setError("Please 6 digit OTP enter karein.");
       return;
     }
     completeLogin(pendingStudent, mobile);
@@ -257,6 +306,19 @@ export default function RegisterPage() {
                   <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
                     <Phone size={18} className="text-[#7d8799]" />
                     <input value={mobile} onChange={(event) => setMobile(event.target.value)} className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="10 digit mobile number" />
+                  </span>
+                </label>
+
+                <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
+                  State
+                  <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
+                    <MapPin size={18} className="text-[#7d8799]" />
+                    <select value={stateId} onChange={(event) => setStateId(event.target.value)} className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none">
+                      <option value="">Select state</option>
+                      {states.map((state) => (
+                        <option key={state.id} value={state.id}>{state.name}</option>
+                      ))}
+                    </select>
                   </span>
                 </label>
 

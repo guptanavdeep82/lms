@@ -7,6 +7,8 @@ export type StudentSession = {
   name: string;
   email: string;
   mobile?: string;
+  stateId?: number;
+  stateName?: string;
   provider?: "password" | "google" | "otp";
   loggedInAt: string;
 };
@@ -15,6 +17,8 @@ export type StudentLoginInput = string | {
   name?: string;
   email: string;
   mobile?: string;
+  stateId?: number;
+  stateName?: string;
   provider?: StudentSession["provider"];
 };
 
@@ -22,6 +26,8 @@ export type StudentProfile = {
   name: string;
   email: string;
   mobile?: string;
+  stateId?: number;
+  stateName?: string;
   provider?: StudentSession["provider"];
   mobileVerified?: boolean;
   createdAt: string;
@@ -93,6 +99,8 @@ export function loginStudent(input: StudentLoginInput) {
     name,
     email: normalizedEmail,
     mobile: typeof input === "string" ? undefined : input.mobile,
+    stateId: typeof input === "string" ? undefined : input.stateId,
+    stateName: typeof input === "string" ? undefined : input.stateName,
     provider: typeof input === "string" ? "password" : input.provider || "password",
     loggedInAt: new Date().toISOString(),
   };

@@ -222,6 +222,17 @@ const brandStyles = `
   background: #ffe164;
   color: #050808;
 }
+.kr-logics-reference-home .contact-section .cf-submit {
+  background: #050808;
+  color: #ffffff;
+}
+.kr-logics-reference-home .contact-section .cf-submit i {
+  color: #ffffff;
+}
+.kr-logics-reference-home .contact-section .cf-submit:hover {
+  background: #151a18;
+  color: #ffffff;
+}
 .kr-logics-reference-home .hero {
   background:
     radial-gradient(circle at 75% 18%, rgba(255, 210, 31, 0.20), transparent 28%),

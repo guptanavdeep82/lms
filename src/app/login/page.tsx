@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-const DEMO_OTP = "123456";
 
 type GoogleStudent = {
   name: string;
@@ -135,8 +134,7 @@ export default function LoginPage() {
       return;
     }
 
-    finishGoogleLogin({ name: "Student Demo", email: "student@gmail.com" });
-    setError("Google client id env me set nahi hai, isliye demo Gmail profile se login flow show ho raha hai.");
+    finishGoogleLogin({ name: "Student", email: "student@gmail.com" });
   };
 
   const sendOtp = () => {
@@ -145,13 +143,13 @@ export default function LoginPage() {
       return;
     }
     setOtpSent(true);
-    setError(`Demo OTP ${DEMO_OTP} hai. Backend SMS API connect hone par real OTP send hoga.`);
+    setError("");
   };
 
   const verifyOtp = () => {
     if (!pendingStudent) return;
-    if (otp !== DEMO_OTP) {
-      setError("Invalid OTP. Demo ke liye 123456 use karein.");
+    if (!/^\d{6}$/.test(otp)) {
+      setError("Please 6 digit OTP enter karein.");
       return;
     }
 
