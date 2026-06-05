@@ -403,8 +403,8 @@ const brandStyles = `
 }
 .kr-logics-reference-home .hero-ad-slide {
   background:
-    radial-gradient(circle at 88% 22%, rgba(255, 210, 31, 0.32), transparent 24%),
-    linear-gradient(120deg, #071c4f 0%, #0f63c7 58%, #0aa9de 100%);
+    radial-gradient(circle at 88% 22%, rgba(255, 210, 31, 0.34), transparent 24%),
+    linear-gradient(120deg, #050808 0%, #181815 58%, #f5c518 100%);
   color: #ffffff;
   display: flex;
   flex: 0 0 33.333%;
@@ -421,18 +421,19 @@ const brandStyles = `
   width: 190px;
   border-radius: 18px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04)),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.20) 0 2px, transparent 2px 20px);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 210, 31, 0.10)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.22) 0 2px, transparent 2px 20px);
 }
 .kr-logics-reference-home .hero-ad-slide.alt {
   background:
-    radial-gradient(circle at 88% 20%, rgba(255, 255, 255, 0.22), transparent 24%),
-    linear-gradient(120deg, #49006d 0%, #b50a91 58%, #f04b9b 100%);
+    radial-gradient(circle at 88% 20%, rgba(255, 255, 255, 0.20), transparent 24%),
+    linear-gradient(120deg, #ffffff 0%, #f7f3df 52%, #f5c518 100%);
+  color: #050808;
 }
 .kr-logics-reference-home .hero-ad-slide.dark {
   background:
     radial-gradient(circle at 88% 20%, rgba(255, 210, 31, 0.24), transparent 24%),
-    linear-gradient(120deg, #050808 0%, #27312b 58%, #80711a 100%);
+    linear-gradient(120deg, #050808 0%, #111111 58%, #6b5600 100%);
 }
 .kr-logics-reference-home .hero-ad-slide span,
 .kr-logics-reference-home .hero-ad-slide strong,
@@ -462,6 +463,10 @@ const brandStyles = `
   line-height: 1.5;
   margin-top: 8px;
   max-width: 560px;
+}
+.kr-logics-reference-home .hero-ad-slide.alt span,
+.kr-logics-reference-home .hero-ad-slide.alt em {
+  color: #050808;
 }
 .kr-logics-reference-home .hero-ad-slide b {
   align-self: flex-start;
@@ -534,10 +539,13 @@ const brandStyles = `
 .kr-logics-reference-home .hero-exam-icon.ibps { background: #4f6ef7; }
 .kr-logics-reference-home .hero-banner-card {
   background:
-    linear-gradient(120deg, rgba(7, 42, 120, 0.94), rgba(24, 105, 198, 0.86)),
+    radial-gradient(circle at 88% 18%, rgba(255, 210, 31, 0.34), transparent 24%),
+    linear-gradient(120deg, rgba(5, 8, 8, 0.96) 0%, rgba(18, 18, 16, 0.92) 54%, rgba(245, 197, 24, 0.84) 100%),
     url("/banking-mock-test-hero.png") center / cover no-repeat;
+  background-blend-mode: normal, multiply, luminosity;
   border-radius: 18px;
-  box-shadow: 0 20px 45px rgba(5, 8, 8, 0.18);
+  border: 1px solid rgba(255, 210, 31, 0.30);
+  box-shadow: 0 20px 45px rgba(5, 8, 8, 0.24);
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -554,7 +562,7 @@ const brandStyles = `
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: rgba(255, 210, 31, 0.22);
+  background: rgba(255, 255, 255, 0.20);
 }
 .kr-logics-reference-home .hero-banner-card span,
 .kr-logics-reference-home .hero-banner-card strong,
