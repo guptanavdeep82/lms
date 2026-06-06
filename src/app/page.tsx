@@ -755,9 +755,10 @@ const brandStyles = `
   width: 100%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: 30px 110px 30px 110px;
+  border-radius: 0;
   background: #050808;
-  box-shadow: 0 24px 70px rgba(5, 8, 8, 0.18);
+  border: 1px solid rgba(5, 8, 8, 0.14);
+  box-shadow: 0 18px 46px rgba(5, 8, 8, 0.14);
 }
 .kr-logics-reference-home .about-video-card iframe {
   display: block;

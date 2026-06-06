@@ -33,7 +33,14 @@ const headerStyles = `
 .public-home-header .tagline{font-size:9px!important;color:rgba(255,255,255,.62)!important;letter-spacing:1.5px!important;text-transform:uppercase!important;font-weight:600!important}
 .public-home-header nav{display:flex!important;gap:24px!important;align-items:center!important;height:100%!important}
 .public-home-header nav a,.public-home-header .exam-menu-trigger{display:inline-flex!important;align-items:center!important;height:100%!important;border-bottom:2px solid transparent!important;color:rgba(255,255,255,.74)!important;font-size:13px!important;font-weight:600!important;line-height:1!important;padding:4px 0!important;text-decoration:none!important;transition:color .2s,border-color .2s!important;white-space:nowrap!important}
-.public-home-header nav>a:hover,.public-home-header nav>a.active,.public-home-header .exam-menu-trigger:hover{color:#ffd21f!important;border-bottom-color:#ffd21f!important}
+.public-home-header nav>a:hover,.public-home-header nav>a.active,.public-home-header .exam-menu-trigger:hover,.public-home-header .exam-menu-trigger.active{color:#ffd21f!important;border-bottom-color:#ffd21f!important}
+.public-home-header .course-menu-wrap{position:relative!important;display:flex!important;align-items:center!important;height:100%!important;line-height:1!important}
+.public-home-header .course-menu-wrap:hover .chev{transform:rotate(180deg)!important}
+.public-home-header .course-dropdown{position:absolute!important;left:50%!important;top:72px!important;z-index:140!important;min-width:210px!important;padding:10px!important;background:#fff!important;border:1px solid #ded9c8!important;border-radius:0 0 12px 12px!important;box-shadow:0 18px 45px rgba(5,8,8,.16)!important;opacity:0!important;visibility:hidden!important;transform:translate(-50%,10px)!important;transition:all .2s ease!important}
+.public-home-header .course-menu-wrap:hover .course-dropdown{opacity:1!important;visibility:visible!important;transform:translate(-50%,0)!important}
+.public-home-header .course-dropdown a{display:flex!important;height:auto!important;align-items:center!important;gap:10px!important;border:0!important;border-radius:8px!important;padding:12px!important;color:#050808!important;font-size:13px!important;font-weight:800!important}
+.public-home-header .course-dropdown a:hover{background:#fff8dc!important;color:#050808!important}
+.public-home-header .course-dropdown span{display:grid!important;place-items:center!important;width:26px!important;height:26px!important;border-radius:7px!important;background:#050808!important;color:#ffd21f!important;font-size:12px!important}
 .public-home-header .exam-menu-wrap{position:relative!important;display:flex!important;align-items:center!important;height:100%!important;line-height:1!important}
 .public-home-header .chev{font-size:13px!important;transition:transform .2s!important}
 .public-home-header .exam-menu-wrap:hover .chev{transform:rotate(180deg)!important}
@@ -56,7 +63,7 @@ const headerStyles = `
 .public-home-header .btn-primary{border:0!important;background:#ffd21f!important;color:#050808!important}
 .public-home-header .btn-primary:hover{background:#ffe164!important;color:#050808!important;transform:translateY(-1px)!important}
 @media(max-width:1180px){.public-home-header .header-inner{gap:14px!important}.public-home-header nav{gap:14px!important}.public-home-header .exam-mega{grid-template-columns:220px 1fr!important}.public-home-header .exam-grid{grid-template-columns:repeat(2,minmax(180px,1fr))!important}}
-@media(max-width:900px){.public-home-header{padding-inline:16px!important}.public-home-header .header-inner{height:auto!important;min-height:68px!important;flex-wrap:wrap!important;padding-block:10px!important}.public-home-header nav{order:3!important;width:100%!important;height:auto!important;overflow-x:auto!important;padding:8px 0 2px!important;scrollbar-width:none!important}.public-home-header nav::-webkit-scrollbar{display:none!important}.public-home-header .hdr-btns{margin-left:auto!important}.public-home-header .exam-mega{display:none!important}}
+@media(max-width:900px){.public-home-header{padding-inline:16px!important}.public-home-header .header-inner{height:auto!important;min-height:68px!important;flex-wrap:wrap!important;padding-block:10px!important}.public-home-header nav{order:3!important;width:100%!important;height:auto!important;overflow-x:auto!important;padding:8px 0 2px!important;scrollbar-width:none!important}.public-home-header nav::-webkit-scrollbar{display:none!important}.public-home-header .hdr-btns{margin-left:auto!important}.public-home-header .exam-mega,.public-home-header .course-dropdown{display:none!important}}
 @media(max-width:640px){.public-home-header .tagline{display:none!important}.public-home-header .btn-ghost,.public-home-header .btn-primary{padding-inline:12px!important;font-size:11px!important}}
 `;
 
@@ -149,7 +156,13 @@ export function PublicHeader({ active }: PublicHeaderProps) {
 
           <nav>
             <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer">Blog</a>
-            {navLink("/courses", "Courses", "courses")}
+            <div className="course-menu-wrap">
+              <Link href="/courses" className={`exam-menu-trigger ${active === "courses" ? "active" : ""}`}>Courses <span className="chev">⌄</span></Link>
+              <div className="course-dropdown">
+                <Link href="/courses?type=video"><span>▶</span> Video Courses</Link>
+                <Link href="/courses?type=pdf"><span>PDF</span> PDF Courses</Link>
+              </div>
+            </div>
             {navLink("/packages", "Packages", "packages")}
             <div className="exam-menu-wrap">
               <Link href="/mock-tests" className="exam-menu-trigger">Exams <span className="chev">⌄</span></Link>
