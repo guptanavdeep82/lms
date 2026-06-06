@@ -86,6 +86,10 @@ const heroShowcaseMarkup = `<div class="hero-showcase-stack">
         <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon office">RBI</span><b>RBI Office</b></a>
         <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon sbi">SBI</span><b>SBI PO</b></a>
         <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon ibps">IBPS</span><b>IBPS PO</b></a>
+        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon sbi">SBI</span><b>SBI Clerk</b></a>
+        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon ibps">IBPS</span><b>IBPS Clerk</b></a>
+        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon bank">RRB</span><b>IBPS RRB</b></a>
+        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon office">OICL</span><b>OICL AO</b></a>
       </div>
     </div>
     <a href="/courses" class="hero-banner-card">
