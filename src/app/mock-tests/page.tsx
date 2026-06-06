@@ -44,7 +44,7 @@ export default function MockTestsPage() {
       <section className="bg-black px-4 py-10 text-white sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f6d3f5]">Online Test Series</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#ffd21f]">Online Test Series</p>
             <h1 className="mt-3 text-[34px] font-extrabold tracking-[-0.04em] text-white sm:text-[46px]">Mock Test Series</h1>
             <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-white/70">
               Explore exam-wise mock test series designed to help you practice with the latest pattern, improve speed and accuracy, review your performance, and prepare confidently for competitive exams.
@@ -113,7 +113,7 @@ function SeriesCard({ category }: { category: MockCategory }) {
       </div>
       <h3 className="mt-5 min-h-[48px] text-lg font-extrabold leading-6 text-black">{category.name}</h3>
       <p className="mt-4 text-sm font-semibold text-[#6d6f78]">{testsCount} Online Mock Tests</p>
-      <Link href={`/mock-tests/${category.slug}`} className="mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#f6d3f5] text-sm font-extrabold text-[#683b61] transition hover:bg-[#efc0ec]">
+      <Link href={`/mock-tests/${category.slug}`} className="mt-5 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#fff4bd] text-sm font-extrabold text-[#6b4d00] transition hover:bg-[#ffe67a]">
         View Mock Tests <ArrowRight size={15} />
       </Link>
     </article>
