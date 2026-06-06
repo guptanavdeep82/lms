@@ -61,7 +61,7 @@ const headerStyles = `
 `;
 
 type PublicHeaderProps = {
-  active?: "home" | "courses" | "mock-tests" | "faculty" | "contact";
+  active?: "home" | "courses" | "packages" | "mock-tests" | "faculty" | "contact";
 };
 
 export function PublicHeader({ active }: PublicHeaderProps) {
@@ -150,6 +150,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
           <nav>
             <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer">Blog</a>
             {navLink("/courses", "Courses", "courses")}
+            {navLink("/packages", "Packages", "packages")}
             <div className="exam-menu-wrap">
               <Link href="/mock-tests" className="exam-menu-trigger">Exams <span className="chev">⌄</span></Link>
               <div className="exam-mega">

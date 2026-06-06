@@ -2,6 +2,7 @@ export type CourseCatalogItem = {
   slug: string;
   title: string;
   desc: string;
+  courseType?: "video" | "pdf";
   category: string;
   exam: string;
   level: string;
@@ -24,6 +25,7 @@ export const courseCatalog: CourseCatalogItem[] = [
     slug: "ibps-po-complete-course",
     title: "IBPS PO Complete Course",
     desc: "Full preparation for IBPS PO with Prelims, Mains, Interview strategy, latest pattern questions and live doubt support.",
+    courseType: "video",
     category: "IBPS",
     exam: "PO / Officer",
     level: "Intermediate",
@@ -44,6 +46,7 @@ export const courseCatalog: CourseCatalogItem[] = [
     slug: "ibps-clerk-full-course",
     title: "IBPS Clerk Full Course",
     desc: "Complete IBPS Clerk preparation with speed-focused lessons, sectional tests, mains practice and doubt sessions.",
+    courseType: "video",
     category: "IBPS",
     exam: "Clerk",
     level: "Beginner",
@@ -63,6 +66,7 @@ export const courseCatalog: CourseCatalogItem[] = [
     slug: "sbi-po-full-course",
     title: "SBI PO Full Course",
     desc: "Comprehensive SBI PO prep with sectional tests, previous year analysis, strategy sessions and mains descriptive practice.",
+    courseType: "video",
     category: "SBI",
     exam: "PO / Officer",
     level: "Intermediate",
@@ -83,6 +87,7 @@ export const courseCatalog: CourseCatalogItem[] = [
     slug: "sbi-clerk-course",
     title: "SBI Clerk Course",
     desc: "Focused SBI Clerk preparation with speed, accuracy, latest pattern mock tests and mains revision.",
+    courseType: "video",
     category: "SBI",
     exam: "Clerk",
     level: "Beginner",
@@ -102,6 +107,7 @@ export const courseCatalog: CourseCatalogItem[] = [
     slug: "rbi-grade-b-preparation",
     title: "RBI Grade B Preparation",
     desc: "Phase I and Phase II preparation with Economics, Finance, Management and high-quality RBI mock tests.",
+    courseType: "video",
     category: "RBI",
     exam: "Grade B",
     level: "Advanced",
@@ -122,6 +128,7 @@ export const courseCatalog: CourseCatalogItem[] = [
     slug: "rbi-assistant-course",
     title: "RBI Assistant Course",
     desc: "Complete RBI Assistant preparation with Prelims, Mains and Language Proficiency Test guidance.",
+    courseType: "video",
     category: "RBI",
     exam: "Clerk",
     level: "Intermediate",
@@ -141,6 +148,7 @@ export const courseCatalog: CourseCatalogItem[] = [
     slug: "lic-aao-ado-course",
     title: "LIC AAO / ADO Course",
     desc: "Complete LIC AAO and ADO exam preparation with insurance awareness, GA, quant and full mock tests.",
+    courseType: "video",
     category: "Insurance",
     exam: "AAO / SO",
     level: "Intermediate",
@@ -160,6 +168,7 @@ export const courseCatalog: CourseCatalogItem[] = [
     slug: "quantitative-aptitude-mastery",
     title: "Quantitative Aptitude Mastery",
     desc: "DI, Arithmetic, Algebra, Number Systems and Simplification from basics to advanced level for all banking exams.",
+    courseType: "pdf",
     category: "Aptitude",
     exam: "All Exams",
     level: "Beginner",
@@ -178,7 +187,7 @@ export const courseCatalog: CourseCatalogItem[] = [
   },
 ];
 
-export function getCourseBySlug(slug: string) {
+export function getCourseBySlug(slug: string): CourseCatalogItem | undefined {
   const course = courseCatalog.find((item) => item.slug === slug);
   if (course) return course;
 
@@ -192,6 +201,7 @@ export function getCourseBySlug(slug: string) {
     slug,
     title,
     desc: "Complete preparation course with recorded lessons, notes, mock tests, practice questions and student support.",
+    courseType: slug.includes("pdf") || slug.includes("notes") ? "pdf" : "video",
     category: "Banking Exams",
     exam: "All Exams",
     level: "Beginner to Advanced",
@@ -202,6 +212,7 @@ export function getCourseBySlug(slug: string) {
     students: 1500,
     rating: 4.6,
     reviews: 420,
+    badge: undefined,
     tags: ["Videos", "Notes", "Mock Tests", "Doubt Support"],
     image: "/hero-students.png",
     outcomes: ["Learn the complete exam syllabus", "Practice topic-wise and full-length tests", "Track preparation with structured study flow"],

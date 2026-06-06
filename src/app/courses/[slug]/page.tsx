@@ -25,6 +25,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
   const course = getCourseBySlug(slug);
   if (!course) notFound();
 
+  const isPdfCourse = course.courseType === "pdf";
   const price = course.price === 0 ? "Free" : `Rs ${course.price.toLocaleString("en-IN")}`;
   const original = course.original ? `Rs ${course.original.toLocaleString("en-IN")}` : null;
 
@@ -37,7 +38,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           <div>
             <Link href="/courses" className="text-sm font-bold text-[#ffd21f]">← Back to courses</Link>
             <div className="mt-6 flex flex-wrap gap-2">
-              {[course.category, course.exam, course.level, course.badge].filter(Boolean).map((item) => (
+              {[isPdfCourse ? "PDF Course" : "Video Course", course.category, course.exam, course.level, course.badge].filter(Boolean).map((item) => (
                 <span key={item} className="rounded-full border border-[#ffd21f]/25 bg-white/8 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#ffd21f]">
                   {item}
                 </span>
@@ -47,8 +48,8 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
             <p className="mt-5 max-w-3xl text-base leading-8 text-white/70">{course.desc}</p>
 
             <div className="mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                [Clock3, `${course.hours}+ hrs`, "Video content"],
+              {[ 
+                [Clock3, isPdfCourse ? "Lifetime" : `${course.hours}+ hrs`, isPdfCourse ? "PDF access" : "Video content"],
                 [FileText, `${course.tests}+`, "Tests"],
                 [UsersRound, course.students.toLocaleString("en-IN"), "Students"],
                 [Star, course.rating.toFixed(1), `${course.reviews} reviews`],
@@ -83,14 +84,14 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                   <ShoppingBag className="size-4" /> Purchase Course
                 </Link>
                 <Link href="/register" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[#050808] text-sm font-extrabold text-[#050808] transition hover:bg-[#050808] hover:text-white">
-                  <PlayCircle className="size-4" /> Register and Preview
+                  <PlayCircle className="size-4" /> {isPdfCourse ? "Register and Download Sample" : "Register and Preview"}
                 </Link>
               </div>
 
               <div className="mt-5 grid gap-2 text-sm font-semibold text-slate-700">
                 <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Secure payment and student login</span>
                 <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Course access starts after purchase</span>
-                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Mock tests and notes included</span>
+                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> {isPdfCourse ? "Downloadable study notes included" : "Mock tests and notes included"}</span>
               </div>
             </div>
           </aside>
@@ -131,10 +132,10 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           <div className="rounded-xl border border-[#ded9c8] bg-white p-6 shadow-sm">
             <h3 className="font-['Sora'] text-xl font-extrabold text-[#050808]">This course includes</h3>
             <div className="mt-5 grid gap-4 text-sm font-semibold text-slate-700">
-              {[
-                [Video, `${course.hours}+ hours recorded videos`],
+              {[ 
+                [isPdfCourse ? FileText : Video, isPdfCourse ? "Downloadable PDF modules" : `${course.hours}+ hours recorded videos`],
                 [BookOpen, "Structured subject-wise learning"],
-                [FileText, "Downloadable notes and PDFs"],
+                [FileText, isPdfCourse ? "Topic-wise notes and practice sheets" : "Downloadable notes and PDFs"],
                 [PlayCircle, `${course.tests}+ mock and practice tests`],
                 [UsersRound, "Doubt support and mentoring"],
               ].map(([Icon, label]) => (
