@@ -759,7 +759,7 @@ const brandStyles = `
   width: 100%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: 0;
+  border-radius: 22px;
   background: #050808;
   border: 1px solid rgba(5, 8, 8, 0.14);
   box-shadow: 0 18px 46px rgba(5, 8, 8, 0.14);

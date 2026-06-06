@@ -70,7 +70,7 @@ const headerStyles = `
 `;
 
 type PublicHeaderProps = {
-  active?: "home" | "courses" | "packages" | "mock-tests" | "faculty" | "contact";
+  active?: "home" | "courses" | "packages" | "mock-tests" | "faculty" | "contact" | "live-classes";
 };
 
 export function PublicHeader({ active }: PublicHeaderProps) {
@@ -166,10 +166,11 @@ export function PublicHeader({ active }: PublicHeaderProps) {
           <nav>
             <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer">Blog</a>
             <div className="course-menu-wrap">
-              <Link href="/courses" onClick={(event) => handleMobileMenuClick(event, "courses")} className={`exam-menu-trigger ${active === "courses" ? "active" : ""}`}>Courses <span className="chev">⌄</span></Link>
+              <Link href="/courses" onClick={(event) => handleMobileMenuClick(event, "courses")} className={`exam-menu-trigger ${active === "courses" || active === "live-classes" ? "active" : ""}`}>Courses <span className="chev">⌄</span></Link>
               <div className={`course-dropdown ${openMenu === "courses" ? "open" : ""}`}>
                 <Link href="/courses?type=video"><span>▶</span> Video Courses</Link>
                 <Link href="/courses?type=pdf"><span>PDF</span> PDF Courses</Link>
+                <Link href="/live-classes"><span>LIVE</span> Live Classes</Link>
               </div>
             </div>
             {navLink("/packages", "Packages", "packages")}
