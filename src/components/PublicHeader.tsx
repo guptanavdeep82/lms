@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { type MouseEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
 import { getStudentSession, logoutStudent } from "@/lib/student-auth";
@@ -38,6 +38,7 @@ const headerStyles = `
 .public-home-header .course-menu-wrap:hover .chev{transform:rotate(180deg)!important}
 .public-home-header .course-dropdown{position:absolute!important;left:50%!important;top:72px!important;z-index:140!important;min-width:210px!important;padding:10px!important;background:#fff!important;border:1px solid #ded9c8!important;border-radius:0 0 12px 12px!important;box-shadow:0 18px 45px rgba(5,8,8,.16)!important;opacity:0!important;visibility:hidden!important;transform:translate(-50%,10px)!important;transition:all .2s ease!important}
 .public-home-header .course-menu-wrap:hover .course-dropdown{opacity:1!important;visibility:visible!important;transform:translate(-50%,0)!important}
+.public-home-header .course-dropdown.open{opacity:1!important;visibility:visible!important;transform:translate(-50%,0)!important}
 .public-home-header .course-dropdown a{display:flex!important;height:auto!important;align-items:center!important;gap:10px!important;border:0!important;border-radius:8px!important;padding:12px!important;color:#050808!important;font-size:13px!important;font-weight:800!important}
 .public-home-header .course-dropdown a:hover{background:#fff8dc!important;color:#050808!important}
 .public-home-header .course-dropdown span{display:grid!important;place-items:center!important;width:26px!important;height:26px!important;border-radius:7px!important;background:#050808!important;color:#ffd21f!important;font-size:12px!important}
@@ -46,6 +47,7 @@ const headerStyles = `
 .public-home-header .exam-menu-wrap:hover .chev{transform:rotate(180deg)!important}
 .public-home-header .exam-mega{position:fixed!important;left:50%!important;right:auto!important;top:72px!important;z-index:150!important;display:grid!important;grid-template-columns:240px minmax(660px,840px)!important;gap:18px!important;width:min(calc(100vw - 40px),1120px)!important;max-height:calc(100vh - 96px)!important;overflow:auto!important;padding:20px!important;background:#fff!important;border:1px solid #ded9c8!important;border-radius:0 0 14px 14px!important;box-shadow:0 18px 45px rgba(15,30,74,.12)!important;opacity:0!important;visibility:hidden!important;transform:translate(-50%,10px)!important;transition:all .22s ease!important}
 .public-home-header .exam-menu-wrap:hover .exam-mega{opacity:1!important;visibility:visible!important;transform:translate(-50%,0)!important}
+.public-home-header .exam-mega.open{opacity:1!important;visibility:visible!important;transform:translate(-50%,0)!important}
 .public-home-header .exam-cats{display:flex!important;flex-direction:column!important;gap:8px!important}
 .public-home-header .exam-cat{display:flex!important;align-items:center!important;justify-content:space-between!important;height:44px!important;border:1px solid #ded9c8!important;border-radius:7px!important;background:#fff!important;color:#050808!important;font-size:14px!important;font-weight:600!important;padding:0 12px!important}
 .public-home-header .exam-cat.active{background:#fff8dc!important;border-color:rgba(255,210,31,.45)!important}
@@ -63,8 +65,8 @@ const headerStyles = `
 .public-home-header .btn-primary{border:0!important;background:#ffd21f!important;color:#050808!important}
 .public-home-header .btn-primary:hover{background:#ffe164!important;color:#050808!important;transform:translateY(-1px)!important}
 @media(max-width:1180px){.public-home-header .header-inner{gap:14px!important}.public-home-header nav{gap:14px!important}.public-home-header .exam-mega{grid-template-columns:220px 1fr!important}.public-home-header .exam-grid{grid-template-columns:repeat(2,minmax(180px,1fr))!important}}
-@media(max-width:900px){.public-home-header{padding-inline:16px!important}.public-home-header .header-inner{height:auto!important;min-height:68px!important;flex-wrap:wrap!important;padding-block:10px!important}.public-home-header nav{order:3!important;width:100%!important;height:auto!important;overflow-x:auto!important;padding:8px 0 2px!important;scrollbar-width:none!important}.public-home-header nav::-webkit-scrollbar{display:none!important}.public-home-header .hdr-btns{margin-left:auto!important}.public-home-header .exam-mega,.public-home-header .course-dropdown{display:none!important}}
-@media(max-width:640px){.public-home-header .tagline{display:none!important}.public-home-header .btn-ghost,.public-home-header .btn-primary{padding-inline:12px!important;font-size:11px!important}}
+@media(max-width:900px){.public-home-header{padding-inline:14px!important}.public-home-header .header-inner{height:auto!important;min-height:68px!important;flex-wrap:wrap!important;padding-block:10px!important;gap:12px!important}.public-home-header .logo-wrap:before{width:46px!important;height:46px!important;flex-basis:46px!important}.public-home-header .brand{font-size:18px!important}.public-home-header nav{order:3!important;width:100%!important;height:auto!important;overflow-x:auto!important;overflow-y:visible!important;padding:8px 0 2px!important;gap:18px!important;scrollbar-width:none!important}.public-home-header nav::-webkit-scrollbar{display:none!important}.public-home-header nav a,.public-home-header .exam-menu-trigger{height:38px!important;font-size:13px!important;padding:0!important}.public-home-header .hdr-btns{margin-left:auto!important}.public-home-header .course-dropdown{position:fixed!important;top:112px!important;left:14px!important;right:14px!important;width:auto!important;min-width:0!important;transform:translateY(10px)!important;border-radius:12px!important}.public-home-header .course-dropdown.open{transform:translateY(0)!important}.public-home-header .exam-mega{position:fixed!important;top:112px!important;left:14px!important;right:14px!important;width:auto!important;max-height:calc(100vh - 128px)!important;grid-template-columns:1fr!important;padding:14px!important;transform:translateY(10px)!important;border-radius:12px!important}.public-home-header .exam-mega.open{transform:translateY(0)!important}.public-home-header .exam-cats{display:flex!important;max-height:180px!important;overflow:auto!important}.public-home-header .exam-grid{grid-template-columns:1fr!important;gap:8px!important}.public-home-header .exam-link{height:auto!important;min-height:44px!important;font-size:13px!important;white-space:normal!important;line-height:1.35!important}}
+@media(max-width:640px){.public-home-header .tagline{display:none!important}.public-home-header .btn-ghost,.public-home-header .btn-primary{padding-inline:12px!important;font-size:11px!important}.public-home-header .btn-primary{display:none!important}.public-home-header .course-dropdown,.public-home-header .exam-mega{top:108px!important}}
 `;
 
 type PublicHeaderProps = {
@@ -75,6 +77,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   const [mockCategories, setMockCategories] = useState<MockCategory[]>(fallbackCategories);
   const [activeCategorySlug, setActiveCategorySlug] = useState(fallbackCategories[0].slug);
   const [isLoggedIn, setIsLoggedIn] = useState(() => (typeof window === "undefined" ? false : Boolean(getStudentSession())));
+  const [openMenu, setOpenMenu] = useState<"courses" | "exams" | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -127,6 +130,12 @@ export function PublicHeader({ active }: PublicHeaderProps) {
     setIsLoggedIn(false);
   };
 
+  const handleMobileMenuClick = (event: MouseEvent<HTMLAnchorElement>, menu: "courses" | "exams") => {
+    if (typeof window === "undefined" || window.innerWidth > 900) return;
+    event.preventDefault();
+    setOpenMenu((current) => (current === menu ? null : menu));
+  };
+
   const navLink = (href: string, label: string, key?: PublicHeaderProps["active"]) => (
     <Link href={href} className={key && active === key ? "active" : ""}>
       {label}
@@ -157,16 +166,16 @@ export function PublicHeader({ active }: PublicHeaderProps) {
           <nav>
             <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer">Blog</a>
             <div className="course-menu-wrap">
-              <Link href="/courses" className={`exam-menu-trigger ${active === "courses" ? "active" : ""}`}>Courses <span className="chev">⌄</span></Link>
-              <div className="course-dropdown">
+              <Link href="/courses" onClick={(event) => handleMobileMenuClick(event, "courses")} className={`exam-menu-trigger ${active === "courses" ? "active" : ""}`}>Courses <span className="chev">⌄</span></Link>
+              <div className={`course-dropdown ${openMenu === "courses" ? "open" : ""}`}>
                 <Link href="/courses?type=video"><span>▶</span> Video Courses</Link>
                 <Link href="/courses?type=pdf"><span>PDF</span> PDF Courses</Link>
               </div>
             </div>
             {navLink("/packages", "Packages", "packages")}
             <div className="exam-menu-wrap">
-              <Link href="/mock-tests" className="exam-menu-trigger">Exams <span className="chev">⌄</span></Link>
-              <div className="exam-mega">
+              <Link href="/mock-tests" onClick={(event) => handleMobileMenuClick(event, "exams")} className="exam-menu-trigger">Exams <span className="chev">⌄</span></Link>
+              <div className={`exam-mega ${openMenu === "exams" ? "open" : ""}`}>
                 <div className="exam-cats">
                   {mockCategories.map((category) => (
                     <Link
