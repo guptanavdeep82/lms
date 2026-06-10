@@ -773,7 +773,8 @@ const brandStyles = `
 .kr-logics-reference-home .about-grid > div:nth-child(2) {
   display: none;
 }
-.kr-logics-reference-home .about-grid > div:nth-child(3) {
+.kr-logics-reference-home .about-grid > div:nth-child(3),
+.kr-logics-reference-home .about-grid > .about-content {
   grid-column: 2;
   grid-row: 1;
 }
@@ -1351,7 +1352,8 @@ const brandStyles = `
   }
   .kr-logics-reference-home .about-grid::before,
   .kr-logics-reference-home .about-video-card,
-  .kr-logics-reference-home .about-grid > div:nth-child(3) {
+  .kr-logics-reference-home .about-grid > div:nth-child(3),
+  .kr-logics-reference-home .about-grid > .about-content {
     grid-column: auto !important;
     grid-row: auto !important;
   }
@@ -1407,7 +1409,12 @@ export default function Home() {
       heroAboutMarker,
       `</section>\n\n${trendingStripMarkup}\n\n<div class="divider"></div>\n\n<!-- ABOUT -->`,
     );
-    const pageWithAboutVideo = pageWithTrendingStrip.replace('<div class="about-grid">', `<div class="about-grid">${aboutVideoMarkup}`);
+    const pageWithAboutVideo = pageWithTrendingStrip
+      .replace('<div class="about-grid">', `<div class="about-grid">${aboutVideoMarkup}`)
+      .replace(
+        /(<section class="about-section" id="about">[\s\S]*?<div style="position:relative">[\s\S]*?<\/div>\s*)<div>(\s*<div class="sec-eyebrow">About Us)/,
+        '$1<div class="about-content">$2',
+      );
     const pageWithWhySection = pageWithAboutVideo.replace(
       "<!-- COURSES -->",
       `${whyKrLogicsMarkup}\n\n<div class="divider"></div>\n\n<!-- COURSES -->`,

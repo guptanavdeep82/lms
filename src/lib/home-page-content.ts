@@ -187,8 +187,14 @@ export function buildContactPhoneMarkup(whatsappNumber: string | null): string {
 export function applyHomePageData(markup: string, settings: HomePageSettings, faculties: HomePageFaculty[], reviews: HomePageReview[], faqs: HomePageFaq[]): string {
   let nextMarkup = markup;
 
-  nextMarkup = nextMarkup.replace(/<div class="hero-stats">[\s\S]*?<\/div>\s*(?=<\/div>\s*<div class="hero-right">)/, buildHeroStatsMarkup(settings));
-  nextMarkup = nextMarkup.replace(/<div class="about-stat-row">[\s\S]*?<\/div>/, buildAboutStatsMarkup(settings));
+  nextMarkup = nextMarkup.replace(
+    /<div class="hero-stats">(?:\s*<div class="hstat">[\s\S]*?<\/div>){4}\s*<\/div>\s*(?=<\/div>\s*<div class="hero-right">)/,
+    buildHeroStatsMarkup(settings),
+  );
+  nextMarkup = nextMarkup.replace(
+    /<div class="about-stat-row">(?:\s*<div class="about-stat-box">[\s\S]*?<\/div>){3}\s*<\/div>/,
+    buildAboutStatsMarkup(settings),
+  );
   nextMarkup = nextMarkup.replace(
     /<div style="font-family:'Sora',sans-serif;font-size:30px;font-weight:800;color:var\(--navy\)">850\+<\/div>/,
     buildSelectionsMiniCardMarkup(settings),
@@ -218,7 +224,10 @@ export function applyHomePageData(markup: string, settings: HomePageSettings, fa
     );
   }
 
-  nextMarkup = nextMarkup.replace(/<div class="footer-socials">[\s\S]*?<\/div>/, buildFooterSocialsMarkup(settings));
+  nextMarkup = nextMarkup.replace(
+    /<div class="footer-socials">[\s\S]*<\/div>(?=\s*<\/div>\s*<div class="footer-col">)/,
+    buildFooterSocialsMarkup(settings),
+  );
 
   const phoneCardPattern = /<div class="c-card"><div class="c-icon"><i class="fa fa-phone"><\/i><\/div><div class="c-text"><h4>Call Us<\/h4>[\s\S]*?<\/div><\/div>/;
   nextMarkup = nextMarkup.replace(
