@@ -23,10 +23,11 @@ export type LiveSessionCourse = {
 
 export type LiveClassSessionItem = {
   id: number;
+  source: "session" | "course";
   title: string;
   description: string | null;
   faculty_name: string | null;
-  scheduled_at: string;
+  scheduled_at: string | null;
   duration_minutes: number;
   status: string;
   display_status: "live" | "scheduled" | "replay";
@@ -35,8 +36,8 @@ export type LiveClassSessionItem = {
   access: LiveSessionAccess;
 };
 
-function liveSessionsUrl(email?: string) {
-  const base = `${publicBackendBaseUrl}/api/live-sessions`;
+export function liveSessionsUrl(email?: string) {
+  const base = typeof window !== "undefined" ? "/api/live-sessions" : `${publicBackendBaseUrl}/api/live-sessions`;
   if (!email) return base;
   return `${base}?email=${encodeURIComponent(email)}`;
 }
@@ -110,4 +111,9 @@ export function liveSessionStatusLabel(status: LiveClassSessionItem["display_sta
   if (status === "live") return "Live";
   if (status === "replay") return "Replay";
   return "Upcoming";
+}
+
+export function formatLiveSessionSchedule(value: string | null) {
+  if (!value) return "Schedule coming soon";
+  return formatLiveSessionTime(value);
 }

@@ -42,7 +42,7 @@ export default function MockResultPage() {
         <div className="max-w-md rounded-lg border border-[#e5e5e5] bg-white p-8 shadow-[0_12px_34px_rgba(0,0,0,0.08)]">
           <BarChart3 className="mx-auto text-[#d6a900]" size={42} />
           <h1 className="mt-4 text-xl font-extrabold">Result not available</h1>
-          <p className="mt-2 text-sm font-semibold leading-6 text-[#69707d]">Pehle mock test complete karein, phir result yahan show hoga.</p>
+          <p className="mt-2 text-sm font-semibold leading-6 text-[#69707d]">Complete the mock test first to view your result here.</p>
           <Link href={`/student/mock-tests/${slug}/instructions`} className="mt-5 inline-flex h-11 items-center rounded-full bg-black px-5 text-sm font-extrabold text-white">
             Start Mock Test
           </Link>
@@ -79,7 +79,7 @@ export default function MockResultPage() {
           <div className="flex items-start gap-3">
             <CheckCircle2 className="mt-1 text-[#16a34a]" size={20} />
             <p className="text-sm font-semibold leading-7 text-[#454b55]">
-              Result local student session me save ho gaya hai. Series page par ye mock test ab “View Results” button ke saath show hoga.
+              Your result has been saved to your student session. This mock test will now show a “View Results” button on the series page.
             </p>
           </div>
         </div>

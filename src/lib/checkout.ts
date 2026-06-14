@@ -90,7 +90,7 @@ export async function createCheckoutOrder(input: {
   };
 
   if (!response.ok) {
-    const message = Object.values(data.errors || {})[0]?.[0] || data.message || "Checkout order create nahi ho paya.";
+    const message = Object.values(data.errors || {})[0]?.[0] || data.message || "Unable to create checkout order.";
     throw new Error(message);
   }
 
@@ -116,7 +116,7 @@ export async function verifyCheckoutPayment(input: {
   };
 
   if (!response.ok) {
-    const message = Object.values(data.errors || {})[0]?.[0] || data.message || "Payment verify nahi ho payi.";
+    const message = Object.values(data.errors || {})[0]?.[0] || data.message || "Payment verification failed.";
     throw new Error(message);
   }
 

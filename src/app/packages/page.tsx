@@ -184,7 +184,7 @@ export default function PackagesPage() {
             })}
             {!packages.length && (
               <div style={{ gridColumn: "1 / -1", padding: "40px 0", textAlign: "center", color: "#716850", fontWeight: 700 }}>
-                Abhi koi published package available nahi hai. Admin panel se package add karein.
+                No published packages are available yet. Add packages from the admin panel.
               </div>
             )}
           </div>

@@ -107,7 +107,7 @@ export default async function FacultyPage() {
 
           {!faculties.length ? (
             <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm font-semibold text-slate-500">
-              Abhi koi faculty admin panel se publish nahi hai. Home Page → Our Faculty se add karein.
+              No faculty profiles have been published yet. Add mentors from Admin → Home Page → Our Faculty.
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">

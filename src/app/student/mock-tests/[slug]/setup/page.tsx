@@ -95,7 +95,7 @@ export default function DynamicMockSetupPage() {
           </div>
 
           <div className="mt-7 space-y-3">
-            {["Browser fullscreen recommended before starting test.", "Question palette, timer and section controls will be visible during test.", "You can mark questions for review and change answers before submission.", "Final submit ke baad score and analysis generate hoga."].map((check) => (
+            {["Browser fullscreen recommended before starting test.", "Question palette, timer and section controls will be visible during test.", "You can mark questions for review and change answers before submission.", "Your score and analysis will be generated after final submission."].map((check) => (
               <div key={check} className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-[#e5eaf2]">
                 <CheckCircle2 size={18} className="text-[#21a366]" />
                 <p className="text-sm font-semibold text-[#344054]">{check}</p>

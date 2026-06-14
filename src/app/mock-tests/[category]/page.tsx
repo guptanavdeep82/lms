@@ -137,7 +137,7 @@ export default function MockSeriesDetailPage() {
               </div>
             </div>
             <p className="mt-5 max-w-3xl text-sm font-semibold leading-7 text-white/72">
-              {category.description || `${category.name} mock tests se speed, accuracy aur exam pattern practice karein.`}
+              {category.description || `Practice speed, accuracy, and exam patterns with ${category.name} mock tests.`}
             </p>
             <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
               <HeroStat icon={FileText} label="Mock Tests" value={String(summary.total)} />
@@ -203,7 +203,7 @@ export default function MockSeriesDetailPage() {
               ))}
               {!visibleTests.length && (
                 <div className="rounded-lg border border-dashed border-[#d8dbe1] bg-white p-8 text-center text-sm font-bold text-[#6f7580]">
-                  Is tab mein abhi mock tests available nahi hain.
+                  No mock tests are available in this tab yet.
                 </div>
               )}
           </div>

@@ -120,7 +120,7 @@ export default function AffiliateDashboardPage() {
                       </tr>
                     ))}
                     {dashboard.codes.length === 0 && (
-                      <tr><td className="px-6 py-6 text-[#667085]" colSpan={5}>Abhi koi referral code assign nahi hai. Admin se code generate karwayein.</td></tr>
+                      <tr><td className="px-6 py-6 text-[#667085]" colSpan={5}>No referral codes assigned yet. Contact admin to generate a code.</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -157,7 +157,7 @@ export default function AffiliateDashboardPage() {
                       </tr>
                     ))}
                     {dashboard.students.length === 0 && (
-                      <tr><td className="px-6 py-6 text-[#667085]" colSpan={7}>Abhi koi student aapke code se register nahi hua.</td></tr>
+                      <tr><td className="px-6 py-6 text-[#667085]" colSpan={7}>No students have registered using your referral code yet.</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -167,7 +167,7 @@ export default function AffiliateDashboardPage() {
         )}
 
         <p className="mt-8 text-center text-sm font-semibold text-[#667085]">
-          Student account ke liye <Link href="/login" className="font-extrabold text-[#172a69]">student login</Link> use karein.
+          For a student account, use <Link href="/login" className="font-extrabold text-[#172a69]">student login</Link>.
         </p>
       </section>
     </main>

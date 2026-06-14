@@ -26,7 +26,7 @@ export function StudentPurchasesPanel() {
       {loading ? (
         <p className="mt-4 text-sm font-semibold text-[#667085]">Loading purchases...</p>
       ) : !orders.length ? (
-        <p className="mt-4 text-sm font-semibold text-[#667085]">Abhi koi payment history nahi hai.</p>
+        <p className="mt-4 text-sm font-semibold text-[#667085]">No payment history yet.</p>
       ) : (
         <div className="mt-5 space-y-3">
           {orders.map((order) => (

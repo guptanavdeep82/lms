@@ -78,7 +78,7 @@ export default function LoginPage() {
         const applied = await applyStudentReferral(student.email, referralCode.trim());
         referral = referralFromStudentPayload(applied);
       } catch (referralError) {
-        setError(referralError instanceof Error ? referralError.message : "Referral code apply nahi ho paya.");
+        setError(referralError instanceof Error ? referralError.message : "Unable to apply referral code.");
         return;
       }
     }
@@ -181,7 +181,7 @@ export default function LoginPage() {
     }
 
     setReferralValid(true);
-    setReferralMessage(`${result.referral.discount_label} discount milega.`);
+    setReferralMessage(`${result.referral.discount_label} discount will be applied.`);
   };
 
   useEffect(() => {

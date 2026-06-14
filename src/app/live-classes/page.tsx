@@ -1,12 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Bell, CalendarDays, CheckCircle2, Clock3, Filter, MonitorPlay, PlayCircle, Radio, Search, Users, Video } from "lucide-react";
+import {
+  Bell,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  Filter,
+  MonitorPlay,
+  PlayCircle,
+  Radio,
+  Search,
+  Sparkles,
+  Video,
+} from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
 import { LiveClassActionButton } from "@/components/live-classes/LiveClassActionButton";
 import {
-  fetchLiveSessions,
-  formatLiveSessionTime,
+  formatLiveSessionSchedule,
+  liveSessionsUrl,
   liveSessionStatusLabel,
   type LiveClassSessionItem,
 } from "@/lib/live-classes";
@@ -33,57 +45,80 @@ const filters = {
   ],
 };
 
-const styles = `
-.live-page{min-height:100vh;background:#f7f6ef;color:#050808;font-family:Inter,ui-sans-serif,system-ui,sans-serif}
-.live-hero{background:#050808;color:#fff;padding:42px 5%}
-.live-hero-inner{max-width:1220px;margin:0 auto;display:flex;align-items:end;justify-content:space-between;gap:24px}
-.live-kicker{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,210,31,.34);border-radius:999px;background:rgba(255,210,31,.08);color:#ffd21f;padding:8px 14px;font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.16em}
-.live-hero h1{margin:16px 0 10px;font-size:clamp(28px,3.2vw,44px);line-height:1;font-weight:950;letter-spacing:0}
-.live-hero p{max-width:690px;color:rgba(255,255,255,.7);font-size:15px;line-height:1.75}
-.hero-live-card{min-width:280px;border:1px solid rgba(255,210,31,.3);border-radius:14px;background:rgba(255,255,255,.08);padding:16px}
-.hero-live-card strong{display:block;font-size:18px}.hero-live-card span{display:block;margin-top:5px;color:rgba(255,255,255,.64);font-size:12px;font-weight:800}
-.live-wrap{max-width:1220px;margin:0 auto;padding:28px 5% 70px}
-.search-row{display:flex;gap:14px;align-items:center;margin-bottom:18px}
-.search-box{position:relative;flex:1}.search-box svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#8a6500}.search-box input{width:100%;height:46px;border:1px solid #dfcf97;border-radius:10px;background:#fffdf3;padding:0 14px 0 44px;font-size:14px;font-weight:700;outline:none}
-.result-count{border:1px solid #dfcf97;border-radius:10px;background:#fff;padding:12px 14px;font-size:13px;font-weight:950;color:#6b4d00;white-space:nowrap}
-.live-layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:22px}
-.filter-sidebar{border:1px solid #dfcf97;border-radius:16px;background:#fff;padding:18px;box-shadow:0 14px 32px rgba(5,8,8,.06);height:max-content;position:sticky;top:92px}
-.filter-head{display:flex;align-items:center;gap:9px;margin-bottom:16px;font-size:18px;font-weight:950}.filter-head svg{color:#c79a00}
-.filter-group{border-top:1px solid #efe5bd;padding-top:16px;margin-top:16px}.filter-group:first-of-type{border-top:0;padding-top:0;margin-top:0}.filter-group h3{margin:0 0 10px;font-size:11px;font-weight:950;color:#8a6500;text-transform:uppercase;letter-spacing:.16em}
-.filter-options{display:grid;gap:8px}.filter-options button{height:38px;border:1px solid #e8dba9;border-radius:9px;background:#fffdf3;color:#4b3a09;text-align:left;padding:0 12px;font-size:13px;font-weight:850;cursor:pointer}.filter-options button.active{background:#050808;border-color:#050808;color:#ffd21f}.clear-btn{margin-top:18px;width:100%;height:40px;border:1px solid #050808;border-radius:9px;background:#fff;color:#050808;font-weight:950;cursor:pointer}
-.class-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.class-card{border:1px solid #dfcf97;border-radius:16px;background:#fff;box-shadow:0 14px 32px rgba(5,8,8,.06);overflow:hidden}
-.class-screen{height:150px;background:linear-gradient(135deg,#050808,#272412);display:grid;place-items:center;position:relative;color:#ffd21f}.class-screen:before{content:attr(data-status);position:absolute;left:14px;top:14px;border-radius:999px;background:#ffd21f;color:#050808;padding:6px 10px;font-size:10px;font-weight:950;text-transform:uppercase}.class-screen.replay:before{background:#fff;color:#050808}.class-screen.live:before{background:#e92424;color:#fff}
-.play-icon{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#ffd21f;color:#050808}
-.class-body{padding:16px}.class-body h2{margin:0;font-size:20px;font-weight:950;line-height:1.2}.class-body p{margin:8px 0 0;color:#6f6b5c;font-size:13px;line-height:1.55}
-.class-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.class-meta span{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#fff4bd;color:#6b4d00;padding:7px 9px;font-size:11px;font-weight:900}
-.class-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #efe5bd;margin-top:16px;padding-top:14px}.class-footer small{color:#7b725c;font-weight:900}
-.live-action-btn{display:inline-flex;height:40px;align-items:center;justify-content:center;gap:8px;border-radius:9px;background:#050808;color:#ffd21f;padding:0 14px;border:none;text-decoration:none;font-size:13px;font-weight:950;cursor:pointer;width:100%}
-.live-action-error{margin:0;color:#b42318;font-size:11px;font-weight:800}
-.price-tag{display:inline-flex;border-radius:999px;background:#050808;color:#ffd21f;padding:4px 8px;font-size:10px;font-weight:900;margin-left:6px}
-.empty-state{grid-column:1/-1;border:1px dashed #c7b26b;border-radius:14px;background:#fffdf3;padding:34px;text-align:center;color:#6b4d00;font-weight:900}
-.info-strip{margin-top:24px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.info-card{border:1px solid #dfcf97;border-radius:14px;background:#fffdf3;padding:16px}.info-card svg{color:#c79a00}.info-card h3{margin:10px 0 6px;font-size:15px;font-weight:950}.info-card p{margin:0;color:#6f6b5c;font-size:13px;line-height:1.55}
-@media(max-width:980px){.live-hero-inner{display:block}.hero-live-card{margin-top:22px}.live-layout{grid-template-columns:1fr}.filter-sidebar{position:static}.class-grid{grid-template-columns:1fr}.info-strip{grid-template-columns:1fr}}
-@media(max-width:640px){.live-hero,.live-wrap{padding-inline:4%}.search-row{display:block}.result-count{display:inline-block;margin-top:10px}.class-footer{display:block}.class-footer .live-action-btn{margin-top:10px}}
-`;
+function statusBadgeClass(status: LiveClassSessionItem["display_status"]) {
+  if (status === "live") return "bg-red-600 text-white";
+  if (status === "replay") return "bg-white text-[#1b2e6b]";
+  return "bg-[#f5c518] text-[#1b2e6b]";
+}
+
+function SessionThumb({ session }: { session: LiveClassSessionItem }) {
+  const src = session.course.image_url;
+
+  return (
+    <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-[#0f1e4a] via-[#1b2e6b] to-[#243580] sm:h-48">
+      {src ? (
+        <>
+          <img src={src} alt={session.title} className="h-full w-full object-cover opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0f1e4a]/90 via-[#1b2e6b]/40 to-transparent" />
+        </>
+      ) : (
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,197,24,0.25),transparent_40%)]" />
+      )}
+      <span
+        className={`absolute left-4 top-4 rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide ${statusBadgeClass(session.display_status)}`}
+      >
+        {liveSessionStatusLabel(session.display_status)}
+      </span>
+      <div className="absolute inset-0 grid place-items-center">
+        <div className="grid size-14 place-items-center rounded-full bg-[#f5c518] text-[#1b2e6b] shadow-lg shadow-black/20">
+          <PlayCircle size={28} fill="currentColor" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function LiveClassesPage() {
   const [liveSessions, setLiveSessions] = useState<LiveClassSessionItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [status, setStatus] = useState("all");
   const [subject, setSubject] = useState("all");
   const [type, setType] = useState("all");
   const [search, setSearch] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   const loadSessions = useCallback(() => {
     const email = getStudentSession()?.email;
-    fetchLiveSessions(email).then(setLiveSessions);
+    setLoading(true);
+    setLoadError("");
+    fetch(liveSessionsUrl(email), { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error("Unable to load live classes.");
+        }
+        const data = (await response.json()) as { sessions?: LiveClassSessionItem[] };
+        setLiveSessions(data.sessions || []);
+      })
+      .catch(() => {
+        setLiveSessions([]);
+        setLoadError("Unable to load live classes. Please try again later.");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
     loadSessions();
   }, [loadSessions]);
 
-  const featuredSession = liveSessions.find((session) => session.display_status === "live") ?? liveSessions[0];
+  const featuredSession = liveSessions.find((s) => s.display_status === "live") ?? liveSessions[0];
+
+  const stats = useMemo(() => ({
+    total: liveSessions.length,
+    live: liveSessions.filter((s) => s.display_status === "live").length,
+    upcoming: liveSessions.filter((s) => s.display_status === "scheduled").length,
+    replay: liveSessions.filter((s) => s.display_status === "replay" || s.has_recording).length,
+  }), [liveSessions]);
 
   const filteredSessions = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -107,91 +142,209 @@ export default function LiveClassesPage() {
   };
 
   return (
-    <main className="live-page">
+    <main className="min-h-screen w-full bg-[#f8f9fc] text-slate-950">
       <PublicHeader active="live-classes" />
-      <style dangerouslySetInnerHTML={{ __html: styles }} />
 
-      <section className="live-hero">
-        <div className="live-hero-inner">
-          <div>
-            <span className="live-kicker"><Radio size={15} /> Live Classes</span>
-            <h1>Live Streaming Classes</h1>
-            <p>Join Zoom live classes instantly. Free classes open after login. Paid classes unlock after course purchase. Recordings auto-save after class ends.</p>
-          </div>
-          <div className="hero-live-card">
-            <strong>{featuredSession ? formatLiveSessionTime(featuredSession.scheduled_at) : "Schedule available soon"}</strong>
-            <span>
-              {featuredSession
-                ? `${featuredSession.title} · ${featuredSession.faculty_name || featuredSession.course.title}`
-                : "Admin can schedule sessions from Live Class Sessions"}
-            </span>
+      {/* Hero — full width */}
+      <section className="relative w-full overflow-hidden border-b border-[#1b2e6b]/20 bg-[#1b2e6b] text-white">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(245,197,24,0.22),transparent_32%)]" />
+        <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full border border-[#f5c518]/20" />
+        <div className="relative mx-auto w-full max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+          <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#f5c518]/35 bg-[#f5c518]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#f5c518]">
+                <Radio size={14} /> Live Classes on Zoom
+              </span>
+              <h1 className="mt-5 font-rajdhani text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl lg:leading-[1.05]">
+                Join Live Banking Classes & Watch Replays Anytime
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-8 text-white/75 sm:text-lg">
+                Attend expert-led live sessions on Zoom. Free classes open after login. Paid batches unlock after purchase. Recordings save automatically when class ends.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                {[
+                  ["Live Now", stats.live],
+                  ["Upcoming", stats.upcoming],
+                  ["Replays", stats.replay],
+                ].map(([label, count]) => (
+                  <div
+                    key={label as string}
+                    className="min-w-[120px] rounded-2xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur-sm"
+                  >
+                    <div className="font-rajdhani text-2xl font-bold text-[#f5c518]">{count as number}</div>
+                    <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-white/65">{label as string}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#f5c518]/30 bg-white/10 p-6 backdrop-blur-md sm:p-7">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#f5c518] px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide text-[#1b2e6b]">
+                <Sparkles size={12} /> Next Session
+              </div>
+              <p className="font-rajdhani text-xl font-bold leading-snug sm:text-2xl">
+                {featuredSession ? featuredSession.title : "Sessions coming soon"}
+              </p>
+              <p className="mt-3 text-sm leading-7 text-white/70">
+                {featuredSession
+                  ? `${formatLiveSessionSchedule(featuredSession.scheduled_at)} · ${featuredSession.faculty_name || featuredSession.course.title}`
+                  : "Admin can schedule live sessions from the panel."}
+              </p>
+              {featuredSession ? (
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
+                    {featuredSession.duration_minutes} min
+                  </span>
+                  <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
+                    {featuredSession.course.is_free ? "Free" : `₹${featuredSession.course.effective_price}`}
+                  </span>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="live-wrap">
-        <div className="search-row">
-          <div className="search-box">
-            <Search size={18} />
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search class, subject, faculty..." />
-          </div>
-          <div className="result-count">{filteredSessions.length} Classes</div>
-        </div>
-
-        <div className="live-layout">
-          <aside className="filter-sidebar">
-            <div className="filter-head"><Filter size={20} /> Filters</div>
-            <FilterGroup title="Status" options={filters.status} value={status} onChange={setStatus} />
-            <FilterGroup title="Subject" options={filters.subject} value={subject} onChange={setSubject} />
-            <FilterGroup title="Class Type" options={filters.type} value={type} onChange={setType} />
-            <button className="clear-btn" type="button" onClick={clearFilters}>Clear Filters</button>
-          </aside>
-
-          <div>
-            <div className="class-grid">
-              {filteredSessions.map((session) => (
-                <article className="class-card" key={session.id}>
-                  <div className={`class-screen ${session.display_status}`} data-status={liveSessionStatusLabel(session.display_status)}>
-                    <div className="play-icon"><PlayCircle size={30} fill="currentColor" /></div>
-                  </div>
-                  <div className="class-body">
-                    <h2>
-                      {session.title}
-                      {session.course.is_free ? (
-                        <span className="price-tag">FREE</span>
-                      ) : (
-                        <span className="price-tag">₹{session.course.effective_price}</span>
-                      )}
-                    </h2>
-                    <p>{session.faculty_name || session.course.exam_type || "KR Logics Faculty"} · {formatLiveSessionTime(session.scheduled_at)}</p>
-                    <div className="class-meta">
-                      <span><Clock3 size={14} /> {session.duration_minutes} min</span>
-                      <span><CalendarDays size={14} /> {session.course.category || "Live"}</span>
-                      <span><Video size={14} /> {(session.course.subject || "general").toUpperCase()}</span>
-                    </div>
-                    <div className="class-footer">
-                      <small>
-                        {session.has_recording
-                          ? "Recording available"
-                          : session.display_status === "live"
-                            ? "Live now on Zoom"
-                            : session.course.is_free
-                              ? "Free after login"
-                              : "Purchase required"}
-                      </small>
-                      <LiveClassActionButton session={session} onAccessChange={loadSessions} />
-                    </div>
-                  </div>
-                </article>
-              ))}
-
-              {!filteredSessions.length && <div className="empty-state">No live classes found. Schedule sessions from admin panel.</div>}
+      {/* Main content — full width container */}
+      <section className="w-full px-4 py-10 sm:px-6 sm:py-12 lg:px-10 lg:py-14">
+        <div className="mx-auto w-full max-w-[1400px]">
+          {/* Search + filter toggle */}
+          <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="relative w-full lg:max-w-xl">
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[#b78600]" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search class, faculty, course..."
+                className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 text-sm font-semibold text-slate-800 shadow-sm outline-none transition focus:border-[#1b2e6b] focus:ring-2 focus:ring-[#1b2e6b]/10"
+              />
             </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-xl border border-[#ead694] bg-[#fff9e0] px-4 py-2.5 text-sm font-bold text-[#6b4d00]">
+                {filteredSessions.length} classes found
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowFilters((v) => !v)}
+                className="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-[#1b2e6b] shadow-sm lg:hidden"
+              >
+                <Filter size={18} /> Filters
+              </button>
+            </div>
+          </div>
 
-            <div className="info-strip">
-              <div className="info-card"><Bell size={24} /><h3>Zoom Live Join</h3><p>Students join directly on Zoom after login and access check.</p></div>
-              <div className="info-card"><MonitorPlay size={24} /><h3>Auto Recording</h3><p>Cloud recording syncs automatically when Zoom class ends.</p></div>
-              <div className="info-card"><CheckCircle2 size={24} /><h3>Free / Paid Access</h3><p>Free courses join after login. Paid courses need purchase first.</p></div>
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]">
+            {/* Sidebar filters */}
+            <aside
+              className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:block lg:h-max ${showFilters ? "block" : "hidden"}`}
+            >
+              <div className="mb-5 flex items-center gap-2 font-rajdhani text-xl font-bold text-[#1b2e6b]">
+                <Filter size={20} className="text-[#e8a800]" /> Filters
+              </div>
+              <FilterGroup title="Status" options={filters.status} value={status} onChange={setStatus} />
+              <FilterGroup title="Subject" options={filters.subject} value={subject} onChange={setSubject} />
+              <FilterGroup title="Class Type" options={filters.type} value={type} onChange={setType} />
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="mt-5 h-11 w-full rounded-xl border-2 border-[#1b2e6b] bg-white text-sm font-bold text-[#1b2e6b] transition hover:bg-[#1b2e6b] hover:text-white"
+              >
+                Clear Filters
+              </button>
+            </aside>
+
+            {/* Cards grid */}
+            <div>
+              {loadError ? (
+                <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                  {loadError}
+                </div>
+              ) : null}
+              {loading ? (
+                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-[420px] animate-pulse rounded-2xl bg-slate-200" />
+                  ))}
+                </div>
+              ) : filteredSessions.length ? (
+                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  {filteredSessions.map((session) => (
+                    <article
+                      key={`${session.source}-${session.course.id}-${session.id}`}
+                      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-[#1b2e6b]/25 hover:shadow-lg"
+                    >
+                      <SessionThumb session={session} />
+                      <div className="flex flex-1 flex-col p-5 sm:p-6">
+                        <div className="flex flex-wrap items-start justify-between gap-2">
+                          <h2 className="font-rajdhani text-xl font-bold leading-snug text-[#1b2e6b] sm:text-[1.35rem]">
+                            {session.title}
+                          </h2>
+                          <span
+                            className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase ${
+                              session.course.is_free
+                                ? "bg-emerald-100 text-emerald-800"
+                                : "bg-[#1b2e6b] text-[#f5c518]"
+                            }`}
+                          >
+                            {session.course.is_free ? "Free" : `₹${session.course.effective_price}`}
+                          </span>
+                        </div>
+                        <p className="mt-2 text-sm font-medium leading-6 text-slate-600">
+                          {session.faculty_name || session.course.exam_type || "KR Logics Faculty"}
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-[#b78600]">
+                          {formatLiveSessionSchedule(session.scheduled_at)}
+                        </p>
+
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">
+                            <Clock3 size={13} /> {session.duration_minutes} min
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">
+                            <CalendarDays size={13} /> {session.course.category || "Live"}
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">
+                            <Video size={13} /> {(session.course.subject || "General").toUpperCase()}
+                          </span>
+                        </div>
+
+                        <div className="mt-auto border-t border-slate-100 pt-5">
+                          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">
+                            {session.has_recording
+                              ? "Recording available"
+                              : session.display_status === "live"
+                                ? "Live now on Zoom"
+                                : session.course.is_free
+                                  ? "Free after login"
+                                  : "Purchase required to join"}
+                          </p>
+                          <LiveClassActionButton session={session} onAccessChange={loadSessions} />
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-[#c7b26b] bg-[#fffdf3] px-6 py-16 text-center">
+                  <p className="font-rajdhani text-2xl font-bold text-[#6b4d00]">No live classes found</p>
+                  <p className="mt-2 text-sm font-medium text-slate-600">Try changing filters or check back later.</p>
+                </div>
+              )}
+
+              {/* Info strip */}
+              <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  { icon: Bell, title: "Zoom Live Join", text: "One-click join after login and access verification." },
+                  { icon: MonitorPlay, title: "Auto Recording", text: "Cloud recordings sync when the Zoom session ends." },
+                  { icon: CheckCircle2, title: "Free & Paid Access", text: "Free courses after login. Paid courses after purchase." },
+                ].map(({ icon: Icon, title, text }) => (
+                  <div key={title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <Icon className="size-6 text-[#e8a800]" />
+                    <h3 className="mt-3 font-rajdhani text-lg font-bold text-[#1b2e6b]">{title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-slate-600">{text}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -212,11 +365,20 @@ function FilterGroup({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="filter-group">
-      <h3>{title}</h3>
-      <div className="filter-options">
+    <div className="border-t border-slate-100 py-4 first:border-t-0 first:pt-0">
+      <h3 className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#b78600]">{title}</h3>
+      <div className="grid gap-2">
         {options.map(([optionValue, label]) => (
-          <button key={optionValue} type="button" className={value === optionValue ? "active" : ""} onClick={() => onChange(optionValue)}>
+          <button
+            key={optionValue}
+            type="button"
+            onClick={() => onChange(optionValue)}
+            className={`h-10 rounded-lg px-3 text-left text-sm font-bold transition ${
+              value === optionValue
+                ? "bg-[#1b2e6b] text-[#f5c518]"
+                : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+            }`}
+          >
             {label}
           </button>
         ))}

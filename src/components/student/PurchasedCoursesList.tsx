@@ -40,7 +40,7 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
   if (!courses.length) {
     return (
       <div className="rounded-[20px] border border-dashed border-[#dfe5ef] bg-[#f8fafc] p-8 text-center">
-        <p className="text-sm font-bold text-[#667085]">Abhi koi purchased course nahi hai.</p>
+        <p className="text-sm font-bold text-[#667085]">No purchased courses yet.</p>
         <Link href="/courses" className="mt-4 inline-flex h-11 items-center rounded-2xl bg-[#172a69] px-5 text-sm font-extrabold text-white">
           Browse Courses
         </Link>

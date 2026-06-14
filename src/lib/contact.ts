@@ -22,7 +22,7 @@ export async function submitContactForm(input: ContactFormInput): Promise<{ mess
   };
 
   if (!response.ok) {
-    const message = Object.values(data.errors || {})[0]?.[0] || data.message || "Form submit nahi ho paya.";
+    const message = Object.values(data.errors || {})[0]?.[0] || data.message || "Unable to submit the form.";
     throw new Error(message);
   }
 

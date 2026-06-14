@@ -65,7 +65,7 @@ export default function AffiliateLoginPage() {
             </span>
             <h1 className="mt-6 text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">Track your referred students</h1>
             <p className="mt-4 max-w-xl text-base leading-8 text-white/72">
-              Admin dwara diya gaya email aur password se login karein. Yahan aap apne referral codes aur unse register hue students dekh sakte hain.
+              Log in with the email and password provided by admin. View your referral codes and students who registered using them.
             </p>
           </div>
         </div>

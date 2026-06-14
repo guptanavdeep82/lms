@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
 import { loginStudent, saveStudentProfile } from "@/lib/student-auth";
-import { publicBackendBaseUrl } from "@/lib/mock-tests";
-import { applyStudentReferral, referralFromStudentPayload, validateReferralCode } from "@/lib/referral";
+import { fetchStates, registerStudent, type StateOption } from "@/lib/student-registration";
+import { referralToSessionFields, validateReferralCode } from "@/lib/referral";
 import {
   ArrowLeft,
   ArrowRight,
@@ -23,12 +23,6 @@ const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 type GoogleStudent = {
   name: string;
   email: string;
-};
-
-type StateOption = {
-  id: number;
-  name: string;
-  code: string;
 };
 
 declare global {
@@ -79,47 +73,29 @@ export default function RegisterPage() {
   const completeLogin = async (student: GoogleStudent, verifiedMobile: string) => {
     const selectedState = states.find((state) => String(state.id) === stateId);
     if (!selectedState) {
-      setError("Please state select karein.");
+      setError("Please select your state.");
       return;
     }
 
+    const normalizedMobile = verifiedMobile.replace(/\D/g, "").slice(-10);
+
     try {
-      const response = await fetch(`${publicBackendBaseUrl}/api/student/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: student.name,
-          email: student.email,
-          mobile: verifiedMobile,
-          state_id: selectedState.id,
-          provider: "google",
-          mobile_verified: true,
-          referral_code: referralCode.trim() || undefined,
-        }),
+      const payload = await registerStudent({
+        name: student.name,
+        email: student.email,
+        mobile: normalizedMobile,
+        state_id: selectedState.id,
+        provider: "google",
+        mobile_verified: true,
+        referral_code: referralCode.trim() || undefined,
       });
 
-      const payload = await response.json().catch(() => ({})) as {
-        student?: {
-          referral_code?: string | null;
-          referral_discount_type?: "percentage" | "fixed" | null;
-          referral_discount_value?: number | null;
-          referral_discount_label?: string | null;
-        };
-        message?: string;
-        errors?: Record<string, string[]>;
-      };
-
-      if (!response.ok) {
-        const referralError = payload.errors?.referral_code?.[0];
-        throw new Error(referralError || payload.message || "Student registration API failed.");
-      }
-
-      const referral = referralFromStudentPayload(payload.student || {});
+      const referral = referralToSessionFields(payload.student || {});
 
       const profile = saveStudentProfile({
         name: student.name,
         email: student.email,
-        mobile: verifiedMobile,
+        mobile: normalizedMobile,
         stateId: selectedState.id,
         stateName: selectedState.name,
         provider: "google",
@@ -140,7 +116,7 @@ export default function RegisterPage() {
       const params = new URLSearchParams(window.location.search);
       router.push(params.get("redirect") || "/student/dashboard");
     } catch (registerError) {
-      setError(registerError instanceof Error ? registerError.message : "Student data database me save nahi ho paya. Please backend API check karein.");
+      setError(registerError instanceof Error ? registerError.message : "Registration failed. Please try again.");
       return;
     }
   };
@@ -168,7 +144,7 @@ export default function RegisterPage() {
 
     setReferralValid(true);
     setReferralDiscountLabel(result.referral.discount_label);
-    setReferralMessage(result.referral.affiliate_name ? `${result.referral.affiliate_name} ka referral code valid hai.` : "Referral code valid hai.");
+    setReferralMessage(result.referral.affiliate_name ? `Valid referral code from ${result.referral.affiliate_name}.` : "Referral code is valid.");
   };
 
   useEffect(() => {
@@ -188,14 +164,9 @@ export default function RegisterPage() {
   }, [referralCode]);
 
   useEffect(() => {
-    fetch(`${publicBackendBaseUrl}/api/states`)
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error("States API failed")))
-      .then((data: { states?: StateOption[] }) => {
-        setStates(data.states || []);
-      })
-      .catch(() => {
-        setStates([]);
-      });
+    fetchStates()
+      .then(setStates)
+      .catch(() => setStates([]));
 
     if (!GOOGLE_CLIENT_ID) return;
 
@@ -239,7 +210,7 @@ export default function RegisterPage() {
 
   const sendOtp = () => {
     if (!/^[6-9]\d{9}$/.test(mobile.replace(/\D/g, "").slice(-10))) {
-      setError("Please valid 10 digit mobile number enter karein.");
+      setError("Please enter a valid 10 digit mobile number.");
       return;
     }
     setOtpSent(true);
@@ -249,7 +220,7 @@ export default function RegisterPage() {
   const verifyOtp = () => {
     if (!pendingStudent) return;
     if (!/^\d{6}$/.test(otp)) {
-      setError("Please 6 digit OTP enter karein.");
+      setError("Please enter the 6 digit OTP.");
       return;
     }
     completeLogin(pendingStudent, mobile);
@@ -271,14 +242,14 @@ export default function RegisterPage() {
             <>
               <div className="inline-flex rounded-full bg-[#050808] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.2em] text-[#f5c518] shadow-lg shadow-black/10">Student Registration</div>
               <h1 className="mt-7 text-3xl font-black tracking-[-0.05em] text-[#050808] sm:text-4xl">Create Account</h1>
-              <p className="mt-4 text-[15px] font-semibold leading-7 text-[#4c4f5d]">Google signup se Gmail aur name auto fetch hoga. Uske baad mobile OTP verification complete karein.</p>
+              <p className="mt-4 text-[15px] font-semibold leading-7 text-[#4c4f5d]">Sign up with Google to auto-fill your name and email, then verify your mobile number with OTP.</p>
 
               <div className="mt-8 rounded-[28px] border border-[#ead694] bg-white/78 p-5 shadow-[0_18px_44px_rgba(95,71,0,0.12)] backdrop-blur">
                 <div className="flex items-start gap-3">
                   <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#050808] text-lg font-black text-[#f5c518]">G</span>
                   <div>
                     <p className="text-sm font-black text-[#050808]">Signup using Gmail</p>
-                    <p className="mt-1 text-xs font-semibold leading-5 text-[#667085]">Name aur email Google account se auto fill hoga.</p>
+                    <p className="mt-1 text-xs font-semibold leading-5 text-[#667085]">Your name and email will be fetched from your Google account.</p>
                   </div>
                 </div>
                 <button type="button" onClick={startGoogleSignup} className="mt-5 inline-flex h-[52px] w-full items-center justify-center gap-3 rounded-2xl bg-[#f5c518] px-5 text-sm font-black text-[#050808] shadow-[0_14px_32px_rgba(245,197,24,0.35)] transition hover:bg-[#ffd84d]">
@@ -337,7 +308,7 @@ export default function RegisterPage() {
                   </span>
                 </label>
 
-                {validatingReferral && <p className="text-xs font-semibold text-[#667085]">Referral code check ho raha hai...</p>}
+                {validatingReferral && <p className="text-xs font-semibold text-[#667085]">Checking referral code...</p>}
                 {!validatingReferral && referralMessage && (
                   <p className={`rounded-2xl px-4 py-3 text-xs font-bold leading-6 ${referralValid ? "bg-[#ecfdf3] text-[#027a48]" : "bg-[#fff8d6] text-[#7a5b00]"}`}>
                     {referralMessage}
@@ -381,7 +352,7 @@ export default function RegisterPage() {
               Signup with Gmail, verify mobile, start learning.
             </h2>
             <p className="mt-5 max-w-xl text-[16px] leading-8 text-white/72">
-              Student registration flow ab Gmail based hai. Name aur email Google se fetch hoga, fir mobile OTP se verified profile create hogi.
+              Create your verified student profile in three simple steps and start learning with KR Logics.
             </p>
             <div className="mt-8 grid gap-3">
               {steps.map((step) => (
