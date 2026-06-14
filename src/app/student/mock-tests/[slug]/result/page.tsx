@@ -41,7 +41,7 @@ export default function MockResultPage() {
       <main className="grid min-h-screen place-items-center bg-[#f7f7f7] px-4 text-center text-black">
         <div className="max-w-md rounded-lg border border-[#e5e5e5] bg-white p-8 shadow-[0_12px_34px_rgba(0,0,0,0.08)]">
           <BarChart3 className="mx-auto text-[#d6a900]" size={42} />
-          <h1 className="mt-4 text-2xl font-extrabold">Result not available</h1>
+          <h1 className="mt-4 text-xl font-extrabold">Result not available</h1>
           <p className="mt-2 text-sm font-semibold leading-6 text-[#69707d]">Pehle mock test complete karein, phir result yahan show hoga.</p>
           <Link href={`/student/mock-tests/${slug}/instructions`} className="mt-5 inline-flex h-11 items-center rounded-full bg-black px-5 text-sm font-extrabold text-white">
             Start Mock Test
@@ -60,7 +60,7 @@ export default function MockResultPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#8a6500]">Mock Test Result</p>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.04em]">{result.testTitle}</h1>
+            <h1 className="mt-2 text-2xl font-extrabold tracking-[-0.04em]">{result.testTitle}</h1>
             <p className="mt-2 text-sm font-semibold text-[#69707d]">Submitted on {new Date(result.submittedAt).toLocaleString()}</p>
           </div>
           <div className="grid h-20 w-20 place-items-center rounded-full bg-[#d6a900] text-black">

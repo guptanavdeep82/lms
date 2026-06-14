@@ -206,7 +206,7 @@ export default function StudentMockTestsPage() {
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[#f7d85a] ring-1 ring-white/15">
                   <ShieldCheck size={14} /> Mock Test Zone
                 </span>
-                <h1 className="mt-5 text-[34px] font-extrabold leading-tight tracking-[-0.04em] sm:text-[46px]">Practice. Analyze. Improve.</h1>
+                <h1 className="mt-5 text-[28px] font-extrabold leading-tight tracking-[-0.04em] sm:text-[38px]">Practice. Analyze. Improve.</h1>
                 <p className="mt-3 max-w-xl text-[15px] leading-7 text-white/72">
                   Real exam pattern ke mock tests, instant score analysis, rank tracking aur topic-wise improvement report.
                 </p>
@@ -225,7 +225,7 @@ export default function StudentMockTestsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-bold text-[#7d8799]">Readiness Score</p>
-                  <h2 className="mt-1 text-3xl font-extrabold tracking-[-0.04em] text-[#172a69]">82%</h2>
+                  <h2 className="mt-1 text-xl font-extrabold tracking-[-0.04em] text-[#172a69]">82%</h2>
                 </div>
                 <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#fff8dc] text-[#c58a00]">
                   <Zap size={22} />
@@ -272,7 +272,7 @@ export default function StudentMockTestsPage() {
                 <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f0a500]">Upcoming Tests</p>
-                    <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.03em] text-[#172a69]">Available Mock Tests</h2>
+                    <h2 className="mt-1 text-xl font-extrabold tracking-[-0.03em] text-[#172a69]">Available Mock Tests</h2>
                   </div>
                   <div className="flex rounded-2xl bg-[#f3f6fb] p-1">
                     {["Upcoming", "Completed", "Missed"].map((tab, index) => (
@@ -325,7 +325,7 @@ export default function StudentMockTestsPage() {
                 <div className="mb-5 flex items-center justify-between">
                   <div>
                     <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f0a500]">Analysis</p>
-                    <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.03em] text-[#172a69]">Completed Tests</h2>
+                    <h2 className="mt-1 text-xl font-extrabold tracking-[-0.03em] text-[#172a69]">Completed Tests</h2>
                   </div>
                   <BarChart3 size={23} className="text-[#172a69]" />
                 </div>

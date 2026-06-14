@@ -77,7 +77,7 @@ export default function DynamicMockSetupPage() {
           <span className="inline-flex items-center gap-2 rounded-full bg-[#eaf3ff] px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.16em] text-[#2268aa]">
             <MonitorCheck size={15} /> Test Setup
           </span>
-          <h2 className="mt-5 text-[28px] font-extrabold tracking-[-0.04em] text-[#172a69] sm:text-[34px]">Ready screen before exam starts</h2>
+          <h2 className="mt-5 text-[24px] font-extrabold tracking-[-0.04em] text-[#172a69] sm:text-[28px]">Ready screen before exam starts</h2>
 
           <div className="mt-7 grid gap-4 sm:grid-cols-2">
             {[
@@ -108,7 +108,7 @@ export default function DynamicMockSetupPage() {
           <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/12 text-[#f5c518]">
             <ShieldCheck size={28} />
           </div>
-          <h3 className="mt-5 text-2xl font-extrabold tracking-[-0.03em]">Exam interface preview</h3>
+          <h3 className="mt-5 text-xl font-extrabold tracking-[-0.03em]">Exam interface preview</h3>
           <div className="mt-6 rounded-2xl bg-white/8 p-4 ring-1 ring-white/10">
             <div className="flex items-center justify-between text-sm font-bold">
               <span>Timer</span>

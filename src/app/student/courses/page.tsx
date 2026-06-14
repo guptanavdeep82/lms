@@ -23,6 +23,8 @@ import {
   Video,
   WalletCards,
 } from "lucide-react";
+import { PurchasedCoursesList, PurchasedCoursesStats } from "@/components/student/PurchasedCoursesList";
+import { StudentPurchasesPanel } from "@/components/student/StudentPurchasesPanel";
 
 const navGroups = [
   {
@@ -46,63 +48,12 @@ const navGroups = [
   },
 ];
 
-const purchasedCourses = [
-  {
-    title: "Banking Foundation Programme",
-    teacher: "KR Faculty Team",
-    category: "IBPS / SBI",
-    status: "Active",
-    nextLesson: "Simplification Speed Tricks",
-    progress: 78,
-    lessons: "122 / 156 lessons",
-    tests: "42 mocks",
-    validity: "Valid till 22 Dec 2026",
-    rating: "4.9",
-    gradient: "from-[#172a69] via-[#2350b8] to-[#13a38b]",
-  },
-  {
-    title: "SBI PO Prelims Crash Course",
-    teacher: "Karan Rajput",
-    category: "SBI PO",
-    status: "Live Batch",
-    nextLesson: "Puzzle Practice Set 18",
-    progress: 59,
-    lessons: "38 / 64 lessons",
-    tests: "28 mocks",
-    validity: "Valid till 18 Nov 2026",
-    rating: "4.8",
-    gradient: "from-[#0f9f78] via-[#19b98a] to-[#f5c518]",
-  },
-  {
-    title: "RBI Grade B Current Affairs",
-    teacher: "Priya Kumari",
-    category: "RBI",
-    status: "Updated",
-    nextLesson: "May Banking Awareness PDF",
-    progress: 52,
-    lessons: "21 / 40 modules",
-    tests: "12 quizzes",
-    validity: "Valid till 09 Jan 2027",
-    rating: "4.9",
-    gradient: "from-[#243580] via-[#6d5dfc] to-[#e8a800]",
-  },
-  {
-    title: "Quantitative Aptitude Mastery",
-    teacher: "Rohit Sharma",
-    category: "Quant",
-    status: "Active",
-    nextLesson: "DI Caselet Practice",
-    progress: 41,
-    lessons: "26 / 72 lessons",
-    tests: "30 practice sets",
-    validity: "Valid till 15 Oct 2026",
-    rating: "4.7",
-    gradient: "from-[#ba7517] via-[#f0a500] to-[#ffcf33]",
-  },
-];
+function CoursesSummaryCard() {
+  return <PurchasedCoursesStats />;
+}
 
 const summary = [
-  { label: "Purchased Courses", value: "4", icon: BookOpen, tone: "bg-[#eef2ff] text-[#172a69]" },
+  { label: "Purchased Courses", value: <CoursesSummaryCard />, icon: BookOpen, tone: "bg-[#eef2ff] text-[#172a69]" },
   { label: "Avg Progress", value: "58%", icon: Target, tone: "bg-[#e9f9f3] text-[#0f9f78]" },
   { label: "Certificates Ready", value: "2", icon: Award, tone: "bg-[#fff8dc] text-[#b77900]" },
   { label: "Pending Lessons", value: "125", icon: Clock3, tone: "bg-[#f4edff] text-[#6d5dfc]" },
@@ -202,7 +153,7 @@ export default function StudentCoursesPage() {
               <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-br from-[#eef2ff] via-[#fff8dc] to-transparent" />
               <div className="relative z-10">
                 <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f0a500]">Purchased Learning</p>
-                <h1 className="mt-2 text-[34px] font-extrabold tracking-[-0.04em] text-[#172a69] sm:text-[44px]">My Courses</h1>
+                <h1 className="mt-2 text-[28px] font-extrabold tracking-[-0.04em] text-[#172a69] sm:text-[36px]">My Courses</h1>
                 <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#667085]">
                   Yahan student ke purchased courses, progress, next lessons, notes aur validity ek clean dashboard me show honge.
                 </p>
@@ -223,7 +174,7 @@ export default function StudentCoursesPage() {
 
             <div className="rounded-[28px] bg-[#172a69] p-6 text-white shadow-[0_22px_60px_rgba(23,42,105,0.22)]">
               <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f5c518]">Next Class</p>
-              <h2 className="mt-3 text-2xl font-extrabold tracking-[-0.03em]">Reasoning Puzzle Live</h2>
+              <h2 className="mt-3 text-xl font-extrabold tracking-[-0.03em]">Reasoning Puzzle Live</h2>
               <p className="mt-2 text-sm font-medium text-white/68">Today at 7:00 PM with Karan Sir</p>
               <button className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#f5c518] text-sm font-extrabold text-[#172a69]">
                 Join Class <Video size={17} />
@@ -249,57 +200,11 @@ export default function StudentCoursesPage() {
 
           <section className="grid gap-6 xl:grid-cols-[1fr_340px]">
             <div className="grid gap-4">
-              {purchasedCourses.map((course) => (
-                <article key={course.title} className="overflow-hidden rounded-[20px] border border-[#dfe5ef] bg-white shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
-                  <div className="grid lg:grid-cols-[190px_1fr]">
-                    <div className={`relative min-h-[132px] bg-gradient-to-br ${course.gradient} p-4 text-white lg:min-h-0`}>
-                      <span className="rounded-full bg-white/16 px-2.5 py-1 text-[11px] font-extrabold backdrop-blur">{course.status}</span>
-                      <BookOpen className="absolute bottom-4 right-4 text-white/75" size={42} />
-                      <div className="absolute bottom-4 left-4">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/68">{course.category}</p>
-                        <p className="mt-0.5 text-sm font-extrabold">{course.rating} Rating</p>
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{course.title}</h2>
-                          <p className="mt-1 text-sm font-semibold text-[#7d8799]">by {course.teacher}</p>
-                        </div>
-                        <span className="rounded-full bg-[#e9f9f3] px-3 py-1 text-[11px] font-extrabold text-[#0f9f78]">{course.validity}</span>
-                      </div>
-
-                      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-[#f7f9fd] px-3 py-2 text-xs font-extrabold">
-                        <span className="text-[#111827]"><span className="font-bold text-[#7d8799]">Lessons:</span> {course.lessons}</span>
-                        <span className="text-[#111827]"><span className="font-bold text-[#7d8799]">Tests:</span> {course.tests}</span>
-                        <span className="min-w-0 max-w-full truncate text-[#111827]"><span className="font-bold text-[#7d8799]">Next:</span> {course.nextLesson}</span>
-                      </div>
-
-                      <div className="mt-3">
-                        <div className="flex items-center justify-between text-xs font-extrabold">
-                          <span className="text-[#7d8799]">Course progress</span>
-                          <span className="text-[#172a69]">{course.progress}%</span>
-                        </div>
-                        <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-[#edf1f7]">
-                          <div className="h-full rounded-full bg-gradient-to-r from-[#172a69] to-[#f5c518]" style={{ width: `${course.progress}%` }} />
-                        </div>
-                      </div>
-
-                      <div className="mt-3 flex gap-2">
-                        <button className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#172a69] px-3 text-xs font-extrabold text-white sm:flex-none">
-                          Continue <PlayCircle size={16} />
-                        </button>
-                        <button className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#fff8dc] px-3 text-xs font-extrabold text-[#8a6100] sm:flex-none">
-                          Certificate <Award size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              ))}
+              <PurchasedCoursesList />
             </div>
 
             <aside className="space-y-6">
+              <StudentPurchasesPanel />
               <div className="rounded-[26px] border border-[#dfe5ef] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-extrabold tracking-[-0.02em] text-[#172a69]">Course Health</h2>

@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
 import { getStudentProfile, loginStudent, saveStudentProfile } from "@/lib/student-auth";
+import { applyStudentReferral, referralFromStudentPayload, validateReferralCode } from "@/lib/referral";
 import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  Gift,
   Phone,
   ShieldCheck,
 } from "lucide-react";
@@ -58,22 +60,62 @@ export default function LoginPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
+  const [referralCode, setReferralCode] = useState("");
+  const [referralMessage, setReferralMessage] = useState("");
+  const [referralValid, setReferralValid] = useState(false);
+  const [validatingReferral, setValidatingReferral] = useState(false);
 
   const redirectAfterLogin = () => {
     const params = new URLSearchParams(window.location.search);
     router.push(params.get("redirect") || "/student/dashboard");
   };
 
+  const finishLoginWithReferral = async (student: { name: string; email: string; mobile?: string; stateId?: number; stateName?: string; provider?: "password" | "google" | "otp" }) => {
+    let referral = referralFromStudentPayload(getStudentProfile(student.email) || {});
+
+    if (referralCode.trim() && !referral.referral_code) {
+      try {
+        const applied = await applyStudentReferral(student.email, referralCode.trim());
+        referral = referralFromStudentPayload(applied);
+      } catch (referralError) {
+        setError(referralError instanceof Error ? referralError.message : "Referral code apply nahi ho paya.");
+        return;
+      }
+    }
+
+    saveStudentProfile({
+      name: student.name,
+      email: student.email,
+      mobile: student.mobile,
+      stateId: student.stateId,
+      stateName: student.stateName,
+      provider: student.provider || "google",
+      mobileVerified: true,
+      ...referral,
+    });
+
+    loginStudent({
+      name: student.name,
+      email: student.email,
+      mobile: student.mobile,
+      stateId: student.stateId,
+      stateName: student.stateName,
+      provider: student.provider || "google",
+      ...referral,
+    });
+
+    redirectAfterLogin();
+  };
+
   const finishGoogleLogin = (student: GoogleStudent) => {
     const profile = getStudentProfile(student.email);
     if (profile?.mobileVerified) {
-      loginStudent({
+      void finishLoginWithReferral({
         name: profile.name || student.name,
         email: profile.email,
         mobile: profile.mobile,
         provider: "google",
       });
-      redirectAfterLogin();
       return;
     }
 
@@ -83,8 +125,14 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    const redirect = new URLSearchParams(window.location.search).get("redirect");
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get("redirect");
     setRegisterHref(redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : "/register");
+
+    const ref = params.get("ref");
+    if (ref) {
+      setReferralCode(ref.toUpperCase());
+    }
 
     if (!GOOGLE_CLIENT_ID) return;
 
@@ -112,6 +160,37 @@ export default function LoginPage() {
     script.onload = loadGoogle;
     document.head.appendChild(script);
   }, []);
+
+  const checkReferralCode = async () => {
+    const code = referralCode.trim();
+    if (!code) {
+      setReferralValid(false);
+      setReferralMessage("");
+      return;
+    }
+
+    setValidatingReferral(true);
+    setReferralMessage("");
+    const result = await validateReferralCode(code);
+    setValidatingReferral(false);
+
+    if (!result.valid) {
+      setReferralValid(false);
+      setReferralMessage(result.message);
+      return;
+    }
+
+    setReferralValid(true);
+    setReferralMessage(`${result.referral.discount_label} discount milega.`);
+  };
+
+  useEffect(() => {
+    if (!referralCode.trim()) return;
+    const timer = window.setTimeout(() => {
+      void checkReferralCode();
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [referralCode]);
 
   const startMobileOtpLogin = (mobileNumber: string) => {
     const cleanedMobile = mobileNumber.replace(/\D/g, "").slice(-10);
@@ -160,13 +239,12 @@ export default function LoginPage() {
       mobileVerified: true,
     });
 
-    loginStudent({
+    void finishLoginWithReferral({
       name: profile.name,
       email: profile.email,
       mobile: profile.mobile,
       provider: "google",
     });
-    redirectAfterLogin();
   };
 
   return (
@@ -183,7 +261,7 @@ export default function LoginPage() {
             <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[#f7d85a] ring-1 ring-white/15">
               <ShieldCheck size={14} /> Student Login
             </span>
-            <h1 className="mt-6 text-[38px] font-extrabold leading-tight tracking-[-0.05em] sm:text-[58px]">
+            <h1 className="mt-6 text-[32px] font-extrabold leading-tight tracking-[-0.05em] sm:text-[48px]">
               Continue your banking exam preparation.
             </h1>
             <p className="mt-5 max-w-xl text-[16px] leading-8 text-white/72">
@@ -209,7 +287,7 @@ export default function LoginPage() {
             <>
               <div>
                 <div className="inline-flex rounded-full bg-[#050808] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.2em] text-[#f5c518] shadow-lg shadow-black/10">Welcome Back</div>
-                <h2 className="mt-7 text-4xl font-black tracking-[-0.05em] text-[#050808] sm:text-5xl">Login to LMS</h2>
+                <h2 className="mt-7 text-3xl font-black tracking-[-0.05em] text-[#050808] sm:text-4xl">Login to LMS</h2>
                 <p className="mt-4 text-[15px] font-semibold leading-7 text-[#4c4f5d]">Use Gmail or mobile OTP to access your student account.</p>
               </div>
 
@@ -240,6 +318,20 @@ export default function LoginPage() {
                 }}
               >
                 <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
+                  Referral Code (Optional)
+                  <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
+                    <Gift size={18} className="text-[#7d8799]" />
+                    <input value={referralCode} onChange={(event) => setReferralCode(event.target.value.toUpperCase())} className="w-full bg-transparent text-sm font-semibold uppercase text-[#111827] outline-none placeholder:normal-case placeholder:text-[#98a2b3]" placeholder="Affiliate referral code" />
+                  </span>
+                </label>
+
+                {!validatingReferral && referralMessage && (
+                  <p className={`rounded-2xl px-4 py-3 text-xs font-bold leading-6 ${referralValid ? "bg-[#ecfdf3] text-[#027a48]" : "bg-[#fff8d6] text-[#7a5b00]"}`}>
+                    {referralMessage}
+                  </p>
+                )}
+
+                <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
                   Mobile Number
                   <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
                     <Phone size={18} className="text-[#7d8799]" />
@@ -258,7 +350,7 @@ export default function LoginPage() {
                 <ArrowLeft size={16} /> Back to Login
               </button>
               <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f0a500]">Mobile Verification</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-[#172a69]">Verify Mobile OTP</h2>
+              <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-[#172a69]">Verify Mobile OTP</h2>
               <div className="mt-4 rounded-2xl bg-[#f8fafc] p-4 ring-1 ring-[#dfe5ef]">
                 <p className="text-sm font-bold text-[#111827]">{pendingStudent.name}</p>
                 <p className="mt-1 text-sm font-semibold text-[#667085]">{pendingStudent.email}</p>

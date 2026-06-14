@@ -45,7 +45,7 @@ export default function MockTestsPage() {
         <div className="mx-auto flex max-w-7xl flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#ffd21f]">Online Test Series</p>
-            <h1 className="mt-3 text-[34px] font-extrabold tracking-[-0.04em] text-white sm:text-[46px]">Mock Test Series</h1>
+            <h1 className="mt-3 text-[28px] font-extrabold tracking-[-0.04em] text-white sm:text-[38px]">Mock Test Series</h1>
             <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-white/70">
               Explore exam-wise mock test series designed to help you practice with the latest pattern, improve speed and accuracy, review your performance, and prepare confidently for competitive exams.
             </p>
@@ -89,7 +89,7 @@ function SeriesGroup({ title, categories }: { title: string; categories: MockCat
 
   return (
     <section>
-      <h2 className="mb-5 text-[26px] font-extrabold tracking-[-0.03em] text-black">{title}</h2>
+      <h2 className="mb-5 text-[22px] font-extrabold tracking-[-0.03em] text-black">{title}</h2>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {categories.map((category) => (
           <SeriesCard key={category.id} category={category} />

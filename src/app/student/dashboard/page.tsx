@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PurchasedCoursesList } from "@/components/student/PurchasedCoursesList";
 import {
   ArrowRight,
   Award,
@@ -64,36 +65,6 @@ const metricTiles = [
   { label: "Tests Taken", value: "18", helper: "4 pending mocks", icon: Target, tone: "from-[#0f9f78] to-[#16c79a]", glow: "shadow-emerald-100" },
   { label: "Study Streak", value: "14d", helper: "Keep it going", icon: Flame, tone: "from-[#f0a500] to-[#ffcf33]", glow: "shadow-amber-100" },
   { label: "Best Rank", value: "#5", helper: "Top 2% nationally", icon: Trophy, tone: "from-[#6d5dfc] to-[#9b7bff]", glow: "shadow-indigo-100" },
-];
-
-const courses = [
-  {
-    title: "Banking Foundation Programme",
-    teacher: "KR Faculty Team",
-    tag: "Continue",
-    lessons: "122 / 156 lessons",
-    time: "42h watched",
-    progress: 78,
-    gradient: "from-[#20327c] via-[#2549b8] to-[#1aa7a1]",
-  },
-  {
-    title: "SBI PO Prelims Crash Course",
-    teacher: "Karan Rajput",
-    tag: "Live Batch",
-    lessons: "38 / 64 lessons",
-    time: "18h watched",
-    progress: 59,
-    gradient: "from-[#0f9f78] via-[#23b889] to-[#f5c518]",
-  },
-  {
-    title: "RBI Grade B Current Affairs",
-    teacher: "Priya Kumari",
-    tag: "New PDF",
-    lessons: "21 / 40 modules",
-    time: "9h read",
-    progress: 52,
-    gradient: "from-[#243580] via-[#6d5dfc] to-[#e8a800]",
-  },
 ];
 
 const schedule = [
@@ -226,7 +197,7 @@ export default function StudentDashboardPage() {
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[#f7d85a] ring-1 ring-white/15">
                   <CheckCircle2 size={14} /> Active Student
                 </span>
-                <h1 className="mt-5 text-[32px] font-extrabold leading-tight tracking-[-0.04em] sm:text-[44px]">
+                <h1 className="mt-5 text-[28px] font-extrabold leading-tight tracking-[-0.04em] sm:text-[36px]">
                   Welcome back, Arjun
                 </h1>
                 <p className="mt-3 max-w-xl text-[15px] leading-7 text-white/72">
@@ -247,7 +218,7 @@ export default function StudentDashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-bold text-[#7d8799]">Weekly Goal</p>
-                  <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.03em] text-[#172a69]">9h 45m / 12h</h2>
+                  <h2 className="mt-1 text-xl font-extrabold tracking-[-0.03em] text-[#172a69]">9h 45m / 12h</h2>
                 </div>
                 <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#fff8dc] text-[#c58a00]">
                   <Award size={22} />
@@ -294,36 +265,14 @@ export default function StudentDashboardPage() {
                 <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
                   <div>
                     <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#f0a500]">My Learning</p>
-                    <h2 className="mt-1 text-2xl font-extrabold tracking-[-0.03em] text-[#172a69]">Continue Courses</h2>
+                    <h2 className="mt-1 text-xl font-extrabold tracking-[-0.03em] text-[#172a69]">Continue Courses</h2>
                   </div>
-                  <a href="#" className="inline-flex items-center gap-1 text-sm font-extrabold text-[#172a69]">
+                  <a href="/student/courses" className="inline-flex items-center gap-1 text-sm font-extrabold text-[#172a69]">
                     View all <ChevronRight size={16} />
                   </a>
                 </div>
                 <div className="grid gap-5 lg:grid-cols-3">
-                  {courses.map((course) => (
-                    <article key={course.title} className="overflow-hidden rounded-[22px] border border-[#e5eaf2] bg-white shadow-[0_14px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(15,23,42,0.08)]">
-                      <div className={`relative h-32 bg-gradient-to-br ${course.gradient} p-4 text-white`}>
-                        <span className="rounded-full bg-white/16 px-3 py-1 text-xs font-extrabold backdrop-blur">{course.tag}</span>
-                        <BookOpen className="absolute bottom-4 right-4 text-white/80" size={42} />
-                      </div>
-                      <div className="p-5">
-                        <h3 className="min-h-[44px] text-[15px] font-extrabold leading-snug text-[#111827]">{course.title}</h3>
-                        <p className="mt-1 text-xs font-semibold text-[#7d8799]">by {course.teacher}</p>
-                        <div className="mt-4 flex flex-wrap gap-3 text-xs font-semibold text-[#7d8799]">
-                          <span className="inline-flex items-center gap-1"><BookOpen size={13} /> {course.lessons}</span>
-                          <span className="inline-flex items-center gap-1"><Clock3 size={13} /> {course.time}</span>
-                        </div>
-                        <div className="mt-4 flex items-center justify-between text-xs font-bold">
-                          <span className="text-[#7d8799]">Progress</span>
-                          <span className="text-[#172a69]">{course.progress}%</span>
-                        </div>
-                        <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#edf1f7]">
-                          <div className="h-full rounded-full bg-[#172a69]" style={{ width: `${course.progress}%` }} />
-                        </div>
-                      </div>
-                    </article>
-                  ))}
+                  <PurchasedCoursesList compact />
                 </div>
               </div>
 

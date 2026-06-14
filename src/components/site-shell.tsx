@@ -74,7 +74,7 @@ export function SectionHeader({ eyebrow, title, text }: { eyebrow: string; title
   return (
     <div className="mx-auto mb-12 max-w-4xl text-center">
       <p className="text-xs font-black uppercase tracking-[0.24em] text-[#9c7411]">{eyebrow}</p>
-      <h2 className="font-display mt-3 text-4xl font-black tracking-tight text-black sm:text-5xl">{title}</h2>
+      <h2 className="font-display mt-3 text-3xl font-black tracking-tight text-black sm:text-4xl">{title}</h2>
       {text ? <p className="mt-4 text-base leading-7 text-black/62">{text}</p> : null}
     </div>
   );

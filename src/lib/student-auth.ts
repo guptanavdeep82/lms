@@ -10,6 +10,10 @@ export type StudentSession = {
   stateId?: number;
   stateName?: string;
   provider?: "password" | "google" | "otp";
+  referralCode?: string | null;
+  referralDiscountType?: "percentage" | "fixed" | null;
+  referralDiscountValue?: number | null;
+  referralDiscountLabel?: string | null;
   loggedInAt: string;
 };
 
@@ -20,6 +24,10 @@ export type StudentLoginInput = string | {
   stateId?: number;
   stateName?: string;
   provider?: StudentSession["provider"];
+  referralCode?: string | null;
+  referralDiscountType?: "percentage" | "fixed" | null;
+  referralDiscountValue?: number | null;
+  referralDiscountLabel?: string | null;
 };
 
 export type StudentProfile = {
@@ -30,6 +38,10 @@ export type StudentProfile = {
   stateName?: string;
   provider?: StudentSession["provider"];
   mobileVerified?: boolean;
+  referralCode?: string | null;
+  referralDiscountType?: "percentage" | "fixed" | null;
+  referralDiscountValue?: number | null;
+  referralDiscountLabel?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -102,6 +114,10 @@ export function loginStudent(input: StudentLoginInput) {
     stateId: typeof input === "string" ? undefined : input.stateId,
     stateName: typeof input === "string" ? undefined : input.stateName,
     provider: typeof input === "string" ? "password" : input.provider || "password",
+    referralCode: typeof input === "string" ? undefined : input.referralCode,
+    referralDiscountType: typeof input === "string" ? undefined : input.referralDiscountType,
+    referralDiscountValue: typeof input === "string" ? undefined : input.referralDiscountValue,
+    referralDiscountLabel: typeof input === "string" ? undefined : input.referralDiscountLabel,
     loggedInAt: new Date().toISOString(),
   };
 

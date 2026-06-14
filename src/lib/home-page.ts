@@ -56,6 +56,10 @@ export type HomeVideoItem = {
 };
 
 export function homePageApiUrl() {
+  if (typeof window !== "undefined") {
+    return "/api/home-page";
+  }
+
   return `${publicBackendBaseUrl}/api/home-page`;
 }
 

@@ -1,17 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Bell, CalendarDays, CheckCircle2, Clock3, Filter, MonitorPlay, PlayCircle, Radio, Search, Users, Video } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
-
-const liveSessions = [
-  { title: "Reasoning Speed Booster", faculty: "Karan Rajput", time: "Today, 7:00 PM", duration: "90 min", status: "live", subject: "reasoning", type: "live", students: 420 },
-  { title: "Quant Doubt Solving", faculty: "Rohit Sharma", time: "Tomorrow, 8:00 PM", duration: "75 min", status: "scheduled", subject: "quant", type: "live", students: 310 },
-  { title: "Banking Awareness Weekly", faculty: "Priya Kumari", time: "Friday, 6:30 PM", duration: "60 min", status: "scheduled", subject: "gk", type: "live", students: 260 },
-  { title: "English Error Detection Class", faculty: "Ankita Mehra", time: "Saturday, 7:30 PM", duration: "80 min", status: "scheduled", subject: "english", type: "live", students: 290 },
-  { title: "SBI PO Prelims Strategy Replay", faculty: "Karan Rajput", time: "Replay Available", duration: "55 min", status: "replay", subject: "reasoning", type: "recorded", students: 740 },
-  { title: "DI Practice Marathon Replay", faculty: "Rohit Sharma", time: "Replay Available", duration: "70 min", status: "replay", subject: "quant", type: "recorded", students: 680 },
-];
+import { LiveClassActionButton } from "@/components/live-classes/LiveClassActionButton";
+import {
+  fetchLiveSessions,
+  formatLiveSessionTime,
+  liveSessionStatusLabel,
+  type LiveClassSessionItem,
+} from "@/lib/live-classes";
+import { getStudentSession } from "@/lib/student-auth";
 
 const filters = {
   status: [
@@ -39,7 +38,7 @@ const styles = `
 .live-hero{background:#050808;color:#fff;padding:42px 5%}
 .live-hero-inner{max-width:1220px;margin:0 auto;display:flex;align-items:end;justify-content:space-between;gap:24px}
 .live-kicker{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,210,31,.34);border-radius:999px;background:rgba(255,210,31,.08);color:#ffd21f;padding:8px 14px;font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.16em}
-.live-hero h1{margin:16px 0 10px;font-size:clamp(34px,4vw,54px);line-height:1;font-weight:950;letter-spacing:0}
+.live-hero h1{margin:16px 0 10px;font-size:clamp(28px,3.2vw,44px);line-height:1;font-weight:950;letter-spacing:0}
 .live-hero p{max-width:690px;color:rgba(255,255,255,.7);font-size:15px;line-height:1.75}
 .hero-live-card{min-width:280px;border:1px solid rgba(255,210,31,.3);border-radius:14px;background:rgba(255,255,255,.08);padding:16px}
 .hero-live-card strong{display:block;font-size:18px}.hero-live-card span{display:block;margin-top:5px;color:rgba(255,255,255,.64);font-size:12px;font-weight:800}
@@ -58,29 +57,47 @@ const styles = `
 .play-icon{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#ffd21f;color:#050808}
 .class-body{padding:16px}.class-body h2{margin:0;font-size:20px;font-weight:950;line-height:1.2}.class-body p{margin:8px 0 0;color:#6f6b5c;font-size:13px;line-height:1.55}
 .class-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.class-meta span{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#fff4bd;color:#6b4d00;padding:7px 9px;font-size:11px;font-weight:900}
-.class-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #efe5bd;margin-top:16px;padding-top:14px}.class-footer a{display:inline-flex;height:40px;align-items:center;justify-content:center;border-radius:9px;background:#050808;color:#ffd21f;padding:0 14px;text-decoration:none;font-size:13px;font-weight:950}.class-footer small{color:#7b725c;font-weight:900}
+.class-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #efe5bd;margin-top:16px;padding-top:14px}.class-footer small{color:#7b725c;font-weight:900}
+.live-action-btn{display:inline-flex;height:40px;align-items:center;justify-content:center;gap:8px;border-radius:9px;background:#050808;color:#ffd21f;padding:0 14px;border:none;text-decoration:none;font-size:13px;font-weight:950;cursor:pointer;width:100%}
+.live-action-error{margin:0;color:#b42318;font-size:11px;font-weight:800}
+.price-tag{display:inline-flex;border-radius:999px;background:#050808;color:#ffd21f;padding:4px 8px;font-size:10px;font-weight:900;margin-left:6px}
 .empty-state{grid-column:1/-1;border:1px dashed #c7b26b;border-radius:14px;background:#fffdf3;padding:34px;text-align:center;color:#6b4d00;font-weight:900}
 .info-strip{margin-top:24px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.info-card{border:1px solid #dfcf97;border-radius:14px;background:#fffdf3;padding:16px}.info-card svg{color:#c79a00}.info-card h3{margin:10px 0 6px;font-size:15px;font-weight:950}.info-card p{margin:0;color:#6f6b5c;font-size:13px;line-height:1.55}
 @media(max-width:980px){.live-hero-inner{display:block}.hero-live-card{margin-top:22px}.live-layout{grid-template-columns:1fr}.filter-sidebar{position:static}.class-grid{grid-template-columns:1fr}.info-strip{grid-template-columns:1fr}}
-@media(max-width:640px){.live-hero,.live-wrap{padding-inline:4%}.search-row{display:block}.result-count{display:inline-block;margin-top:10px}.class-footer{display:block}.class-footer a{width:100%;margin-top:10px}}
+@media(max-width:640px){.live-hero,.live-wrap{padding-inline:4%}.search-row{display:block}.result-count{display:inline-block;margin-top:10px}.class-footer{display:block}.class-footer .live-action-btn{margin-top:10px}}
 `;
 
 export default function LiveClassesPage() {
+  const [liveSessions, setLiveSessions] = useState<LiveClassSessionItem[]>([]);
   const [status, setStatus] = useState("all");
   const [subject, setSubject] = useState("all");
   const [type, setType] = useState("all");
   const [search, setSearch] = useState("");
 
+  const loadSessions = useCallback(() => {
+    const email = getStudentSession()?.email;
+    fetchLiveSessions(email).then(setLiveSessions);
+  }, []);
+
+  useEffect(() => {
+    loadSessions();
+  }, [loadSessions]);
+
+  const featuredSession = liveSessions.find((session) => session.display_status === "live") ?? liveSessions[0];
+
   const filteredSessions = useMemo(() => {
     const query = search.trim().toLowerCase();
     return liveSessions.filter((session) => {
-      if (status !== "all" && session.status !== status) return false;
-      if (subject !== "all" && session.subject !== subject) return false;
-      if (type !== "all" && session.type !== type) return false;
-      if (query && !`${session.title} ${session.faculty} ${session.subject}`.toLowerCase().includes(query)) return false;
+      const sessionSubject = session.course.subject || "general";
+      const sessionType = session.display_status === "replay" ? "recorded" : "live";
+
+      if (status !== "all" && session.display_status !== status) return false;
+      if (subject !== "all" && sessionSubject !== subject) return false;
+      if (type !== "all" && sessionType !== type) return false;
+      if (query && !`${session.title} ${session.faculty_name} ${session.course.title}`.toLowerCase().includes(query)) return false;
       return true;
     });
-  }, [search, status, subject, type]);
+  }, [liveSessions, search, status, subject, type]);
 
   const clearFilters = () => {
     setStatus("all");
@@ -99,11 +116,15 @@ export default function LiveClassesPage() {
           <div>
             <span className="live-kicker"><Radio size={15} /> Live Classes</span>
             <h1>Live Streaming Classes</h1>
-            <p>Watch live classes, join upcoming sessions, and replay completed sessions from your student dashboard.</p>
+            <p>Join Zoom live classes instantly. Free classes open after login. Paid classes unlock after course purchase. Recordings auto-save after class ends.</p>
           </div>
           <div className="hero-live-card">
-            <strong>Today at 7:00 PM</strong>
-            <span>Reasoning Speed Booster · Karan Rajput</span>
+            <strong>{featuredSession ? formatLiveSessionTime(featuredSession.scheduled_at) : "Schedule available soon"}</strong>
+            <span>
+              {featuredSession
+                ? `${featuredSession.title} · ${featuredSession.faculty_name || featuredSession.course.title}`
+                : "Admin can schedule sessions from Live Class Sessions"}
+            </span>
           </div>
         </div>
       </section>
@@ -120,44 +141,57 @@ export default function LiveClassesPage() {
         <div className="live-layout">
           <aside className="filter-sidebar">
             <div className="filter-head"><Filter size={20} /> Filters</div>
-
             <FilterGroup title="Status" options={filters.status} value={status} onChange={setStatus} />
             <FilterGroup title="Subject" options={filters.subject} value={subject} onChange={setSubject} />
             <FilterGroup title="Class Type" options={filters.type} value={type} onChange={setType} />
-
             <button className="clear-btn" type="button" onClick={clearFilters}>Clear Filters</button>
           </aside>
 
           <div>
             <div className="class-grid">
               {filteredSessions.map((session) => (
-                <article className="class-card" key={session.title}>
-                  <div className={`class-screen ${session.status}`} data-status={session.status === "live" ? "Live" : session.status}>
+                <article className="class-card" key={session.id}>
+                  <div className={`class-screen ${session.display_status}`} data-status={liveSessionStatusLabel(session.display_status)}>
                     <div className="play-icon"><PlayCircle size={30} fill="currentColor" /></div>
                   </div>
                   <div className="class-body">
-                    <h2>{session.title}</h2>
-                    <p>{session.faculty} · {session.time}</p>
+                    <h2>
+                      {session.title}
+                      {session.course.is_free ? (
+                        <span className="price-tag">FREE</span>
+                      ) : (
+                        <span className="price-tag">₹{session.course.effective_price}</span>
+                      )}
+                    </h2>
+                    <p>{session.faculty_name || session.course.exam_type || "KR Logics Faculty"} · {formatLiveSessionTime(session.scheduled_at)}</p>
                     <div className="class-meta">
-                      <span><Clock3 size={14} /> {session.duration}</span>
-                      <span><Users size={14} /> {session.students} students</span>
-                      <span><Video size={14} /> {session.subject.toUpperCase()}</span>
+                      <span><Clock3 size={14} /> {session.duration_minutes} min</span>
+                      <span><CalendarDays size={14} /> {session.course.category || "Live"}</span>
+                      <span><Video size={14} /> {(session.course.subject || "general").toUpperCase()}</span>
                     </div>
                     <div className="class-footer">
-                      <small>{session.type === "recorded" ? "Replay available" : "Attendance enabled"}</small>
-                      <a href="/login">{session.status === "replay" ? "Watch Replay" : "Join Class"}</a>
+                      <small>
+                        {session.has_recording
+                          ? "Recording available"
+                          : session.display_status === "live"
+                            ? "Live now on Zoom"
+                            : session.course.is_free
+                              ? "Free after login"
+                              : "Purchase required"}
+                      </small>
+                      <LiveClassActionButton session={session} onAccessChange={loadSessions} />
                     </div>
                   </div>
                 </article>
               ))}
 
-              {!filteredSessions.length && <div className="empty-state">No live classes found for selected filters.</div>}
+              {!filteredSessions.length && <div className="empty-state">No live classes found. Schedule sessions from admin panel.</div>}
             </div>
 
             <div className="info-strip">
-              <div className="info-card"><Bell size={24} /><h3>Class Reminders</h3><p>Students get alerts before scheduled sessions.</p></div>
-              <div className="info-card"><MonitorPlay size={24} /><h3>Replay Access</h3><p>Completed classes can be watched again anytime.</p></div>
-              <div className="info-card"><CheckCircle2 size={24} /><h3>Attendance</h3><p>Track attendance for every live class.</p></div>
+              <div className="info-card"><Bell size={24} /><h3>Zoom Live Join</h3><p>Students join directly on Zoom after login and access check.</p></div>
+              <div className="info-card"><MonitorPlay size={24} /><h3>Auto Recording</h3><p>Cloud recording syncs automatically when Zoom class ends.</p></div>
+              <div className="info-card"><CheckCircle2 size={24} /><h3>Free / Paid Access</h3><p>Free courses join after login. Paid courses need purchase first.</p></div>
             </div>
           </div>
         </div>

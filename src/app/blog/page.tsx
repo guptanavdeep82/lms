@@ -16,7 +16,7 @@ export default function BlogPage() {
           {blogs.map((blog) => (
             <Link key={blog.slug} href={`/blog/${blog.slug}`} className="rounded-md border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#9c7411]">{blog.category}</p>
-              <h2 className="mt-4 text-2xl font-black leading-tight">{blog.title}</h2>
+              <h2 className="mt-4 text-xl font-black leading-tight">{blog.title}</h2>
               <p className="mt-4 text-sm text-black/55">{blog.date} | {blog.read}</p>
               <span className="mt-6 inline-flex items-center gap-2 text-sm font-black">Read Article <ArrowRight size={16} /></span>
             </Link>

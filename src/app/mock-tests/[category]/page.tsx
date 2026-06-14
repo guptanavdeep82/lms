@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { BarChart3, Check, ChevronRight, Clock3, FileText, Languages, Loader2, LockKeyhole, PlayCircle, ShieldCheck, Sparkles, Trophy } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
+import { RazorpayCheckoutButton } from "@/components/payments/RazorpayCheckoutButton";
+import { fetchStudentPurchases, hasPurchase } from "@/lib/checkout";
 import { hasCompletedMock } from "@/lib/mock-results";
-import { isStudentLoggedIn } from "@/lib/student-auth";
+import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
 
 const tabs = [
@@ -23,6 +25,7 @@ export default function MockSeriesDetailPage() {
   const [activeTab, setActiveTab] = useState("full_length");
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const [categoryPurchased, setCategoryPurchased] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -49,6 +52,18 @@ export default function MockSeriesDetailPage() {
     };
   }, [categorySlug]);
 
+  useEffect(() => {
+    if (!category) return;
+    const session = getStudentSession();
+    if (!session?.email) return;
+
+    fetchStudentPurchases(session.email).then((purchases) => {
+      setCategoryPurchased(hasPurchase(purchases, "mock_category", category.id));
+    });
+  }, [category]);
+
+  const isTestLocked = (test: MockTest) => test.is_locked && !categoryPurchased;
+
   const visibleTests = useMemo(() => {
     return (category?.tests ?? []).filter((test) => test.test_type === activeTab);
   }, [activeTab, category]);
@@ -57,14 +72,14 @@ export default function MockSeriesDetailPage() {
     const tests = category?.tests ?? [];
     return {
       total: tests.length,
-      open: tests.filter((test) => !test.is_locked && test.questions_count > 0).length,
-      locked: tests.filter((test) => test.is_locked).length,
+      open: tests.filter((test) => !isTestLocked(test) && test.questions_count > 0).length,
+      locked: tests.filter((test) => isTestLocked(test)).length,
       questions: tests.reduce((sum, test) => sum + test.questions_count, 0),
     };
-  }, [category]);
+  }, [category, categoryPurchased]);
 
   const startTest = (test: MockTest) => {
-    if (test.is_locked || test.questions_count === 0) return;
+    if (isTestLocked(test) || test.questions_count === 0) return;
 
     const target = `/student/mock-tests/${test.slug}/instructions`;
     if (!isStudentLoggedIn()) {
@@ -83,7 +98,7 @@ export default function MockSeriesDetailPage() {
     return (
       <main className="grid min-h-screen place-items-center bg-[#f7f7f7] px-4 text-center">
         <div>
-          <h1 className="text-2xl font-extrabold text-black">Series not found</h1>
+          <h1 className="text-xl font-extrabold text-black">Series not found</h1>
           <Link href="/mock-tests" className="mt-4 inline-flex h-11 items-center rounded-full bg-black px-5 text-sm font-extrabold text-white">Back to mock tests</Link>
         </div>
       </main>
@@ -118,7 +133,7 @@ export default function MockSeriesDetailPage() {
               </span>
               <div>
                 <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#ffd21f]">Online Mock Test Series</p>
-                <h1 className="mt-1 text-[30px] font-extrabold tracking-[-0.04em] sm:text-[42px]">{category.name}</h1>
+                <h1 className="mt-1 text-[26px] font-extrabold tracking-[-0.04em] sm:text-[35px]">{category.name}</h1>
               </div>
             </div>
             <p className="mt-5 max-w-3xl text-sm font-semibold leading-7 text-white/72">
@@ -184,7 +199,7 @@ export default function MockSeriesDetailPage() {
 
           <div className="mt-4 grid gap-3">
               {visibleTests.map((test) => (
-                <TestRow key={test.id} test={test} completed={Boolean(completed[test.slug])} onStart={() => startTest(test)} />
+                <TestRow key={test.id} test={test} locked={isTestLocked(test)} completed={Boolean(completed[test.slug])} onStart={() => startTest(test)} />
               ))}
               {!visibleTests.length && (
                 <div className="rounded-lg border border-dashed border-[#d8dbe1] bg-white p-8 text-center text-sm font-bold text-[#6f7580]">
@@ -209,7 +224,18 @@ export default function MockSeriesDetailPage() {
               <span className="text-2xl font-extrabold text-black">₹{price?.sale_price ?? price?.price ?? 0}</span>
               <p className="mt-1 text-xs font-bold text-[#16a34a]">You save ₹300</p>
             </div>
-            <button className="mt-4 h-11 w-full rounded-lg bg-[#d6a900] text-sm font-extrabold text-black shadow-[0_10px_22px_rgba(214,169,0,0.22)]">Buy Now</button>
+            <RazorpayCheckoutButton
+              itemType="mock_category"
+              itemId={category.id}
+              itemTitle={`${category.name} Test Series`}
+              price={price?.sale_price ?? price?.price ?? 0}
+              successRedirect={`/mock-tests/${category.slug}`}
+              label="Buy Now"
+              purchasedLabel="Series Purchased"
+              alreadyPurchased={categoryPurchased}
+              onPurchased={() => setCategoryPurchased(true)}
+              className="mt-4 h-11 w-full rounded-lg bg-[#d6a900] text-sm font-extrabold text-black shadow-[0_10px_22px_rgba(214,169,0,0.22)]"
+            />
             <div className="mt-4 grid gap-3 border-t border-[#ececec] pt-4 text-xs font-bold text-[#6a707c]">
               <div className="flex items-center justify-between"><span>Total Tests</span><b className="text-black">{summary.total}</b></div>
               <div className="flex items-center justify-between"><span>Available Now</span><b className="text-black">{summary.open}</b></div>
@@ -221,7 +247,7 @@ export default function MockSeriesDetailPage() {
   );
 }
 
-function TestRow({ test, completed, onStart }: { test: MockTest; completed: boolean; onStart: () => void }) {
+function TestRow({ test, locked, completed, onStart }: { test: MockTest; locked: boolean; completed: boolean; onStart: () => void }) {
   return (
     <article className="rounded-lg border border-[#d9dde5] bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
       <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
@@ -240,7 +266,7 @@ function TestRow({ test, completed, onStart }: { test: MockTest; completed: bool
             </div>
           </div>
         </div>
-        {test.is_locked ? (
+        {locked ? (
           <span className="inline-flex h-9 items-center justify-center gap-1 rounded-lg bg-[#fff8dc] px-4 text-xs font-extrabold text-[#8a6500]">
             <LockKeyhole size={13} /> Locked
           </span>

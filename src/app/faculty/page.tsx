@@ -1,44 +1,8 @@
 import { BookOpen, CheckCircle2, Clock, Star, Trophy, Users } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
+import { fetchHomePageData, type HomePageFaculty } from "@/lib/home-page";
 
-const faculty = [
-  {
-    initials: "KR",
-    name: "Karan Rajput",
-    role: "Founder & Director",
-    focus: "Reasoning, Quant, Exam Strategy",
-    experience: "10+ years",
-    result: "420+ selections mentored",
-    tone: "bg-[#1b2e6b]",
-  },
-  {
-    initials: "AM",
-    name: "Ankita Mehra",
-    role: "English Expert",
-    focus: "Reading, Grammar, Descriptive English",
-    experience: "8 years",
-    result: "98 percentile student batches",
-    tone: "bg-emerald-600",
-  },
-  {
-    initials: "RS",
-    name: "Rohit Sharma",
-    role: "Quant Specialist",
-    focus: "DI, Arithmetic, Speed Maths",
-    experience: "9 years",
-    result: "300+ rank improvers",
-    tone: "bg-blue-600",
-  },
-  {
-    initials: "PK",
-    name: "Priya Kumari",
-    role: "Banking & GK Mentor",
-    focus: "Current Affairs, Banking Awareness",
-    experience: "7 years",
-    result: "Daily CA program lead",
-    tone: "bg-orange-600",
-  },
-];
+export const dynamic = "force-dynamic";
 
 const strengths = [
   "Live doubt classes every week",
@@ -47,7 +11,35 @@ const strengths = [
   "Topic-wise revision strategy",
 ];
 
-export default function FacultyPage() {
+const facultyTones = ["bg-[#1b2e6b]", "bg-emerald-600", "bg-blue-600", "bg-orange-600", "bg-violet-600", "bg-amber-600"];
+
+function initialsFromName(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "KR";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
+}
+
+function FacultyAvatar({ faculty, tone }: { faculty: HomePageFaculty; tone: string }) {
+  if (faculty.image_url) {
+    return (
+      <div className={`absolute left-1/2 top-14 size-20 -translate-x-1/2 overflow-hidden rounded-full border-4 border-white shadow-lg ${tone}`}>
+        <img src={faculty.image_url} alt={faculty.title} className="h-full w-full object-cover" />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`absolute left-1/2 top-14 grid size-20 -translate-x-1/2 place-items-center rounded-full border-4 border-white ${tone} font-rajdhani text-3xl font-bold text-white shadow-lg`}>
+      {initialsFromName(faculty.title)}
+    </div>
+  );
+}
+
+export default async function FacultyPage() {
+  const homeData = await fetchHomePageData();
+  const faculties = homeData?.faculties ?? [];
+
   return (
     <main className="min-h-screen bg-[#f8f9fc] text-slate-950">
       <PublicHeader active="faculty" />
@@ -58,7 +50,7 @@ export default function FacultyPage() {
             <div className="mb-4 inline-flex rounded-full bg-[#fff9e0] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#b78600]">
               Expert Mentors
             </div>
-            <h1 className="font-rajdhani text-4xl font-bold leading-tight text-[#1b2e6b] sm:text-5xl lg:text-6xl lg:leading-[0.95]">
+            <h1 className="font-rajdhani text-3xl font-bold leading-tight text-[#1b2e6b] sm:text-4xl lg:text-5xl lg:leading-[0.95]">
               Learn From Faculty Who Know The Exam Inside Out
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-slate-600">
@@ -66,13 +58,13 @@ export default function FacultyPage() {
             </p>
             <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
               {[
-                ["35K+", "Doubts solved"],
+                [`${faculties.length || 0}+`, "Expert faculty"],
                 ["850+", "Selections"],
                 ["4.9/5", "Student rating"],
               ].map(([value, label]) => (
-                <div key={label} className="rounded-lg border border-slate-200 bg-[#f8f9fc] p-4">
-                  <div className="font-rajdhani text-3xl font-bold text-[#1b2e6b]">{value}</div>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</div>
+                <div key={label as string} className="rounded-lg border border-slate-200 bg-[#f8f9fc] p-4">
+                  <div className="font-rajdhani text-3xl font-bold text-[#1b2e6b]">{value as string}</div>
+                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label as string}</div>
                 </div>
               ))}
             </div>
@@ -105,43 +97,62 @@ export default function FacultyPage() {
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <div className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#e8a800]">Our Team</div>
-              <h2 className="font-rajdhani text-3xl font-bold text-[#1b2e6b] sm:text-4xl">Faculty Panel</h2>
+              <h2 className="font-rajdhani text-2xl font-bold text-[#1b2e6b] sm:text-3xl">Faculty Panel</h2>
             </div>
             <div className="flex w-fit items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm">
               <Star className="size-4 fill-[#f5c518] text-[#f5c518]" />
-              4.9 average teaching rating
+              {faculties.length ? `${faculties.length} active mentors` : "Faculty profiles loading from admin"}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-            {faculty.map((member) => (
-              <article key={member.name} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-                <div className="relative h-28 bg-gradient-to-br from-slate-100 to-slate-200">
-                  <div className={`absolute left-1/2 top-14 grid size-20 -translate-x-1/2 place-items-center rounded-full border-4 border-white ${member.tone} font-rajdhani text-3xl font-bold text-white shadow-lg`}>
-                    {member.initials}
-                  </div>
-                </div>
-                <div className="px-5 pb-5 pt-12 text-center">
-                  <h3 className="font-rajdhani text-2xl font-bold text-[#1b2e6b]">{member.name}</h3>
-                  <div className="mt-1 text-xs font-bold uppercase tracking-wide text-[#e8a800]">{member.role}</div>
-                  <p className="mt-3 min-h-12 text-sm leading-6 text-slate-600">{member.focus}</p>
-                  <div className="mt-4 grid grid-cols-2 gap-2 text-left">
-                    <div className="rounded-lg bg-[#f8f9fc] p-3">
-                      <Clock className="mb-1 size-4 text-[#1b2e6b]" />
-                      <div className="text-sm font-bold text-slate-900">{member.experience}</div>
-                      <div className="text-[10px] font-semibold uppercase text-slate-500">Experience</div>
+          {!faculties.length ? (
+            <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm font-semibold text-slate-500">
+              Abhi koi faculty admin panel se publish nahi hai. Home Page → Our Faculty se add karein.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+              {faculties.map((member, index) => {
+                const tone = facultyTones[index % facultyTones.length];
+                const focus = member.course_keywords.length
+                  ? member.course_keywords.join(", ")
+                  : "Banking exam preparation mentor";
+
+                return (
+                  <article key={member.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+                    <div className="relative h-28 bg-gradient-to-br from-slate-100 to-slate-200">
+                      <FacultyAvatar faculty={member} tone={tone} />
                     </div>
-                    <div className="rounded-lg bg-[#f8f9fc] p-3">
-                      <Users className="mb-1 size-4 text-[#1b2e6b]" />
-                      <div className="text-sm font-bold text-slate-900">Mentor</div>
-                      <div className="text-[10px] font-semibold uppercase text-slate-500">Support</div>
+                    <div className="px-5 pb-5 pt-12 text-center">
+                      <h3 className="font-rajdhani text-xl font-bold text-[#1b2e6b]">{member.title}</h3>
+                      <div className="mt-1 text-xs font-bold uppercase tracking-wide text-[#e8a800]">{member.designation}</div>
+                      <p className="mt-3 min-h-12 text-sm leading-6 text-slate-600">{focus}</p>
+                      <div className="mt-4 grid grid-cols-2 gap-2 text-left">
+                        <div className="rounded-lg bg-[#f8f9fc] p-3">
+                          <Clock className="mb-1 size-4 text-[#1b2e6b]" />
+                          <div className="text-sm font-bold text-slate-900">{member.experience?.trim() || "Experienced"}</div>
+                          <div className="text-[10px] font-semibold uppercase text-slate-500">Experience</div>
+                        </div>
+                        <div className="rounded-lg bg-[#f8f9fc] p-3">
+                          <Users className="mb-1 size-4 text-[#1b2e6b]" />
+                          <div className="text-sm font-bold text-slate-900">Mentor</div>
+                          <div className="text-[10px] font-semibold uppercase text-slate-500">Support</div>
+                        </div>
+                      </div>
+                      {member.course_keywords.length ? (
+                        <div className="mt-3 flex flex-wrap justify-center gap-2">
+                          {member.course_keywords.map((keyword) => (
+                            <span key={`${member.id}-${keyword}`} className="rounded-lg bg-[#fff9e0] px-3 py-2 text-xs font-bold text-[#8a6500]">
+                              {keyword}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
-                  </div>
-                  <div className="mt-3 rounded-lg bg-[#fff9e0] px-3 py-2 text-xs font-bold text-[#8a6500]">{member.result}</div>
-                </div>
-              </article>
-            ))}
-          </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -154,7 +165,7 @@ export default function FacultyPage() {
           ].map(([Icon, title, text]) => (
             <div key={title as string} className="rounded-xl border border-slate-200 p-6">
               <Icon className="mb-4 size-8 text-[#1b2e6b]" />
-              <h3 className="font-rajdhani text-2xl font-bold text-[#1b2e6b]">{title as string}</h3>
+              <h3 className="font-rajdhani text-xl font-bold text-[#1b2e6b]">{title as string}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">{text as string}</p>
             </div>
           ))}

@@ -10,7 +10,7 @@ export default function DashboardPage() {
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f7c843]">Student Dashboard</p>
-            <h1 className="mt-4 text-5xl font-black tracking-tight">Good evening, student</h1>
+            <h1 className="mt-4 text-4xl font-black tracking-tight">Good evening, student</h1>
             <p className="mt-3 text-white/62">Your courses, live classes, notes, mocks and discussions in one learning cockpit.</p>
           </div>
           <Link href="/courses" className="rounded-md bg-[#f7c843] px-5 py-3 text-sm font-black text-black">Buy Another Course</Link>
@@ -28,7 +28,7 @@ export default function DashboardPage() {
       <section className="mx-auto grid max-w-7xl gap-6 px-4 pb-16 sm:px-6 lg:grid-cols-[1fr_0.42fr] lg:px-8">
         <div className="rounded-md border border-black/10 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-black">Continue Watching</h2>
+            <h2 className="text-xl font-black">Continue Watching</h2>
             <PlayCircle className="text-[#9c7411]" />
           </div>
           <div className="mt-6 h-3 rounded-full bg-black/10"><div className="h-3 w-[68%] rounded-full bg-[#f7c843]" /></div>

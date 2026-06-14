@@ -8,24 +8,33 @@ import {
   FileText,
   PlayCircle,
   ShieldCheck,
-  ShoppingBag,
   Star,
   UsersRound,
   Video,
 } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
-import { courseCatalog, getCourseBySlug } from "@/lib/course-catalog";
+import { CoursePurchaseActions } from "@/components/payments/CoursePurchaseActions";
+import { fetchCourseBySlug, mapApiCourseToCatalogItem } from "@/lib/courses";
 
-export function generateStaticParams() {
-  return courseCatalog.map((course) => ({ slug: course.slug }));
+export const dynamic = "force-dynamic";
+
+function CourseImage({ src, alt }: { src: string; alt: string }) {
+  if (src.startsWith("http://") || src.startsWith("https://")) {
+    return <img src={src} alt={alt} className="h-full w-full object-cover" />;
+  }
+
+  return <Image src={src} alt={alt} fill className="object-cover" priority unoptimized />;
 }
 
 export default async function CourseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const course = getCourseBySlug(slug);
-  if (!course) notFound();
+  const payload = await fetchCourseBySlug(slug);
+  if (!payload?.course) notFound();
 
+  const course = mapApiCourseToCatalogItem(payload.course, payload.lessons);
   const isPdfCourse = course.courseType === "pdf";
+  const isLiveCourse = course.courseType === "live";
+  const courseTypeLabel = isPdfCourse ? "PDF Course" : isLiveCourse ? "Live Class Course" : "Video Course";
   const price = course.price === 0 ? "Free" : `Rs ${course.price.toLocaleString("en-IN")}`;
   const original = course.original ? `Rs ${course.original.toLocaleString("en-IN")}` : null;
 
@@ -38,18 +47,18 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           <div>
             <Link href="/courses" className="text-sm font-bold text-[#ffd21f]">← Back to courses</Link>
             <div className="mt-6 flex flex-wrap gap-2">
-              {[isPdfCourse ? "PDF Course" : "Video Course", course.category, course.exam, course.level, course.badge].filter(Boolean).map((item) => (
+              {[courseTypeLabel, course.category, course.exam, course.level, course.badge].filter(Boolean).map((item) => (
                 <span key={item} className="rounded-full border border-[#ffd21f]/25 bg-white/8 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#ffd21f]">
                   {item}
                 </span>
               ))}
             </div>
-            <h1 className="mt-5 max-w-4xl font-['Sora'] text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">{course.title}</h1>
+            <h1 className="mt-5 max-w-4xl font-['Sora'] text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">{course.title}</h1>
             <p className="mt-5 max-w-3xl text-base leading-8 text-white/70">{course.desc}</p>
 
             <div className="mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-              {[ 
-                [Clock3, isPdfCourse ? "Lifetime" : `${course.hours}+ hrs`, isPdfCourse ? "PDF access" : "Video content"],
+              {[
+                [Clock3, isPdfCourse ? "Lifetime" : isLiveCourse ? `${course.hours}+ hrs` : `${course.hours}+ hrs`, isPdfCourse ? "PDF access" : isLiveCourse ? "Live sessions" : "Video content"],
                 [FileText, `${course.tests}+`, "Tests"],
                 [UsersRound, course.students.toLocaleString("en-IN"), "Students"],
                 [Star, course.rating.toFixed(1), `${course.reviews} reviews`],
@@ -65,7 +74,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
           <aside className="overflow-hidden rounded-2xl border border-[#ffd21f]/20 bg-white p-3 text-[#050808] shadow-2xl shadow-black/30">
             <div className="relative h-72 overflow-hidden rounded-xl bg-[#f7f6ef]">
-              <Image src={course.image} alt={course.title} fill className="object-cover" priority />
+              <CourseImage src={course.image} alt={course.title} />
             </div>
             <div className="p-5">
               <div className="flex items-end justify-between gap-3">
@@ -79,19 +88,18 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                 <span className="rounded-full bg-[#fff8dc] px-3 py-1 text-xs font-extrabold text-[#050808]">Limited offer</span>
               </div>
 
-              <div className="mt-5 grid gap-3">
-                <Link href="/login" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#ffd21f] text-sm font-extrabold text-[#050808] transition hover:bg-[#ffe164]">
-                  <ShoppingBag className="size-4" /> Purchase Course
-                </Link>
-                <Link href="/register" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[#050808] text-sm font-extrabold text-[#050808] transition hover:bg-[#050808] hover:text-white">
-                  <PlayCircle className="size-4" /> {isPdfCourse ? "Register and Download Sample" : "Register and Preview"}
-                </Link>
-              </div>
+              <CoursePurchaseActions
+                courseId={payload.course.id}
+                courseTitle={course.title}
+                price={course.price}
+                isPdfCourse={isPdfCourse}
+                isLiveCourse={isLiveCourse}
+              />
 
               <div className="mt-5 grid gap-2 text-sm font-semibold text-slate-700">
                 <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Secure payment and student login</span>
                 <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Course access starts after purchase</span>
-                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> {isPdfCourse ? "Downloadable study notes included" : "Mock tests and notes included"}</span>
+                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> {isPdfCourse ? "Downloadable study notes included" : isLiveCourse ? "Live classes and replays included" : "Mock tests and notes included"}</span>
               </div>
             </div>
           </aside>
@@ -101,7 +109,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_360px] lg:px-8">
         <div className="grid gap-6">
           <article className="rounded-xl border border-[#ded9c8] bg-white p-6 shadow-sm">
-            <h2 className="font-['Sora'] text-3xl font-extrabold text-[#050808]">What you will learn</h2>
+            <h2 className="font-['Sora'] text-2xl font-extrabold text-[#050808]">What you will learn</h2>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {course.outcomes.map((item) => (
                 <div key={item} className="flex gap-3 rounded-lg bg-[#f7f6ef] p-4">
@@ -113,7 +121,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           </article>
 
           <article className="rounded-xl border border-[#ded9c8] bg-white p-6 shadow-sm">
-            <h2 className="font-['Sora'] text-3xl font-extrabold text-[#050808]">Course curriculum</h2>
+            <h2 className="font-['Sora'] text-2xl font-extrabold text-[#050808]">Course curriculum</h2>
             <div className="mt-6 grid gap-3">
               {course.curriculum.map((item, index) => (
                 <div key={item} className="flex items-center justify-between rounded-lg border border-[#ded9c8] p-4">
@@ -132,8 +140,8 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           <div className="rounded-xl border border-[#ded9c8] bg-white p-6 shadow-sm">
             <h3 className="font-['Sora'] text-xl font-extrabold text-[#050808]">This course includes</h3>
             <div className="mt-5 grid gap-4 text-sm font-semibold text-slate-700">
-              {[ 
-                [isPdfCourse ? FileText : Video, isPdfCourse ? "Downloadable PDF modules" : `${course.hours}+ hours recorded videos`],
+              {[
+                [isPdfCourse ? FileText : isLiveCourse ? Video : Video, isPdfCourse ? "Downloadable PDF modules" : isLiveCourse ? `${course.hours}+ hours live classes` : `${course.hours}+ hours recorded videos`],
                 [BookOpen, "Structured subject-wise learning"],
                 [FileText, isPdfCourse ? "Topic-wise notes and practice sheets" : "Downloadable notes and PDFs"],
                 [PlayCircle, `${course.tests}+ mock and practice tests`],
@@ -149,7 +157,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
           <div className="rounded-xl bg-[#050808] p-6 text-white">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#ffd21f]">Need Guidance?</p>
-            <h3 className="mt-3 font-['Sora'] text-2xl font-extrabold">Not sure this course is right?</h3>
+            <h3 className="mt-3 font-['Sora'] text-xl font-extrabold">Not sure this course is right?</h3>
             <p className="mt-3 text-sm leading-6 text-white/65">Talk to counselling team and pick the right batch, mock test pack and study plan.</p>
             <Link href="/contact" className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-lg bg-[#ffd21f] text-sm font-extrabold text-[#050808]">
               Contact Counsellor

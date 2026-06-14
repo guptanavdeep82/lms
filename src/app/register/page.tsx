@@ -6,11 +6,13 @@ import { useRouter } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
 import { loginStudent, saveStudentProfile } from "@/lib/student-auth";
 import { publicBackendBaseUrl } from "@/lib/mock-tests";
+import { applyStudentReferral, referralFromStudentPayload, validateReferralCode } from "@/lib/referral";
 import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
   GraduationCap,
+  Gift,
   MapPin,
   Phone,
   ShieldCheck,
@@ -68,6 +70,11 @@ export default function RegisterPage() {
   const [googleReady, setGoogleReady] = useState(false);
   const [states, setStates] = useState<StateOption[]>([]);
   const [stateId, setStateId] = useState("");
+  const [referralCode, setReferralCode] = useState("");
+  const [referralMessage, setReferralMessage] = useState("");
+  const [referralDiscountLabel, setReferralDiscountLabel] = useState("");
+  const [referralValid, setReferralValid] = useState(false);
+  const [validatingReferral, setValidatingReferral] = useState(false);
 
   const completeLogin = async (student: GoogleStudent, verifiedMobile: string) => {
     const selectedState = states.find((state) => String(state.id) === stateId);
@@ -87,39 +94,98 @@ export default function RegisterPage() {
           state_id: selectedState.id,
           provider: "google",
           mobile_verified: true,
+          referral_code: referralCode.trim() || undefined,
         }),
       });
 
+      const payload = await response.json().catch(() => ({})) as {
+        student?: {
+          referral_code?: string | null;
+          referral_discount_type?: "percentage" | "fixed" | null;
+          referral_discount_value?: number | null;
+          referral_discount_label?: string | null;
+        };
+        message?: string;
+        errors?: Record<string, string[]>;
+      };
+
       if (!response.ok) {
-        throw new Error("Student registration API failed.");
+        const referralError = payload.errors?.referral_code?.[0];
+        throw new Error(referralError || payload.message || "Student registration API failed.");
       }
-    } catch {
-      setError("Student data database me save nahi ho paya. Please backend API check karein.");
+
+      const referral = referralFromStudentPayload(payload.student || {});
+
+      const profile = saveStudentProfile({
+        name: student.name,
+        email: student.email,
+        mobile: verifiedMobile,
+        stateId: selectedState.id,
+        stateName: selectedState.name,
+        provider: "google",
+        mobileVerified: true,
+        ...referral,
+      });
+
+      loginStudent({
+        name: profile.name,
+        email: profile.email,
+        mobile: profile.mobile,
+        stateId: profile.stateId,
+        stateName: profile.stateName,
+        provider: "google",
+        ...referral,
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      router.push(params.get("redirect") || "/student/dashboard");
+    } catch (registerError) {
+      setError(registerError instanceof Error ? registerError.message : "Student data database me save nahi ho paya. Please backend API check karein.");
+      return;
+    }
+  };
+
+  const checkReferralCode = async () => {
+    const code = referralCode.trim();
+    if (!code) {
+      setReferralValid(false);
+      setReferralMessage("");
+      setReferralDiscountLabel("");
       return;
     }
 
-    const profile = saveStudentProfile({
-      name: student.name,
-      email: student.email,
-      mobile: verifiedMobile,
-      stateId: selectedState.id,
-      stateName: selectedState.name,
-      provider: "google",
-      mobileVerified: true,
-    });
+    setValidatingReferral(true);
+    setReferralMessage("");
+    const result = await validateReferralCode(code);
+    setValidatingReferral(false);
 
-    loginStudent({
-      name: profile.name,
-      email: profile.email,
-      mobile: profile.mobile,
-      stateId: profile.stateId,
-      stateName: profile.stateName,
-      provider: "google",
-    });
+    if (!result.valid) {
+      setReferralValid(false);
+      setReferralDiscountLabel("");
+      setReferralMessage(result.message);
+      return;
+    }
 
-    const params = new URLSearchParams(window.location.search);
-    router.push(params.get("redirect") || "/student/dashboard");
+    setReferralValid(true);
+    setReferralDiscountLabel(result.referral.discount_label);
+    setReferralMessage(result.referral.affiliate_name ? `${result.referral.affiliate_name} ka referral code valid hai.` : "Referral code valid hai.");
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      setReferralCode(ref.toUpperCase());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!referralCode.trim()) return;
+    const timer = window.setTimeout(() => {
+      void checkReferralCode();
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [referralCode]);
 
   useEffect(() => {
     fetch(`${publicBackendBaseUrl}/api/states`)
@@ -204,7 +270,7 @@ export default function RegisterPage() {
           {!pendingStudent ? (
             <>
               <div className="inline-flex rounded-full bg-[#050808] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.2em] text-[#f5c518] shadow-lg shadow-black/10">Student Registration</div>
-              <h1 className="mt-7 text-4xl font-black tracking-[-0.05em] text-[#050808] sm:text-5xl">Create Account</h1>
+              <h1 className="mt-7 text-3xl font-black tracking-[-0.05em] text-[#050808] sm:text-4xl">Create Account</h1>
               <p className="mt-4 text-[15px] font-semibold leading-7 text-[#4c4f5d]">Google signup se Gmail aur name auto fetch hoga. Uske baad mobile OTP verification complete karein.</p>
 
               <div className="mt-8 rounded-[28px] border border-[#ead694] bg-white/78 p-5 shadow-[0_18px_44px_rgba(95,71,0,0.12)] backdrop-blur">
@@ -235,7 +301,7 @@ export default function RegisterPage() {
                 <ArrowLeft size={16} /> Change Gmail
               </button>
               <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f0a500]">Mobile Verification</p>
-              <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-[#172a69]">Verify Mobile OTP</h1>
+              <h1 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-[#172a69]">Verify Mobile OTP</h1>
               <div className="mt-4 rounded-2xl bg-[#f8fafc] p-4 ring-1 ring-[#dfe5ef]">
                 <p className="text-sm font-bold text-[#111827]">{pendingStudent.name}</p>
                 <p className="mt-1 text-sm font-semibold text-[#667085]">{pendingStudent.email}</p>
@@ -262,6 +328,22 @@ export default function RegisterPage() {
                     </select>
                   </span>
                 </label>
+
+                <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
+                  Referral Code (Optional)
+                  <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#172a69]">
+                    <Gift size={18} className="text-[#7d8799]" />
+                    <input value={referralCode} onChange={(event) => setReferralCode(event.target.value.toUpperCase())} className="w-full bg-transparent text-sm font-semibold uppercase text-[#111827] outline-none placeholder:normal-case placeholder:text-[#98a2b3]" placeholder="Affiliate referral code" />
+                  </span>
+                </label>
+
+                {validatingReferral && <p className="text-xs font-semibold text-[#667085]">Referral code check ho raha hai...</p>}
+                {!validatingReferral && referralMessage && (
+                  <p className={`rounded-2xl px-4 py-3 text-xs font-bold leading-6 ${referralValid ? "bg-[#ecfdf3] text-[#027a48]" : "bg-[#fff8d6] text-[#7a5b00]"}`}>
+                    {referralMessage}
+                    {referralValid && referralDiscountLabel ? ` Discount: ${referralDiscountLabel}` : ""}
+                  </p>
+                )}
 
                 {otpSent && (
                   <label className="grid gap-2 text-sm font-extrabold text-[#344054]">
@@ -295,7 +377,7 @@ export default function RegisterPage() {
             <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[#f7d85a] ring-1 ring-white/15">
               <ShieldCheck size={14} /> KR Logics Admission
             </span>
-            <h2 className="mt-6 text-[38px] font-extrabold leading-tight tracking-[-0.05em] sm:text-[58px]">
+            <h2 className="mt-6 text-[32px] font-extrabold leading-tight tracking-[-0.05em] sm:text-[48px]">
               Signup with Gmail, verify mobile, start learning.
             </h2>
             <p className="mt-5 max-w-xl text-[16px] leading-8 text-white/72">

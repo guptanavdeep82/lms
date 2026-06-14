@@ -2,14 +2,8 @@ import {
   formatCompactStat,
   formatStatNumber,
   extractYouTubeId,
-  type HomePageFaculty,
-  type HomePageFaq,
-  type HomePageReview,
   type HomePageSettings,
 } from "@/lib/home-page";
-
-const facultyColors = ["#1B2E6B", "#15803D", "#185FA5", "#D85A30", "#7F77DD", "#BA7517"];
-const facultyBackgrounds = ["var(--light2)", "#F0FDF4", "#EEF6FF", "#FFF7ED", "#F5F3FF", "#FFF8EB"];
 
 function escapeHtml(value: string): string {
   return value
@@ -18,19 +12,6 @@ function escapeHtml(value: string): string {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
-}
-
-function initialsFromName(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "KR";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase();
-}
-
-function buildStars(rating: number): string {
-  return Array.from({ length: 5 }, (_, index) =>
-    `<i class="fa fa-star"${index < rating ? "" : ' style="opacity:.25"'}></i>`,
-  ).join("");
 }
 
 export function buildHeroStatsMarkup(settings: HomePageSettings): string {
@@ -93,67 +74,6 @@ export function buildBannerSliderMarkup(bannerImages: string[]): string {
   </div>`;
 }
 
-export function buildFacultyGridMarkup(faculties: HomePageFaculty[]): string {
-  if (faculties.length === 0) return "";
-
-  return faculties
-    .map((faculty, index) => {
-      const color = facultyColors[index % facultyColors.length];
-      const background = facultyBackgrounds[index % facultyBackgrounds.length];
-      const initials = initialsFromName(faculty.title);
-      const avatarMarkup = faculty.image_url
-        ? `<img class="faculty-avatar-img" src="${escapeHtml(faculty.image_url)}" alt="${escapeHtml(faculty.title)}" />`
-        : `<div class="faculty-avatar" style="background:${color}">${escapeHtml(initials)}</div>`;
-      const chips = faculty.course_keywords
-        .map((keyword) => `<span class="fchip">${escapeHtml(keyword)}</span>`)
-        .join("");
-      const experience = faculty.experience?.trim() ? escapeHtml(faculty.experience) : "Experienced mentor";
-
-      return `<div class="faculty-card">
-      <div class="faculty-top" style="background:${background}">${avatarMarkup}</div>
-      <div class="faculty-body"><div class="faculty-name">${escapeHtml(faculty.title)}</div><div class="faculty-role">${escapeHtml(faculty.designation)}</div><div class="faculty-exp">${experience}</div><div class="faculty-chips">${chips}</div></div>
-    </div>`;
-    })
-    .join("");
-}
-
-export function buildReviewsGridMarkup(reviews: HomePageReview[]): string {
-  if (reviews.length === 0) return "";
-
-  return reviews
-    .map((review, index) => {
-      const color = facultyColors[index % facultyColors.length];
-      const initials = initialsFromName(review.name);
-      const authorVisual = review.image_url
-        ? `<img class="testi-avatar-img" src="${escapeHtml(review.image_url)}" alt="${escapeHtml(review.name)}" />`
-        : `<div class="testi-avatar" style="background:${color}">${escapeHtml(initials)}</div>`;
-      const examName = review.exam_name?.trim() ? escapeHtml(review.exam_name) : "KR Logics Student";
-
-      return `<div class="testi-card">
-      <div class="testi-stars">${buildStars(review.rating)}</div>
-      <div class="testi-text">"${escapeHtml(review.description)}"</div>
-      <div class="testi-author">
-        ${authorVisual}
-        <div><div class="testi-name">${escapeHtml(review.name)}</div><div class="testi-bank">${examName}</div></div>
-      </div>
-    </div>`;
-    })
-    .join("");
-}
-
-export function buildFaqMarkup(faqs: HomePageFaq[]): string {
-  if (faqs.length === 0) return "";
-
-  return faqs
-    .map(
-      (faq, index) => `<div class="faq-item${index === 0 ? " open" : ""}">
-      <div class="faq-q">${escapeHtml(faq.question)}<span class="faq-toggle"><i class="fa fa-plus"></i></span></div>
-      <div class="faq-ans"><p>${escapeHtml(faq.answer)}</p></div>
-    </div>`,
-    )
-    .join("");
-}
-
 function socialLink(href: string | null, iconClass: string, label: string): string {
   if (!href) {
     return `<div class="fsoc" aria-hidden="true"><i class="${iconClass}"></i></div>`;
@@ -184,7 +104,7 @@ export function buildContactPhoneMarkup(whatsappNumber: string | null): string {
   return `<p>${escapeHtml(whatsappNumber)}</p>`;
 }
 
-export function applyHomePageData(markup: string, settings: HomePageSettings, faculties: HomePageFaculty[], reviews: HomePageReview[], faqs: HomePageFaq[]): string {
+export function applyHomePageData(markup: string, settings: HomePageSettings): string {
   let nextMarkup = markup;
 
   nextMarkup = nextMarkup.replace(
@@ -199,30 +119,6 @@ export function applyHomePageData(markup: string, settings: HomePageSettings, fa
     /<div style="font-family:'Sora',sans-serif;font-size:30px;font-weight:800;color:var\(--navy\)">850\+<\/div>/,
     buildSelectionsMiniCardMarkup(settings),
   );
-
-  const facultyGrid = buildFacultyGridMarkup(faculties);
-  if (facultyGrid) {
-    nextMarkup = nextMarkup.replace(
-      /<div class="faculty-grid">[\s\S]*<\/div>(?=\s*<\/section>\s*\n\n<div class="divider">)/,
-      `<div class="faculty-grid">${facultyGrid}</div>`,
-    );
-  }
-
-  const reviewsGrid = buildReviewsGridMarkup(reviews);
-  if (reviewsGrid) {
-    nextMarkup = nextMarkup.replace(
-      /<div class="testi-grid">[\s\S]*<\/div>(?=\s*<\/section>\s*\n\n<!-- FAQ -->)/,
-      `<div class="testi-grid">${reviewsGrid}</div>`,
-    );
-  }
-
-  const faqItems = buildFaqMarkup(faqs);
-  if (faqItems) {
-    nextMarkup = nextMarkup.replace(
-      /<div class="faq-wrap">[\s\S]*<\/div>(?=\s*<\/section>\s*\n\n<div class="divider">)/,
-      `<div class="faq-wrap">${faqItems}</div>`,
-    );
-  }
 
   nextMarkup = nextMarkup.replace(
     /<div class="footer-socials">[\s\S]*<\/div>(?=\s*<\/div>\s*<div class="footer-col">)/,

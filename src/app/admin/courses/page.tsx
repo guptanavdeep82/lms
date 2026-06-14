@@ -391,7 +391,7 @@ export default function AdminCoursesPage() {
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.2em] text-[#b99000]">Dynamic Module</p>
-          <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-[#050808]">{title}</h2>
+          <h2 className="mt-2 text-xl font-black tracking-[-0.04em] text-[#050808]">{title}</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">{description}</p>
         </div>
         <form onSubmit={(event) => addMeta(event, setter)} className="flex min-w-full gap-2 sm:min-w-[420px]">
@@ -485,7 +485,7 @@ export default function AdminCoursesPage() {
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#b99000]">Courses & Mock Test Administration</p>
-                <h1 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[#050808] sm:text-3xl">Learning Content Management</h1>
+                <h1 className="mt-1 text-xl font-black tracking-[-0.04em] text-[#050808] sm:text-2xl">Learning Content Management</h1>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <div className="flex h-11 min-w-[250px] items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4">
@@ -535,7 +535,7 @@ export default function AdminCoursesPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b99000]">Create Course</p>
-                      <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">{editingCourseId ? "Update Course" : "New Course"}</h2>
+                      <h2 className="mt-2 text-xl font-black tracking-[-0.04em]">{editingCourseId ? "Update Course" : "New Course"}</h2>
                     </div>
                     {editingCourseId ? (
                       <button
@@ -697,7 +697,7 @@ export default function AdminCoursesPage() {
                   <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.2em] text-[#b99000]">Dynamic List</p>
-                      <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">Courses</h2>
+                      <h2 className="mt-2 text-xl font-black tracking-[-0.04em]">Courses</h2>
                     </div>
                     <button className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-700">
                       Filter <ChevronDown size={16} />
@@ -756,7 +756,7 @@ export default function AdminCoursesPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.18em] text-[#b99000]">Create Mock Test</p>
-                      <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">{editingMockTestId ? "Update Mock Test" : "New Mock Test"}</h2>
+                      <h2 className="mt-2 text-xl font-black tracking-[-0.04em]">{editingMockTestId ? "Update Mock Test" : "New Mock Test"}</h2>
                     </div>
                     {editingMockTestId ? (
                       <button
@@ -934,7 +934,7 @@ export default function AdminCoursesPage() {
                   <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.2em] text-[#b99000]">Dynamic Mock Test List</p>
-                      <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">Mock Tests</h2>
+                      <h2 className="mt-2 text-xl font-black tracking-[-0.04em]">Mock Tests</h2>
                     </div>
                     <a href="/mock-tests" className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-700">
                       Public Preview
@@ -1002,7 +1002,7 @@ export default function AdminCoursesPage() {
                 <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
                   <div>
                     <p className="text-xs font-black uppercase tracking-[0.2em] text-[#b99000]">New Module Added</p>
-                    <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-[#050808]">Exam Type Management</h2>
+                    <h2 className="mt-2 text-xl font-black tracking-[-0.04em] text-[#050808]">Exam Type Management</h2>
                     <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
                       Admin yahan exam types create karega. Course create/edit karte time ye same list multi-select me show hoti hai.
                     </p>

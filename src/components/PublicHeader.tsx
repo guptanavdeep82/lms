@@ -3,6 +3,7 @@
 import { type MouseEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
+import { cmsPageHref, fetchCmsPages, type CmsPageSummary } from "@/lib/cms-pages";
 import { getStudentSession, logoutStudent } from "@/lib/student-auth";
 
 const fallbackCategories: MockCategory[] = [
@@ -64,9 +65,12 @@ const headerStyles = `
 .public-home-header .btn-ghost:hover{background:#ffd21f!important;color:#050808!important}
 .public-home-header .btn-primary{border:0!important;background:#ffd21f!important;color:#050808!important}
 .public-home-header .btn-primary:hover{background:#ffe164!important;color:#050808!important;transform:translateY(-1px)!important}
-@media(max-width:1180px){.public-home-header .header-inner{gap:14px!important}.public-home-header nav{gap:14px!important}.public-home-header .exam-mega{grid-template-columns:220px 1fr!important}.public-home-header .exam-grid{grid-template-columns:repeat(2,minmax(180px,1fr))!important}}
-@media(max-width:900px){.public-home-header{padding-inline:14px!important}.public-home-header .header-inner{height:auto!important;min-height:68px!important;flex-wrap:wrap!important;padding-block:10px!important;gap:12px!important}.public-home-header .logo-wrap:before{width:46px!important;height:46px!important;flex-basis:46px!important}.public-home-header .brand{font-size:18px!important}.public-home-header nav{order:3!important;width:100%!important;height:auto!important;overflow-x:auto!important;overflow-y:visible!important;padding:8px 0 2px!important;gap:18px!important;scrollbar-width:none!important}.public-home-header nav::-webkit-scrollbar{display:none!important}.public-home-header nav a,.public-home-header .exam-menu-trigger{height:38px!important;font-size:13px!important;padding:0!important}.public-home-header .hdr-btns{margin-left:auto!important}.public-home-header .course-dropdown{position:fixed!important;top:112px!important;left:14px!important;right:14px!important;width:auto!important;min-width:0!important;transform:translateY(10px)!important;border-radius:12px!important}.public-home-header .course-dropdown.open{transform:translateY(0)!important}.public-home-header .exam-mega{position:fixed!important;top:112px!important;left:14px!important;right:14px!important;width:auto!important;max-height:calc(100vh - 128px)!important;grid-template-columns:1fr!important;padding:14px!important;transform:translateY(10px)!important;border-radius:12px!important}.public-home-header .exam-mega.open{transform:translateY(0)!important}.public-home-header .exam-cats{display:flex!important;max-height:180px!important;overflow:auto!important}.public-home-header .exam-grid{grid-template-columns:1fr!important;gap:8px!important}.public-home-header .exam-link{height:auto!important;min-height:44px!important;font-size:13px!important;white-space:normal!important;line-height:1.35!important}}
-@media(max-width:640px){.public-home-header .tagline{display:none!important}.public-home-header .btn-ghost,.public-home-header .btn-primary{padding-inline:12px!important;font-size:11px!important}.public-home-header .btn-primary{display:none!important}.public-home-header .course-dropdown,.public-home-header .exam-mega{top:108px!important}}
+.public-home-header .latest-exam-mega{grid-template-columns:1fr!important;width:min(calc(100vw - 40px),760px)!important}
+.public-home-header .latest-exam-mega .exam-grid{grid-template-columns:repeat(3,minmax(180px,1fr))!important}
+.public-home-header .latest-exam-wrap:hover .latest-exam-mega{opacity:1!important;visibility:visible!important;transform:translate(-50%,0)!important}
+@media(max-width:1180px){.public-home-header .header-inner{gap:14px!important}.public-home-header nav{gap:14px!important}.public-home-header .exam-mega{grid-template-columns:220px 1fr!important}.public-home-header .exam-grid{grid-template-columns:repeat(2,minmax(180px,1fr))!important}.public-home-header .latest-exam-mega .exam-grid{grid-template-columns:repeat(2,minmax(180px,1fr))!important}}
+@media(max-width:900px){.public-home-header{padding-inline:14px!important}.public-home-header .header-inner{height:auto!important;min-height:68px!important;flex-wrap:wrap!important;padding-block:10px!important;gap:12px!important}.public-home-header .logo-wrap:before{width:46px!important;height:46px!important;flex-basis:46px!important}.public-home-header .brand{font-size:18px!important}.public-home-header nav{order:3!important;width:100%!important;height:auto!important;overflow-x:auto!important;overflow-y:visible!important;padding:8px 0 2px!important;gap:18px!important;scrollbar-width:none!important}.public-home-header nav::-webkit-scrollbar{display:none!important}.public-home-header nav a,.public-home-header .exam-menu-trigger{height:38px!important;font-size:13px!important;padding:0!important}.public-home-header .hdr-btns{margin-left:auto!important}.public-home-header .course-dropdown{position:fixed!important;top:112px!important;left:14px!important;right:14px!important;width:auto!important;min-width:0!important;transform:translateY(10px)!important;border-radius:12px!important}.public-home-header .course-dropdown.open{transform:translateY(0)!important}.public-home-header .exam-mega,.public-home-header .latest-exam-mega{position:fixed!important;top:112px!important;left:14px!important;right:14px!important;width:auto!important;max-height:calc(100vh - 128px)!important;grid-template-columns:1fr!important;padding:14px!important;transform:translateY(10px)!important;border-radius:12px!important}.public-home-header .exam-mega.open,.public-home-header .latest-exam-mega.open{transform:translateY(0)!important}.public-home-header .exam-cats{display:flex!important;max-height:180px!important;overflow:auto!important}.public-home-header .exam-grid{grid-template-columns:1fr!important;gap:8px!important}.public-home-header .exam-link{height:auto!important;min-height:44px!important;font-size:13px!important;white-space:normal!important;line-height:1.35!important}}
+@media(max-width:640px){.public-home-header .tagline{display:none!important}.public-home-header .btn-ghost,.public-home-header .btn-primary{padding-inline:12px!important;font-size:11px!important}.public-home-header .btn-primary{display:none!important}.public-home-header .course-dropdown,.public-home-header .exam-mega,.public-home-header .latest-exam-mega{top:108px!important}}
 `;
 
 type PublicHeaderProps = {
@@ -77,7 +81,8 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   const [mockCategories, setMockCategories] = useState<MockCategory[]>(fallbackCategories);
   const [activeCategorySlug, setActiveCategorySlug] = useState(fallbackCategories[0].slug);
   const [isLoggedIn, setIsLoggedIn] = useState(() => (typeof window === "undefined" ? false : Boolean(getStudentSession())));
-  const [openMenu, setOpenMenu] = useState<"courses" | "exams" | null>(null);
+  const [openMenu, setOpenMenu] = useState<"courses" | "exams" | "latest-exam" | null>(null);
+  const [cmsPages, setCmsPages] = useState<CmsPageSummary[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -108,6 +113,18 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   }, []);
 
   useEffect(() => {
+    let mounted = true;
+
+    fetchCmsPages().then((pages) => {
+      if (mounted) setCmsPages(pages);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     const syncSession = () => setIsLoggedIn(Boolean(getStudentSession()));
     window.addEventListener("storage", syncSession);
     window.addEventListener("focus", syncSession);
@@ -130,7 +147,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
     setIsLoggedIn(false);
   };
 
-  const handleMobileMenuClick = (event: MouseEvent<HTMLAnchorElement>, menu: "courses" | "exams") => {
+  const handleMobileMenuClick = (event: MouseEvent<HTMLAnchorElement>, menu: "courses" | "exams" | "latest-exam") => {
     if (typeof window === "undefined" || window.innerWidth > 900) return;
     event.preventDefault();
     setOpenMenu((current) => (current === menu ? null : menu));
@@ -174,6 +191,20 @@ export function PublicHeader({ active }: PublicHeaderProps) {
               </div>
             </div>
             {navLink("/packages", "Packages", "packages")}
+            <div className="exam-menu-wrap latest-exam-wrap">
+              <Link href={cmsPages[0] ? cmsPageHref(cmsPages[0].slug) : "#"} onClick={(event) => handleMobileMenuClick(event, "latest-exam")} className="exam-menu-trigger">Latest Exam <span className="chev">⌄</span></Link>
+              <div className={`exam-mega latest-exam-mega ${openMenu === "latest-exam" ? "open" : ""}`}>
+                <div className="exam-grid">
+                  {cmsPages.map((page, index) => (
+                    <Link key={page.id} href={cmsPageHref(page.slug)} className="exam-link">
+                      <span className={`exam-icon ${examTone(index)}`}>{initials(page.title)}</span>
+                      {page.title}
+                    </Link>
+                  ))}
+                  {!cmsPages.length && <div className="exam-empty">No exam pages available yet.</div>}
+                </div>
+              </div>
+            </div>
             <div className="exam-menu-wrap">
               <Link href="/mock-tests" onClick={(event) => handleMobileMenuClick(event, "exams")} className="exam-menu-trigger">Exams <span className="chev">⌄</span></Link>
               <div className={`exam-mega ${openMenu === "exams" ? "open" : ""}`}>
