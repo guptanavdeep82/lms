@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
 import { getStudentProfile, loginStudent, saveStudentProfile } from "@/lib/student-auth";
+import { syncStudentWithBackend } from "@/lib/student-registration";
 import { applyStudentReferral, referralFromStudentPayload, validateReferralCode } from "@/lib/referral";
 import {
   ArrowLeft,
@@ -103,6 +104,12 @@ export default function LoginPage() {
       provider: student.provider || "google",
       ...referral,
     });
+
+    try {
+      await syncStudentWithBackend(student.email);
+    } catch {
+      // Local login should still work even if backend sync fails temporarily.
+    }
 
     redirectAfterLogin();
   };

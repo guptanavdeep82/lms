@@ -1,4 +1,5 @@
 import { publicBackendBaseUrl } from "@/lib/mock-tests";
+import { buildStudentCheckoutProfile } from "@/lib/student-registration";
 
 export type CheckoutItemType = "course" | "mock_test" | "mock_category" | "package";
 
@@ -78,12 +79,24 @@ export async function createCheckoutOrder(input: {
   itemType: CheckoutItemType;
   itemId: number;
   couponCode?: string;
+  name?: string;
+  mobile?: string;
+  state_id?: number;
+  provider?: string;
+  mobile_verified?: boolean;
 }): Promise<CreateOrderResponse> {
+  const profile = buildStudentCheckoutProfile(input.email);
+
   const response = await fetch(checkoutUrl("create-order"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       email: input.email,
+      name: input.name ?? profile.name,
+      mobile: input.mobile ?? profile.mobile,
+      state_id: input.state_id ?? profile.state_id,
+      provider: input.provider ?? profile.provider,
+      mobile_verified: input.mobile_verified ?? profile.mobile_verified,
       item_type: input.itemType,
       item_id: input.itemId,
       coupon_code: input.couponCode || undefined,
@@ -108,11 +121,28 @@ export async function verifyCheckoutPayment(input: {
   razorpay_order_id: string;
   razorpay_payment_id: string;
   razorpay_signature: string;
+  name?: string;
+  mobile?: string;
+  state_id?: number;
+  provider?: string;
+  mobile_verified?: boolean;
 }) {
+  const profile = buildStudentCheckoutProfile(input.email);
+
   const response = await fetch(checkoutUrl("verify"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
+    body: JSON.stringify({
+      email: input.email,
+      name: input.name ?? profile.name,
+      mobile: input.mobile ?? profile.mobile,
+      state_id: input.state_id ?? profile.state_id,
+      provider: input.provider ?? profile.provider,
+      mobile_verified: input.mobile_verified ?? profile.mobile_verified,
+      razorpay_order_id: input.razorpay_order_id,
+      razorpay_payment_id: input.razorpay_payment_id,
+      razorpay_signature: input.razorpay_signature,
+    }),
   });
 
   const data = await response.json().catch(() => ({})) as {

@@ -1,4 +1,5 @@
 import { backendBaseUrl } from "@/lib/mock-tests";
+import { getStudentProfile, getStudentSession } from "@/lib/student-auth";
 
 export type StateOption = {
   id: number;
@@ -9,11 +10,20 @@ export type StateOption = {
 export type RegisterStudentInput = {
   name: string;
   email: string;
-  mobile: string;
-  state_id: number;
+  mobile?: string;
+  state_id?: number;
   provider?: string;
   mobile_verified?: boolean;
   referral_code?: string;
+};
+
+export type StudentCheckoutProfile = {
+  email: string;
+  name?: string;
+  mobile?: string;
+  state_id?: number;
+  provider?: string;
+  mobile_verified?: boolean;
 };
 
 function statesUrl() {
@@ -29,6 +39,21 @@ export async function fetchStates(): Promise<StateOption[]> {
   if (!response.ok) return [];
   const data = (await response.json()) as { states?: StateOption[] };
   return data.states || [];
+}
+
+export function buildStudentCheckoutProfile(email: string): StudentCheckoutProfile {
+  const profile = getStudentProfile(email);
+  const session = getStudentSession();
+  const normalizedEmail = email.trim().toLowerCase();
+
+  return {
+    email: normalizedEmail,
+    name: profile?.name || session?.name,
+    mobile: profile?.mobile || session?.mobile,
+    state_id: profile?.stateId || session?.stateId,
+    provider: profile?.provider || session?.provider || "google",
+    mobile_verified: profile?.mobileVerified ?? true,
+  };
 }
 
 export async function registerStudent(input: RegisterStudentInput) {
@@ -50,4 +75,17 @@ export async function registerStudent(input: RegisterStudentInput) {
   }
 
   return payload;
+}
+
+export async function syncStudentWithBackend(email: string) {
+  const checkoutProfile = buildStudentCheckoutProfile(email);
+
+  return registerStudent({
+    name: checkoutProfile.name || checkoutProfile.email.split("@")[0] || "Student",
+    email: checkoutProfile.email,
+    mobile: checkoutProfile.mobile,
+    state_id: checkoutProfile.state_id,
+    provider: checkoutProfile.provider,
+    mobile_verified: checkoutProfile.mobile_verified,
+  });
 }
