@@ -67,13 +67,19 @@ function loadRazorpayScript(): Promise<void> {
   });
 }
 
+function checkoutUrl(path: "create-order" | "verify") {
+  return typeof window !== "undefined"
+    ? `/api/checkout/${path}`
+    : `${publicBackendBaseUrl}/api/checkout/${path}`;
+}
+
 export async function createCheckoutOrder(input: {
   email: string;
   itemType: CheckoutItemType;
   itemId: number;
   couponCode?: string;
 }): Promise<CreateOrderResponse> {
-  const response = await fetch(`${publicBackendBaseUrl}/api/checkout/create-order`, {
+  const response = await fetch(checkoutUrl("create-order"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -103,7 +109,7 @@ export async function verifyCheckoutPayment(input: {
   razorpay_payment_id: string;
   razorpay_signature: string;
 }) {
-  const response = await fetch(`${publicBackendBaseUrl}/api/checkout/verify`, {
+  const response = await fetch(checkoutUrl("verify"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
