@@ -1,0 +1,494 @@
+.public-home-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  max-width: none;
+  padding: 0 5%;
+  background: rgba(5, 8, 8, 0.96);
+  border-bottom: 1px solid rgba(255, 210, 31, 0.28);
+  box-shadow: 0 12px 30px rgba(5, 8, 8, 0.12);
+  backdrop-filter: blur(10px);
+  font-family: var(--font-poppins), "Poppins", ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: normal;
+  flex-shrink: 0;
+}
+
+.public-home-header .header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  gap: 20px;
+  max-width: none;
+}
+
+.public-home-header .logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.public-home-header .logo-wrap > svg {
+  display: none;
+}
+
+.public-home-header .logo-wrap::before {
+  content: "";
+  display: block;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  border-radius: 50%;
+  background: url("/logics-logo.jpeg") center / cover no-repeat;
+  box-shadow: 0 0 0 2px rgba(255, 210, 31, 0.35), 0 10px 28px rgba(0, 0, 0, 0.22);
+}
+
+.public-home-header .logo-text-group {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.public-home-header .brand {
+  font-family: var(--font-sora), "Sora", ui-sans-serif, system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.public-home-header .brand span {
+  color: #ffd21f;
+}
+
+.public-home-header .tagline {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.62);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.public-home-header nav {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  height: 100%;
+}
+
+.public-home-header nav a,
+.public-home-header .exam-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  border-bottom: 2px solid transparent;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 4px 0;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.public-home-header nav > a:hover,
+.public-home-header nav > a.active,
+.public-home-header .exam-menu-trigger:hover,
+.public-home-header .exam-menu-trigger.active {
+  color: #ffd21f;
+  border-bottom-color: #ffd21f;
+}
+
+.public-home-header .course-menu-wrap,
+.public-home-header .exam-menu-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  line-height: 1;
+}
+
+.public-home-header .course-menu-wrap:hover .chev,
+.public-home-header .exam-menu-wrap:hover .chev {
+  transform: rotate(180deg);
+}
+
+.public-home-header .chev {
+  font-size: 13px;
+  transition: transform 0.2s;
+}
+
+.public-home-header .course-dropdown {
+  position: absolute;
+  left: 50%;
+  top: 72px;
+  z-index: 140;
+  min-width: 210px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #ded9c8;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 18px 45px rgba(5, 8, 8, 0.16);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 10px);
+  transition: all 0.2s ease;
+}
+
+.public-home-header .course-menu-wrap:hover .course-dropdown,
+.public-home-header .course-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.public-home-header .course-dropdown a {
+  display: flex;
+  height: auto;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px;
+  color: #050808;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.public-home-header .course-dropdown a:hover {
+  background: #fff8dc;
+  color: #050808;
+}
+
+.public-home-header .course-dropdown span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #050808;
+  color: #ffd21f;
+  font-size: 12px;
+}
+
+.public-home-header .exam-mega {
+  position: fixed;
+  left: 50%;
+  right: auto;
+  top: 72px;
+  z-index: 150;
+  display: grid;
+  grid-template-columns: 240px minmax(660px, 840px);
+  gap: 18px;
+  width: min(calc(100vw - 40px), 1120px);
+  max-height: calc(100vh - 96px);
+  overflow: auto;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ded9c8;
+  border-radius: 0 0 14px 14px;
+  box-shadow: 0 18px 45px rgba(15, 30, 74, 0.12);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 10px);
+  transition: all 0.22s ease;
+}
+
+.public-home-header .exam-menu-wrap:hover .exam-mega,
+.public-home-header .exam-mega.open,
+.public-home-header .latest-exam-wrap:hover .latest-exam-mega {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.public-home-header .latest-exam-mega {
+  grid-template-columns: 1fr;
+  width: min(calc(100vw - 40px), 760px);
+}
+
+.public-home-header .latest-exam-mega .exam-grid {
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+}
+
+.public-home-header .exam-cats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.public-home-header .exam-cat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  border: 1px solid #ded9c8;
+  border-radius: 7px;
+  background: #fff;
+  color: #050808;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 12px;
+}
+
+.public-home-header .exam-cat.active {
+  background: #fff8dc;
+  border-color: rgba(255, 210, 31, 0.45);
+}
+
+.public-home-header .exam-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
+  align-content: start;
+  gap: 10px 14px;
+}
+
+.public-home-header .exam-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  overflow: hidden;
+  border: 1px solid #dfe3ea;
+  border-radius: 7px;
+  background: #fff;
+  color: #121827;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.public-home-header .exam-link:hover {
+  border-color: #050808;
+  box-shadow: 0 8px 18px rgba(27, 46, 107, 0.12);
+  color: #050808;
+  transform: translateY(-1px);
+}
+
+.public-home-header .exam-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #ffd21f;
+  background: #050808;
+  border: 1px solid rgba(255, 210, 31, 0.3);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.public-home-header .exam-icon.gold {
+  background: #ffd21f;
+  color: #050808;
+}
+
+.public-home-header .exam-empty {
+  grid-column: 1 / -1;
+  border: 1px dashed #ded9c8;
+  border-radius: 8px;
+  padding: 18px;
+  color: #667085;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.public-home-header .hdr-btns {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.public-home-header .btn-ghost,
+.public-home-header .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  min-height: 36px;
+  padding: 8px 20px;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.public-home-header .btn-ghost {
+  border: 1.5px solid #ffd21f;
+  color: #ffd21f;
+  background: transparent;
+}
+
+.public-home-header .btn-ghost:hover {
+  background: #ffd21f;
+  color: #050808;
+}
+
+.public-home-header .btn-primary {
+  border: 0;
+  background: #ffd21f;
+  color: #050808;
+}
+
+.public-home-header .btn-primary:hover {
+  background: #ffe164;
+  color: #050808;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1180px) {
+  .public-home-header .header-inner {
+    gap: 14px;
+  }
+
+  .public-home-header nav {
+    gap: 14px;
+  }
+
+  .public-home-header .exam-mega {
+    grid-template-columns: 220px 1fr;
+  }
+
+  .public-home-header .exam-grid,
+  .public-home-header .latest-exam-mega .exam-grid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .public-home-header {
+    padding-inline: 14px;
+  }
+
+  .public-home-header .header-inner {
+    height: auto;
+    min-height: 68px;
+    flex-wrap: wrap;
+    padding-block: 10px;
+    gap: 12px;
+  }
+
+  .public-home-header .logo-wrap::before {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+  }
+
+  .public-home-header .brand {
+    font-size: 18px;
+  }
+
+  .public-home-header nav {
+    order: 3;
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 8px 0 2px;
+    gap: 18px;
+    scrollbar-width: none;
+  }
+
+  .public-home-header nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .public-home-header nav a,
+  .public-home-header .exam-menu-trigger {
+    height: 38px;
+    font-size: 13px;
+    padding: 0;
+  }
+
+  .public-home-header .hdr-btns {
+    margin-left: auto;
+  }
+
+  .public-home-header .course-dropdown {
+    position: fixed;
+    top: 112px;
+    left: 14px;
+    right: 14px;
+    width: auto;
+    min-width: 0;
+    transform: translateY(10px);
+    border-radius: 12px;
+  }
+
+  .public-home-header .course-dropdown.open {
+    transform: translateY(0);
+  }
+
+  .public-home-header .exam-mega,
+  .public-home-header .latest-exam-mega {
+    position: fixed;
+    top: 112px;
+    left: 14px;
+    right: 14px;
+    width: auto;
+    max-height: calc(100vh - 128px);
+    grid-template-columns: 1fr;
+    padding: 14px;
+    transform: translateY(10px);
+    border-radius: 12px;
+  }
+
+  .public-home-header .exam-mega.open,
+  .public-home-header .latest-exam-mega.open {
+    transform: translateY(0);
+  }
+
+  .public-home-header .exam-cats {
+    display: flex;
+    max-height: 180px;
+    overflow: auto;
+  }
+
+  .public-home-header .exam-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .public-home-header .exam-link {
+    height: auto;
+    min-height: 44px;
+    font-size: 13px;
+    white-space: normal;
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 640px) {
+  .public-home-header .tagline {
+    display: none;
+  }
+
+  .public-home-header .btn-ghost,
+  .public-home-header .btn-primary {
+    padding-inline: 12px;
+    font-size: 11px;
+  }
+
+  .public-home-header .btn-primary {
+    display: none;
+  }
+
+  .public-home-header .course-dropdown,
+  .public-home-header .exam-mega,
+  .public-home-header .latest-exam-mega {
+    top: 108px;
+  }
+}

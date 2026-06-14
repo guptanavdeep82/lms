@@ -1,5 +1,5 @@
 import { BookOpen, CheckCircle2, Clock, Star, Trophy, Users } from "lucide-react";
-import { PublicHeader } from "@/components/PublicHeader";
+import { PublicPageShell } from "@/components/PublicPageShell";
 import { fetchHomePageData, type HomePageFaculty } from "@/lib/home-page";
 
 export const dynamic = "force-dynamic";
@@ -41,8 +41,7 @@ export default async function FacultyPage() {
   const faculties = homeData?.faculties ?? [];
 
   return (
-    <main className="min-h-screen bg-[#f8f9fc] text-slate-950">
-      <PublicHeader active="faculty" />
+    <PublicPageShell active="faculty">
 
       <section className="border-b border-slate-200 bg-white px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
@@ -171,6 +170,6 @@ export default async function FacultyPage() {
           ))}
         </div>
       </section>
-    </main>
+    </PublicPageShell>
   );
 }

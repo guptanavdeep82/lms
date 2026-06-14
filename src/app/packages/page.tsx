@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { BadgePercent, BookOpenCheck, CheckCircle2, Crown, Layers3, Loader2, MonitorPlay, Trophy } from "lucide-react";
-import { PublicHeader } from "@/components/PublicHeader";
+import { PublicPageShell } from "@/components/PublicPageShell";
 import { RazorpayCheckoutButton } from "@/components/payments/RazorpayCheckoutButton";
 import { fetchPackages, formatInr, packageEffectivePrice, packageIncludeLabel, type PackageItem } from "@/lib/packages";
 import { fetchStudentPurchases } from "@/lib/checkout";
@@ -91,8 +91,7 @@ export default function PackagesPage() {
   );
 
   return (
-    <main className="packages-page">
-      <PublicHeader active="packages" />
+    <PublicPageShell active="packages" className="packages-page">
       <style dangerouslySetInnerHTML={{ __html: styles }} />
       <section className="packages-hero">
         <div className="packages-hero-inner">
@@ -197,6 +196,6 @@ export default function PackagesPage() {
           <div className="why-item"><Trophy size={26} /><h3>Exam Ready</h3><p>Built for IBPS, SBI, RBI and insurance banking aspirants.</p></div>
         </div>
       </section>
-    </main>
+    </PublicPageShell>
   );
 }

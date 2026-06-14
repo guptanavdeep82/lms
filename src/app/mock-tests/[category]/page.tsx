@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { BarChart3, Check, ChevronRight, Clock3, FileText, Languages, Loader2, LockKeyhole, PlayCircle, ShieldCheck, Sparkles, Trophy } from "lucide-react";
-import { PublicHeader } from "@/components/PublicHeader";
+import { PublicPageShell } from "@/components/PublicPageShell";
 import { RazorpayCheckoutButton } from "@/components/payments/RazorpayCheckoutButton";
 import { fetchStudentPurchases, hasPurchase } from "@/lib/checkout";
 import { hasCompletedMock } from "@/lib/mock-results";
@@ -91,17 +91,21 @@ export default function MockSeriesDetailPage() {
   };
 
   if (loading) {
-    return <main className="grid min-h-screen place-items-center bg-white"><Loader2 className="animate-spin text-black" size={34} /></main>;
+    return (
+      <PublicPageShell active="mock-tests" className="grid min-h-screen place-items-center bg-white">
+        <Loader2 className="animate-spin text-black" size={34} />
+      </PublicPageShell>
+    );
   }
 
   if (!category) {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#f7f7f7] px-4 text-center">
+      <PublicPageShell active="mock-tests" className="grid min-h-screen place-items-center bg-[#f7f7f7] px-4 text-center">
         <div>
           <h1 className="text-xl font-extrabold text-black">Series not found</h1>
           <Link href="/mock-tests" className="mt-4 inline-flex h-11 items-center rounded-full bg-black px-5 text-sm font-extrabold text-white">Back to mock tests</Link>
         </div>
-      </main>
+      </PublicPageShell>
     );
   }
 
@@ -109,14 +113,11 @@ export default function MockSeriesDetailPage() {
   const completedCount = category.tests.filter((test) => completed[test.slug]).length;
 
   return (
-    <main className="min-h-screen bg-[#f4f5f7] text-[#141414]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
-
-      <PublicHeader active="mock-tests" />
+    <PublicPageShell active="mock-tests" className="min-h-screen bg-[#f4f5f7] text-[#141414]">
 
       <section className="border-b border-[#e2e4e8] bg-white px-4 py-3 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-1 text-[11px] font-semibold text-[#69707d]">
-          <Link href="/">Guidefly</Link>
+          <Link href="/">Home</Link>
           <ChevronRight size={12} />
           <Link href="/mock-tests">Test Series</Link>
           <ChevronRight size={12} />
@@ -243,7 +244,7 @@ export default function MockSeriesDetailPage() {
             </div>
           </aside>
       </section>
-    </main>
+    </PublicPageShell>
   );
 }
 

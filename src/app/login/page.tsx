@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { PublicHeader } from "@/components/PublicHeader";
+import { PublicPageShell } from "@/components/PublicPageShell";
 import { getStudentProfile, loginStudent, saveStudentProfile } from "@/lib/student-auth";
 import { syncStudentWithBackend } from "@/lib/student-registration";
 import { applyStudentReferral, referralFromStudentPayload, validateReferralCode } from "@/lib/referral";
@@ -255,10 +255,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f6f8fc] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
-
-      <PublicHeader />
+    <PublicPageShell className="min-h-screen bg-[#f6f8fc] text-[#111827]">
 
       <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_540px] lg:px-8">
         <div className="relative overflow-hidden rounded-[32px] bg-[#172a69] p-7 text-white shadow-[0_24px_70px_rgba(23,42,105,0.24)] sm:p-10">
@@ -397,6 +394,6 @@ export default function LoginPage() {
           </div>
         </div>
       </section>
-    </main>
+    </PublicPageShell>
   );
 }

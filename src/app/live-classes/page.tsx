@@ -14,7 +14,7 @@ import {
   Sparkles,
   Video,
 } from "lucide-react";
-import { PublicHeader } from "@/components/PublicHeader";
+import { PublicPageShell } from "@/components/PublicPageShell";
 import { LiveClassActionButton } from "@/components/live-classes/LiveClassActionButton";
 import {
   formatLiveSessionSchedule,
@@ -142,14 +142,13 @@ export default function LiveClassesPage() {
   };
 
   return (
-    <main className="min-h-screen w-full bg-[#f8f9fc] text-slate-950">
-      <PublicHeader active="live-classes" />
+    <PublicPageShell active="live-classes">
 
       {/* Hero — full width */}
       <section className="relative w-full overflow-hidden border-b border-[#1b2e6b]/20 bg-[#1b2e6b] text-white">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(245,197,24,0.22),transparent_32%)]" />
         <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full border border-[#f5c518]/20" />
-        <div className="relative mx-auto w-full max-w-[1400px] px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+        <div className="relative mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
           <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full border border-[#f5c518]/35 bg-[#f5c518]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#f5c518]">
@@ -207,7 +206,7 @@ export default function LiveClassesPage() {
 
       {/* Main content — full width container */}
       <section className="w-full px-4 py-10 sm:px-6 sm:py-12 lg:px-10 lg:py-14">
-        <div className="mx-auto w-full max-w-[1400px]">
+        <div className="mx-auto w-full max-w-7xl">
           {/* Search + filter toggle */}
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="relative w-full lg:max-w-xl">
@@ -349,7 +348,7 @@ export default function LiveClassesPage() {
           </div>
         </div>
       </section>
-    </main>
+    </PublicPageShell>
   );
 }
 

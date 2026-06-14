@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { Clock, Loader2, Mail, MapPin, MessageCircle, Phone, Send, ShieldCheck } from "lucide-react";
-import { PublicHeader } from "@/components/PublicHeader";
+import { PublicPageShell } from "@/components/PublicPageShell";
 import { submitContactForm } from "@/lib/contact";
 
 const contactCards = [
@@ -74,8 +74,7 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f8f9fc] text-slate-950">
-      <PublicHeader active="contact" />
+    <PublicPageShell active="contact">
 
       <section className="border-b border-slate-200 bg-white px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
@@ -190,6 +189,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-    </main>
+    </PublicPageShell>
   );
 }

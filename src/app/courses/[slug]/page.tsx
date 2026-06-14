@@ -12,7 +12,7 @@ import {
   UsersRound,
   Video,
 } from "lucide-react";
-import { PublicHeader } from "@/components/PublicHeader";
+import { PublicPageShell } from "@/components/PublicPageShell";
 import { CoursePurchaseActions } from "@/components/payments/CoursePurchaseActions";
 import { fetchCourseBySlug, mapApiCourseToCatalogItem } from "@/lib/courses";
 
@@ -39,8 +39,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
   const original = course.original ? `Rs ${course.original.toLocaleString("en-IN")}` : null;
 
   return (
-    <main className="min-h-screen bg-[#f7f6ef] text-[#151515]">
-      <PublicHeader active="courses" />
+    <PublicPageShell active="courses" className="min-h-screen bg-[#f7f6ef] text-[#151515]">
 
       <section className="bg-[#050808] px-4 py-12 text-white sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_0.82fr]">
@@ -165,6 +164,6 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           </div>
         </aside>
       </section>
-    </main>
+    </PublicPageShell>
   );
 }

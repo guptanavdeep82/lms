@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, FileText, Loader2, Search } from "lucide-react";
-import { PublicHeader } from "@/components/PublicHeader";
+import { PublicPageShell } from "@/components/PublicPageShell";
 import { mockTestsApiUrl, type MockCategory, type MockTestsResponse } from "@/lib/mock-tests";
 
 export default function MockTestsPage() {
@@ -36,10 +36,7 @@ export default function MockTestsPage() {
   }, [categories, search]);
 
   return (
-    <main className="min-h-screen bg-[#f7f7f7] text-[#0b0b0f]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
-
-      <PublicHeader active="mock-tests" />
+    <PublicPageShell active="mock-tests" className="min-h-screen bg-[#f7f7f7] text-[#0b0b0f]">
 
       <section className="bg-black px-4 py-10 text-white sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 md:flex-row md:items-end md:justify-between">
@@ -74,13 +71,13 @@ export default function MockTestsPage() {
             {!filteredCategories.length && (
               <div className="rounded-lg border border-dashed border-[#d5d5d5] bg-white p-10 text-center">
                 <p className="text-lg font-extrabold text-black">No test series found</p>
-                <p className="mt-2 text-sm font-semibold text-[#667085]">Admin panel mein published mock tests add karne ke baad yahan show honge.</p>
+                <p className="mt-2 text-sm font-semibold text-[#667085]">Published mock tests will appear here once added from the admin panel.</p>
               </div>
             )}
           </div>
         )}
       </section>
-    </main>
+    </PublicPageShell>
   );
 }
 

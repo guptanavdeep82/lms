@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { PublicHeader } from "@/components/PublicHeader";
+import { PublicPageShell } from "@/components/PublicPageShell";
 import { fetchCmsPageBySlug } from "@/lib/cms-pages";
 
 export const dynamic = "force-dynamic";
@@ -37,8 +37,7 @@ export default async function CmsPageDetail({ params }: PageProps) {
   if (!page) notFound();
 
   return (
-    <main className="min-h-screen bg-[#f8f9fc] text-slate-950">
-      <PublicHeader />
+    <PublicPageShell className="min-h-screen bg-[#f8f9fc] text-slate-950">
 
       <section className="border-b border-slate-200 bg-white px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-5xl">
@@ -69,6 +68,6 @@ export default async function CmsPageDetail({ params }: PageProps) {
           )}
         </article>
       </section>
-    </main>
+    </PublicPageShell>
   );
 }

@@ -1,10 +1,24 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Montserrat, Rajdhani } from "next/font/google";
+import { Bebas_Neue, Montserrat, Poppins, Rajdhani, Sora } from "next/font/google";
 import "./globals.css";
+import "@/components/public-header.css";
+import "@/components/public-footer.css";
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
+});
+
+const sora = Sora({
+  variable: "--font-sora",
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
 });
 
 const bebasNeue = Bebas_Neue({
@@ -33,9 +47,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${montserrat.variable} ${bebasNeue.variable} ${rajdhani.variable} h-full antialiased`}
+      className={`${poppins.variable} ${montserrat.variable} ${sora.variable} ${bebasNeue.variable} ${rajdhani.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-background text-foreground font-[family-name:var(--font-poppins)]">
         {children}
       </body>
     </html>

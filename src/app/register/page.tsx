@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { PublicHeader } from "@/components/PublicHeader";
+import { PublicPageShell } from "@/components/PublicPageShell";
 import { loginStudent, saveStudentProfile } from "@/lib/student-auth";
 import { fetchStates, registerStudent, type StateOption } from "@/lib/student-registration";
 import { referralToSessionFields, validateReferralCode } from "@/lib/referral";
@@ -227,10 +227,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f6f8fc] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
-
-      <PublicHeader />
+    <PublicPageShell className="min-h-screen bg-[#f6f8fc] text-[#111827]">
 
       <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[540px_1fr] lg:px-8">
         <div className="relative min-h-[520px] overflow-hidden rounded-[34px] border border-[#ead694] bg-gradient-to-br from-white via-[#fffaf0] to-[#fff0b8] p-7 shadow-[0_28px_80px_rgba(95,71,0,0.16)] sm:p-9">
@@ -365,6 +362,6 @@ export default function RegisterPage() {
           </div>
         </div>
       </section>
-    </main>
+    </PublicPageShell>
   );
 }
