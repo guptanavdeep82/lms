@@ -12,7 +12,6 @@ import {
   PlayCircle,
   Radio,
   Search,
-  Sparkles,
   Video,
 } from "lucide-react";
 import { PublicPageShell } from "@/components/PublicPageShell";
@@ -113,7 +112,10 @@ export default function LiveClassesPage() {
     loadSessions();
   }, [loadSessions]);
 
-  const featuredSession = liveSessions.find((s) => s.display_status === "live") ?? liveSessions[0];
+  const recordedSessions = useMemo(
+    () => liveSessions.filter((s) => s.source === "session" && (s.has_recording || s.display_status === "replay")),
+    [liveSessions],
+  );
 
   const stats = useMemo(() => ({
     total: liveSessions.length,
@@ -151,62 +153,31 @@ export default function LiveClassesPage() {
   return (
     <PublicPageShell active="live-classes">
 
-      {/* Hero — full width */}
-      <section className="relative w-full overflow-hidden border-b border-[#1b2e6b]/20 bg-[#1b2e6b] text-white">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(245,197,24,0.22),transparent_32%)]" />
-        <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full border border-[#f5c518]/20" />
-        <div className="relative mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
-          <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full bg-[#f5c518] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-[#1b2e6b] shadow-md shadow-black/10">
-                <Radio size={14} className="text-[#1b2e6b]" /> Live Classes on Zoom
-              </span>
-              <h1 className="mt-5 font-rajdhani text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl lg:leading-[1.05]">
-                Join Live Banking Classes & Watch Replays Anytime
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-8 text-white/75 sm:text-lg">
-                Attend expert-led live sessions on Zoom. Free classes open after login. Paid batches unlock after purchase. Recordings save automatically when class ends.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                {[
-                  ["Live Now", stats.live],
-                  ["Upcoming", stats.upcoming],
-                  ["Replays", stats.replay],
-                ].map(([label, count]) => (
-                  <div
-                    key={label as string}
-                    className="min-w-[120px] rounded-2xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur-sm"
-                  >
-                    <div className="font-rajdhani text-2xl font-bold text-[#f5c518]">{count as number}</div>
-                    <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-white/65">{label as string}</div>
-                  </div>
-                ))}
+      {/* Hero — compact, matches PDF/courses page */}
+      <section className="border-b border-[#e5e8f0] bg-[#1b2e6b] px-6 py-11 text-white sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#f5c518] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#1b2e6b]">
+              <Radio size={12} /> Live Classes on Zoom
+            </span>
+            <h1 className="mt-4 font-['Sora'] text-[28px] font-extrabold leading-tight text-white">
+              Live Banking Classes &amp; Recorded Replays
+            </h1>
+            <p className="mt-3 max-w-xl text-sm leading-7 text-white/60">
+              Join expert-led Zoom sessions. Recordings from completed live classes appear here automatically for replay.
+            </p>
+          </div>
+          <div className="flex gap-9">
+            {[
+              ["Live Now", stats.live],
+              ["Upcoming", stats.upcoming],
+              ["Recorded", stats.replay],
+            ].map(([label, count]) => (
+              <div key={label as string} className="text-center">
+                <strong className="block font-['Sora'] text-[28px] font-extrabold text-[#f5c518]">{count as number}</strong>
+                <small className="text-[11px] font-semibold uppercase tracking-wide text-white/50">{label as string}</small>
               </div>
-            </div>
-
-            <div className="rounded-2xl border border-[#f5c518]/30 bg-white/10 p-6 backdrop-blur-md sm:p-7">
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#f5c518] px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide text-[#1b2e6b]">
-                <Sparkles size={12} /> Next Session
-              </div>
-              <p className="font-rajdhani text-xl font-bold leading-snug sm:text-2xl">
-                {featuredSession ? featuredSession.title : "Sessions coming soon"}
-              </p>
-              <p className="mt-3 text-sm leading-7 text-white/70">
-                {featuredSession
-                  ? `${formatLiveSessionSchedule(featuredSession.scheduled_at)} · ${featuredSession.faculty_name || featuredSession.course.title}`
-                  : "Admin can schedule live sessions from the panel."}
-              </p>
-              {featuredSession ? (
-                <div className="mt-5 flex flex-wrap gap-2">
-                  <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
-                    {featuredSession.duration_minutes} min
-                  </span>
-                  <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
-                    {featuredSession.course.is_free ? "Free" : `₹${featuredSession.course.effective_price}`}
-                  </span>
-                </div>
-              ) : null}
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -266,6 +237,22 @@ export default function LiveClassesPage() {
                   {loadError}
                 </div>
               ) : null}
+
+              {!loading && recordedSessions.length > 0 ? (
+                <div className="mb-10">
+                  <div className="mb-4 flex items-center gap-2">
+                    <MonitorPlay size={18} className="text-[#e8a800]" />
+                    <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#8a6500]">Recorded Classes</h2>
+                    <span className="rounded-full bg-[#fff9e0] px-2 py-0.5 text-[10px] font-bold text-[#6b4d00]">{recordedSessions.length}</span>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {recordedSessions.map((session) => (
+                      <SessionCard key={`rec-${session.id}`} session={session} onAccessChange={loadSessions} />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               {loading ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {[1, 2, 3, 4].map((i) => (
@@ -282,51 +269,11 @@ export default function LiveClassesPage() {
                       </div>
                       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {sessions.map((session) => (
-                          <article
+                          <SessionCard
                             key={`${session.source}-${session.course.id}-${session.id}`}
-                            className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[#1b2e6b]/25 hover:shadow-md"
-                          >
-                            <Link href={`/live-classes/course/${session.course.slug}`} className="block">
-                              <SessionThumb session={session} />
-                            </Link>
-                            <div className="flex flex-1 flex-col p-4">
-                              <div className="flex flex-wrap items-start justify-between gap-2">
-                                <Link href={`/live-classes/course/${session.course.slug}`}>
-                                  <h2 className="font-rajdhani text-base font-bold leading-snug text-[#1b2e6b] transition group-hover:text-[#0f1e4a]">
-                                    {session.title}
-                                  </h2>
-                                </Link>
-                                <span
-                                  className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
-                                    session.course.is_free
-                                      ? "bg-emerald-100 text-emerald-800"
-                                      : "bg-[#1b2e6b] text-[#f5c518]"
-                                  }`}
-                                >
-                                  {session.course.is_free ? "Free" : `₹${session.course.effective_price}`}
-                                </span>
-                              </div>
-                              <p className="mt-1.5 text-xs font-medium leading-5 text-slate-600">
-                                {session.faculty_name || session.course.exam_type || "KR Logics Faculty"}
-                              </p>
-                              <p className="mt-1 text-xs font-semibold text-[#b78600]">
-                                {formatLiveSessionSchedule(session.scheduled_at)}
-                              </p>
-
-                              <div className="mt-3 flex flex-wrap gap-1.5">
-                                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700">
-                                  <Clock3 size={11} /> {session.duration_minutes} min
-                                </span>
-                                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700">
-                                  <Video size={11} /> {(session.course.subject || "General").toUpperCase()}
-                                </span>
-                              </div>
-
-                              <div className="mt-auto border-t border-slate-100 pt-3">
-                                <LiveClassActionButton session={session} onAccessChange={loadSessions} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#1b2e6b] text-xs font-bold text-[#f5c518] shadow-sm transition hover:bg-[#0f1e4a] disabled:opacity-70" />
-                              </div>
-                            </div>
-                          </article>
+                            session={session}
+                            onAccessChange={loadSessions}
+                          />
                         ))}
                       </div>
                     </div>
@@ -358,6 +305,69 @@ export default function LiveClassesPage() {
         </div>
       </section>
     </PublicPageShell>
+  );
+}
+
+function SessionCard({
+  session,
+  onAccessChange,
+}: {
+  session: LiveClassSessionItem;
+  onAccessChange: () => void;
+}) {
+  return (
+    <article className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[#1b2e6b]/25 hover:shadow-md">
+      <Link href={`/live-classes/course/${session.course.slug}`} className="block">
+        <SessionThumb session={session} />
+      </Link>
+      <div className="flex flex-1 flex-col p-4">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <Link href={`/live-classes/course/${session.course.slug}`}>
+            <h2 className="font-rajdhani text-base font-bold leading-snug text-[#1b2e6b] transition group-hover:text-[#0f1e4a]">
+              {session.title}
+            </h2>
+          </Link>
+          <span
+            className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
+              session.course.is_free
+                ? "bg-emerald-100 text-emerald-800"
+                : "bg-[#1b2e6b] text-[#f5c518]"
+            }`}
+          >
+            {session.course.is_free ? "Free" : `₹${session.course.effective_price}`}
+          </span>
+        </div>
+        <p className="mt-1.5 text-xs font-medium leading-5 text-slate-600">
+          {session.faculty_name || session.course.exam_type || "KR Logics Faculty"}
+        </p>
+        <p className="mt-1 text-xs font-semibold text-[#b78600]">
+          {session.has_recording ? "Recorded · " : ""}
+          {formatLiveSessionSchedule(session.scheduled_at)}
+        </p>
+
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700">
+            <Clock3 size={11} /> {session.duration_minutes} min
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700">
+            <Video size={11} /> {(session.course.subject || "General").toUpperCase()}
+          </span>
+          {session.has_recording ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#fff9e0] px-2 py-1 text-[10px] font-bold text-[#6b4d00]">
+              <MonitorPlay size={11} /> Replay
+            </span>
+          ) : null}
+        </div>
+
+        <div className="mt-auto border-t border-slate-100 pt-3">
+          <LiveClassActionButton
+            session={session}
+            onAccessChange={onAccessChange}
+            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#1b2e6b] text-xs font-bold text-[#f5c518] shadow-sm transition hover:bg-[#0f1e4a] disabled:opacity-70"
+          />
+        </div>
+      </div>
+    </article>
   );
 }
 

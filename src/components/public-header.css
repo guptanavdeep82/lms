@@ -154,9 +154,9 @@
   gap: 10px;
   border: 0;
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px;
   color: #050808;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -226,14 +226,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 44px;
+  height: 40px;
   border: 1px solid #ded9c8;
   border-radius: 7px;
   background: #fff;
   color: #050808;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 0 12px;
+  padding: 0 10px;
 }
 
 .public-home-header .exam-cat.active {
@@ -251,16 +251,16 @@
 .public-home-header .exam-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 46px;
+  gap: 8px;
+  height: 40px;
   overflow: hidden;
   border: 1px solid #dfe3ea;
   border-radius: 7px;
   background: #fff;
   color: #121827;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 0 12px;
+  padding: 0 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -464,8 +464,8 @@
 
   .public-home-header .exam-link {
     height: auto;
-    min-height: 44px;
-    font-size: 13px;
+    min-height: 38px;
+    font-size: 11px;
     white-space: normal;
     line-height: 1.35;
   }

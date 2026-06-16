@@ -236,14 +236,14 @@ canvas {
 }
 
 .exam-cat {
-  height: 44px !important;
+  height: 40px !important;
   border: 1px solid;
   border-radius: 7px;
-  padding: 0 12px;
+  padding: 0 10px;
   display: flex !important;
   align-items: center;
   justify-content: space-between;
-  font-size: 14px !important;
+  font-size: 12px !important;
   font-weight: 600;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
 }
@@ -255,15 +255,15 @@ canvas {
 }
 
 .exam-link {
-  height: 46px !important;
+  height: 40px !important;
   border: 1px solid;
   border-radius: 7px;
   display: flex !important;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   overflow: hidden;
-  padding: 0 12px;
-  font-size: 14px !important;
+  padding: 0 10px;
+  font-size: 12px !important;
   font-weight: 600;
   text-overflow: ellipsis;
   transition: all 0.18s ease;
