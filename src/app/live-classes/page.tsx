@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Bell,
@@ -18,6 +19,7 @@ import { PublicPageShell } from "@/components/PublicPageShell";
 import { LiveClassActionButton } from "@/components/live-classes/LiveClassActionButton";
 import {
   formatLiveSessionSchedule,
+  groupLiveSessionsByDate,
   liveSessionsUrl,
   liveSessionStatusLabel,
   type LiveClassSessionItem,
@@ -55,7 +57,7 @@ function SessionThumb({ session }: { session: LiveClassSessionItem }) {
   const src = session.course.image_url;
 
   return (
-    <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-[#0f1e4a] via-[#1b2e6b] to-[#243580] sm:h-48">
+    <div className="relative h-28 w-full overflow-hidden bg-gradient-to-br from-[#0f1e4a] via-[#1b2e6b] to-[#243580] sm:h-32">
       {src ? (
         <>
           <img src={src} alt={session.title} className="h-full w-full object-cover opacity-90" />
@@ -70,8 +72,8 @@ function SessionThumb({ session }: { session: LiveClassSessionItem }) {
         {liveSessionStatusLabel(session.display_status)}
       </span>
       <div className="absolute inset-0 grid place-items-center">
-        <div className="grid size-14 place-items-center rounded-full bg-[#f5c518] text-[#1b2e6b] shadow-lg shadow-black/20">
-          <PlayCircle size={28} fill="currentColor" />
+        <div className="grid size-10 place-items-center rounded-full bg-[#f5c518] text-[#1b2e6b] shadow-lg shadow-black/20">
+          <PlayCircle size={22} fill="currentColor" />
         </div>
       </div>
     </div>
@@ -134,6 +136,11 @@ export default function LiveClassesPage() {
     });
   }, [liveSessions, search, status, subject, type]);
 
+  const groupedSessions = useMemo(
+    () => groupLiveSessionsByDate(filteredSessions),
+    [filteredSessions],
+  );
+
   const clearFilters = () => {
     setStatus("all");
     setSubject("all");
@@ -151,8 +158,8 @@ export default function LiveClassesPage() {
         <div className="relative mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
           <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#f5c518]/35 bg-[#f5c518]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#f5c518]">
-                <Radio size={14} /> Live Classes on Zoom
+              <span className="inline-flex items-center gap-2 rounded-full bg-[#f5c518] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-[#1b2e6b] shadow-md shadow-black/10">
+                <Radio size={14} className="text-[#1b2e6b]" /> Live Classes on Zoom
               </span>
               <h1 className="mt-5 font-rajdhani text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl lg:leading-[1.05]">
                 Join Live Banking Classes & Watch Replays Anytime
@@ -260,67 +267,69 @@ export default function LiveClassesPage() {
                 </div>
               ) : null}
               {loading ? (
-                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-[420px] animate-pulse rounded-2xl bg-slate-200" />
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-[300px] animate-pulse rounded-xl bg-slate-200" />
                   ))}
                 </div>
               ) : filteredSessions.length ? (
-                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                  {filteredSessions.map((session) => (
-                    <article
-                      key={`${session.source}-${session.course.id}-${session.id}`}
-                      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-[#1b2e6b]/25 hover:shadow-lg"
-                    >
-                      <SessionThumb session={session} />
-                      <div className="flex flex-1 flex-col p-5 sm:p-6">
-                        <div className="flex flex-wrap items-start justify-between gap-2">
-                          <h2 className="font-rajdhani text-xl font-bold leading-snug text-[#1b2e6b] sm:text-[1.35rem]">
-                            {session.title}
-                          </h2>
-                          <span
-                            className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase ${
-                              session.course.is_free
-                                ? "bg-emerald-100 text-emerald-800"
-                                : "bg-[#1b2e6b] text-[#f5c518]"
-                            }`}
-                          >
-                            {session.course.is_free ? "Free" : `₹${session.course.effective_price}`}
-                          </span>
-                        </div>
-                        <p className="mt-2 text-sm font-medium leading-6 text-slate-600">
-                          {session.faculty_name || session.course.exam_type || "KR Logics Faculty"}
-                        </p>
-                        <p className="mt-1 text-sm font-semibold text-[#b78600]">
-                          {formatLiveSessionSchedule(session.scheduled_at)}
-                        </p>
-
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">
-                            <Clock3 size={13} /> {session.duration_minutes} min
-                          </span>
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">
-                            <CalendarDays size={13} /> {session.course.category || "Live"}
-                          </span>
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">
-                            <Video size={13} /> {(session.course.subject || "General").toUpperCase()}
-                          </span>
-                        </div>
-
-                        <div className="mt-auto border-t border-slate-100 pt-5">
-                          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-slate-500">
-                            {session.has_recording
-                              ? "Recording available"
-                              : session.display_status === "live"
-                                ? "Live now on Zoom"
-                                : session.course.is_free
-                                  ? "Free after login"
-                                  : "Purchase required to join"}
-                          </p>
-                          <LiveClassActionButton session={session} onAccessChange={loadSessions} />
-                        </div>
+                <div className="grid gap-8">
+                  {groupedSessions.map(([dateLabel, sessions]) => (
+                    <div key={dateLabel}>
+                      <div className="mb-4 flex items-center gap-2">
+                        <CalendarDays size={18} className="text-[#e8a800]" />
+                        <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#8a6500]">{dateLabel}</h2>
                       </div>
-                    </article>
+                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {sessions.map((session) => (
+                          <article
+                            key={`${session.source}-${session.course.id}-${session.id}`}
+                            className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[#1b2e6b]/25 hover:shadow-md"
+                          >
+                            <Link href={`/live-classes/course/${session.course.slug}`} className="block">
+                              <SessionThumb session={session} />
+                            </Link>
+                            <div className="flex flex-1 flex-col p-4">
+                              <div className="flex flex-wrap items-start justify-between gap-2">
+                                <Link href={`/live-classes/course/${session.course.slug}`}>
+                                  <h2 className="font-rajdhani text-base font-bold leading-snug text-[#1b2e6b] transition group-hover:text-[#0f1e4a]">
+                                    {session.title}
+                                  </h2>
+                                </Link>
+                                <span
+                                  className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
+                                    session.course.is_free
+                                      ? "bg-emerald-100 text-emerald-800"
+                                      : "bg-[#1b2e6b] text-[#f5c518]"
+                                  }`}
+                                >
+                                  {session.course.is_free ? "Free" : `₹${session.course.effective_price}`}
+                                </span>
+                              </div>
+                              <p className="mt-1.5 text-xs font-medium leading-5 text-slate-600">
+                                {session.faculty_name || session.course.exam_type || "KR Logics Faculty"}
+                              </p>
+                              <p className="mt-1 text-xs font-semibold text-[#b78600]">
+                                {formatLiveSessionSchedule(session.scheduled_at)}
+                              </p>
+
+                              <div className="mt-3 flex flex-wrap gap-1.5">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700">
+                                  <Clock3 size={11} /> {session.duration_minutes} min
+                                </span>
+                                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700">
+                                  <Video size={11} /> {(session.course.subject || "General").toUpperCase()}
+                                </span>
+                              </div>
+
+                              <div className="mt-auto border-t border-slate-100 pt-3">
+                                <LiveClassActionButton session={session} onAccessChange={loadSessions} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#1b2e6b] text-xs font-bold text-[#f5c518] shadow-sm transition hover:bg-[#0f1e4a] disabled:opacity-70" />
+                              </div>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : (

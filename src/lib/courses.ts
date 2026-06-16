@@ -12,6 +12,7 @@ export type ApiCourse = {
   slug: string;
   course_type: "video" | "pdf" | "live" | string;
   image_url: string | null;
+  pdf_url?: string | null;
   short_description: string | null;
   description?: string | null;
   level: string;
@@ -73,6 +74,7 @@ export type ListingCourse = {
   tags: string[];
   isNew: boolean;
   type: "video" | "pdf" | "live";
+  image_url: string | null;
 };
 
 export type LiveClassSession = {
@@ -212,6 +214,7 @@ export function mapApiCourseToListingCourse(course: ApiCourse): ListingCourse {
     tags: course.subjects.length > 0 ? course.subjects.map((subject) => subject.name) : [course.category || "Banking"].filter(Boolean) as string[],
     isNew: false,
     type: (course.course_type === "pdf" || course.course_type === "live" ? course.course_type : "video") as ListingCourse["type"],
+    image_url: course.image_url,
   };
 }
 
@@ -256,6 +259,7 @@ export function mapApiCourseToCatalogItem(course: ApiCourse, lessons: ApiCourseL
     badge: listing.badge || undefined,
     tags: listing.tags,
     image: course.image_url || "/hero-students.png",
+    pdfUrl: course.pdf_url || null,
     outcomes: course.subjects.length > 0
       ? course.subjects.map((subject) => `${subject.name} preparation and practice`)
       : ["Structured syllabus coverage", "Exam-focused preparation", "Practice with expert guidance"],

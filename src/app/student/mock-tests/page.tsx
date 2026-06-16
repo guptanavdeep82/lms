@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   Award,
   BarChart3,
@@ -11,7 +10,6 @@ import {
   CreditCard,
   FileText,
   Grid2X2,
-  LogOut,
   Medal,
   Menu,
   MessageSquare,
@@ -26,28 +24,8 @@ import {
   WalletCards,
   Zap,
 } from "lucide-react";
-
-const navGroups = [
-  {
-    title: "Learn",
-    items: [
-      { label: "Dashboard", icon: Grid2X2, href: "/student/dashboard" },
-      { label: "My Courses", icon: BookOpen, href: "/student/courses" },
-      { label: "Mock Tests", icon: WalletCards, href: "/student/mock-tests", active: true },
-      { label: "Schedule", icon: CalendarDays, href: "#schedule" },
-      { label: "Certificates", icon: Medal, href: "#certificates" },
-    ],
-  },
-  {
-    title: "Account",
-    items: [
-      { label: "Profile", icon: User, href: "#profile" },
-      { label: "Purchases", icon: CreditCard, href: "#purchases" },
-      { label: "Messages", icon: MessageSquare, href: "#messages" },
-      { label: "Settings", icon: Settings, href: "#settings" },
-    ],
-  },
-];
+import { StudentMobileNav } from "@/components/student/StudentMobileNav";
+import { StudentSidebar } from "@/components/student/StudentSidebar";
 
 const stats = [
   { label: "Tests Taken", value: "18", helper: "+4 this week", icon: FileText, tone: "bg-[#eef2ff] text-[#172a69]" },
@@ -120,45 +98,8 @@ export default function StudentMockTestsPage() {
     <main className="min-h-screen bg-[#f6f8fc] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
 
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[282px] border-r border-[#e4e8f1] bg-white lg:block">
-        <div className="flex h-[78px] items-center gap-3 border-b border-[#e4e8f1] px-6">
-          <Image src="/logics-logo.jpeg" alt="KR Logics logo" width={48} height={48} className="h-12 w-12 rounded-2xl border-2 border-[#ffd21f] object-cover shadow-xl shadow-black/10" />
-          <div className="min-w-0">
-            <p className="text-[16px] font-extrabold leading-tight text-[#172a69]">KR Logics</p>
-            <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#8791a5]">Student LMS</p>
-          </div>
-        </div>
-
-        <div className="h-[calc(100vh-78px)] overflow-y-auto px-4 py-5">
-          {navGroups.map((group) => (
-            <div key={group.title} className="mb-8">
-              <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#9aa4b5]">{group.title}</p>
-              <div className="space-y-1.5">
-                {group.items.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    className={`flex h-11 items-center gap-3 rounded-2xl px-3.5 text-[14px] font-semibold transition ${
-                      item.active
-                        ? "bg-[#eef2ff] text-[#172a69] shadow-sm ring-1 ring-[#dfe5ff]"
-                        : "text-[#334155] hover:bg-[#f3f6fb] hover:text-[#172a69]"
-                    }`}
-                  >
-                    <item.icon size={18} strokeWidth={2.2} />
-                    {item.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0 border-t border-[#e4e8f1] bg-white p-4">
-          <a href="#" className="flex h-11 items-center gap-3 rounded-2xl px-3.5 text-[14px] font-semibold text-[#334155] hover:bg-[#f3f6fb]">
-            <LogOut size={18} />
-            Sign out
-          </a>
-        </div>
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[282px] border-r border-[#e4e8f1] bg-white lg:block relative">
+        <StudentSidebar />
       </aside>
 
       <section className="lg:pl-[282px]">
@@ -182,20 +123,7 @@ export default function StudentMockTestsPage() {
           </div>
         </header>
 
-        <nav className="sticky top-[70px] z-20 flex gap-2 overflow-x-auto border-b border-[#e4e8f1] bg-white px-4 py-3 [scrollbar-width:none] sm:px-8 lg:hidden [&::-webkit-scrollbar]:hidden">
-          {navGroups.flatMap((group) => group.items).slice(0, 6).map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl px-3 text-xs font-extrabold ${
-                item.active ? "bg-[#172a69] text-white" : "bg-[#f3f6fb] text-[#334155]"
-              }`}
-            >
-              <item.icon size={15} />
-              {item.label}
-            </a>
-          ))}
-        </nav>
+        <StudentMobileNav />
 
         <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-8">
           <section className="mb-6 grid gap-5 xl:grid-cols-[1fr_360px]">

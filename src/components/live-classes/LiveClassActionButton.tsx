@@ -30,8 +30,8 @@ export function LiveClassActionButton({ session, className, onAccessChange }: Li
 
   if (session.source === "course") {
     return (
-      <Link href={`/courses/${session.course.slug}`} className={className || defaultBtnClass}>
-        View Live Course
+      <Link href={`/live-classes/course/${session.course.slug}`} className={className || defaultBtnClass}>
+        View Live Plan
       </Link>
     );
   }

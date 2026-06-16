@@ -117,3 +117,64 @@ export function formatLiveSessionSchedule(value: string | null) {
   if (!value) return "Schedule coming soon";
   return formatLiveSessionTime(value);
 }
+
+export function formatLiveSessionDateKey(value: string | null) {
+  if (!value) return "Schedule coming soon";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Schedule coming soon";
+  return date.toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+export function groupLiveSessionsByDate(sessions: LiveClassSessionItem[]) {
+  const groups = new Map<string, LiveClassSessionItem[]>();
+
+  for (const session of sessions) {
+    const key = formatLiveSessionDateKey(session.scheduled_at);
+    const bucket = groups.get(key) || [];
+    bucket.push(session);
+    groups.set(key, bucket);
+  }
+
+  return Array.from(groups.entries());
+}
+
+export type LiveCourseDetail = {
+  course: {
+    id: number;
+    title: string;
+    slug: string;
+    description: string | null;
+    short_description: string | null;
+    price: number;
+    sale_price: number | null;
+    effective_price: number;
+    is_free: boolean;
+    duration_hours: number;
+    category: string | null;
+    exam_type: string | null;
+    subject: string | null;
+    image_url: string | null;
+  };
+  access: LiveSessionAccess;
+  sessions: LiveClassSessionItem[];
+  recordings: LiveClassSessionItem[];
+};
+
+export function liveCourseDetailUrl(slug: string, email?: string) {
+  const base = typeof window !== "undefined"
+    ? `/api/live-courses/${encodeURIComponent(slug)}`
+    : `${publicBackendBaseUrl}/api/live-courses/${encodeURIComponent(slug)}`;
+  if (!email) return base;
+  return `${base}?email=${encodeURIComponent(email)}`;
+}
+
+export async function fetchLiveCourseDetail(slug: string, email?: string): Promise<LiveCourseDetail | null> {
+  const response = await fetch(liveCourseDetailUrl(slug, email), { cache: "no-store" });
+  if (!response.ok) return null;
+  return (await response.json()) as LiveCourseDetail;
+}

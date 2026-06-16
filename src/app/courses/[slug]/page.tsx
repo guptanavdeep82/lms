@@ -37,6 +37,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
   const courseTypeLabel = isPdfCourse ? "PDF Course" : isLiveCourse ? "Live Class Course" : "Video Course";
   const price = course.price === 0 ? "Free" : `Rs ${course.price.toLocaleString("en-IN")}`;
   const original = course.original ? `Rs ${course.original.toLocaleString("en-IN")}` : null;
+  const pdfUrl = course.pdfUrl;
 
   return (
     <PublicPageShell active="courses" className="min-h-screen bg-[#f7f6ef] text-[#151515]">
@@ -45,6 +46,11 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_0.82fr]">
           <div>
             <Link href="/courses" className="text-sm font-bold text-[#ffd21f]">← Back to courses</Link>
+            <div className="mt-6 overflow-hidden rounded-2xl border border-[#ffd21f]/20 bg-[#111] shadow-2xl">
+              <div className="relative h-56 w-full sm:h-72">
+                <CourseImage src={course.image} alt={course.title} />
+              </div>
+            </div>
             <div className="mt-6 flex flex-wrap gap-2">
               {[courseTypeLabel, course.category, course.exam, course.level, course.badge].filter(Boolean).map((item) => (
                 <span key={item} className="rounded-full border border-[#ffd21f]/25 bg-white/8 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#ffd21f]">
@@ -72,9 +78,6 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           </div>
 
           <aside className="overflow-hidden rounded-2xl border border-[#ffd21f]/20 bg-white p-3 text-[#050808] shadow-2xl shadow-black/30">
-            <div className="relative h-72 overflow-hidden rounded-xl bg-[#f7f6ef]">
-              <CourseImage src={course.image} alt={course.title} />
-            </div>
             <div className="p-5">
               <div className="flex items-end justify-between gap-3">
                 <div>
@@ -94,6 +97,17 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                 isPdfCourse={isPdfCourse}
                 isLiveCourse={isLiveCourse}
               />
+
+              {isPdfCourse && pdfUrl ? (
+                <a
+                  href={pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex h-11 w-full items-center justify-center rounded-lg border border-[#ded9c8] bg-[#fff8dc] text-sm font-extrabold text-[#050808]"
+                >
+                  Download Course PDF
+                </a>
+              ) : null}
 
               <div className="mt-5 grid gap-2 text-sm font-semibold text-slate-700">
                 <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Secure payment and student login</span>
