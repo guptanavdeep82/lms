@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { loginStudent, saveStudentProfile } from "@/lib/student-auth";
@@ -27,6 +27,7 @@ const steps = [
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [pendingStudent, setPendingStudent] = useState<GoogleStudent | null>(null);
   const [mobile, setMobile] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -39,6 +40,13 @@ export default function RegisterPage() {
   const [referralDiscountLabel, setReferralDiscountLabel] = useState("");
   const [referralValid, setReferralValid] = useState(false);
   const [validatingReferral, setValidatingReferral] = useState(false);
+
+  useEffect(() => {
+    const invite = searchParams.get("invite");
+    if (invite) {
+      setReferralCode(invite.toUpperCase());
+    }
+  }, [searchParams]);
 
   const completeLogin = async (student: GoogleStudent, verifiedMobile: string) => {
     const selectedState = states.find((state) => String(state.id) === stateId);
@@ -58,6 +66,7 @@ export default function RegisterPage() {
         provider: "google",
         mobile_verified: true,
         referral_code: referralCode.trim() || undefined,
+        invite_code: searchParams.get("invite")?.trim().toUpperCase() || undefined,
       });
 
       const referral = referralToSessionFields(payload.student || {});

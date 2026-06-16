@@ -3,6 +3,7 @@ import {
   formatStatNumber,
   extractYouTubeId,
   type HomePageSettings,
+  type HomeTopCourse,
 } from "@/lib/home-page";
 
 function escapeHtml(value: string): string {
@@ -132,6 +133,56 @@ export function applyHomePageData(markup: string, settings: HomePageSettings): s
   );
 
   return nextMarkup;
+}
+
+const courseCardColors = ["#1B2E6B", "#1D9E75", "#D85A30", "#7F77DD", "#BA7517", "#378ADD"];
+const courseCardBadges = [
+  { label: "POPULAR", style: "background:#EEF6FF;color:#1B2E6B" },
+  { label: "HOT", style: "background:#E1F5EE;color:#0F6E56" },
+  { label: "PREMIUM", style: "background:#FAECE7;color:#993C1D" },
+  { label: "NEW", style: "background:#FAEEDA;color:#633806" },
+];
+
+function courseIconClass(type: string): string {
+  if (type === "pdf") return "fa-file-pdf";
+  if (type === "live") return "fa-video";
+  return "fa-graduation-cap";
+}
+
+export function buildTopCoursesMarkup(courses: HomeTopCourse[]): string {
+  if (!courses.length) return "";
+
+  return courses
+    .map((course, index) => {
+      const color = courseCardColors[index % courseCardColors.length];
+      const badge = course.is_featured ? courseCardBadges[index % courseCardBadges.length] : null;
+      const priceLabel = course.effective_price <= 0 ? "Free" : `₹${course.effective_price.toLocaleString("en-IN")}`;
+      const description = escapeHtml((course.short_description || "Expert-designed banking exam course.").slice(0, 110));
+      const thumb = course.image_url
+        ? `<img src="${escapeHtml(course.image_url)}" alt="${escapeHtml(course.title)}" style="width:50px;height:50px;border-radius:14px;object-fit:cover">`
+        : `<div class="course-icon-wrap" style="background:${color}"><i class="fa ${courseIconClass(course.course_type)}"></i></div>`;
+
+      return `<a href="/courses/${escapeHtml(course.slug)}" class="course-card">
+      <div class="course-top">
+        ${thumb}
+        ${badge ? `<span class="course-badge" style="${badge.style}">${badge.label}</span>` : ""}
+        <div class="course-title">${escapeHtml(course.title)}</div>
+        <div class="course-desc">${description}</div>
+      </div>
+      <div class="course-bottom">
+        <div class="course-meta"><span><i class="fa fa-clock"></i> ${course.duration_hours} hrs</span><span><i class="fa fa-file-alt"></i> ${course.lessons_count}+ Lessons</span></div>
+        <div class="course-price">${priceLabel}</div>
+      </div>
+    </a>`;
+    })
+    .join("");
+}
+
+export function applyTopCoursesMarkup(markup: string, courses: HomeTopCourse[]): string {
+  const cards = buildTopCoursesMarkup(courses);
+  if (!cards) return markup;
+
+  return markup.replace(/<div class="courses-grid">[\s\S]*?<\/div>(?=\s*<\/section>)/, `<div class="courses-grid">${cards}</div>`);
 }
 
 export function buildHeroShowcaseMarkup(bannerImages: string[]): string {

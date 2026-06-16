@@ -41,11 +41,27 @@ export type HomePageFaq = {
   sort_order: number;
 };
 
+export type HomeTopCourse = {
+  id: number;
+  title: string;
+  slug: string;
+  short_description: string | null;
+  course_type: string;
+  price: number;
+  sale_price: number | null;
+  effective_price: number;
+  duration_hours: number;
+  lessons_count: number;
+  is_featured: boolean;
+  image_url: string | null;
+};
+
 export type HomePageResponse = {
   settings: HomePageSettings;
   reviews: HomePageReview[];
   faculties: HomePageFaculty[];
   faqs: HomePageFaq[];
+  top_courses: HomeTopCourse[];
 };
 
 export type HomeVideoItem = {

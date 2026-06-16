@@ -5,13 +5,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BookOpen,
-  CalendarDays,
-  CreditCard,
+  Gift,
   Grid2X2,
+  Headphones,
+  History,
   LogOut,
-  Medal,
-  MessageSquare,
-  Settings,
+  ShoppingBag,
+  Target,
   User,
   WalletCards,
 } from "lucide-react";
@@ -22,24 +22,28 @@ const navGroups = [
     title: "Learn",
     items: [
       { label: "Dashboard", icon: Grid2X2, href: "/student/dashboard" },
-      { label: "My Courses", icon: BookOpen, href: "/student/courses" },
+      { label: "My Courses", icon: BookOpen, href: "/student/dashboard#courses" },
       { label: "Mock Tests", icon: WalletCards, href: "/student/mock-tests" },
-      { label: "Schedule", icon: CalendarDays, href: "#schedule" },
-      { label: "Certificates", icon: Medal, href: "#certificates" },
+      { label: "Test Results", icon: Target, href: "/student/dashboard#test-results" },
     ],
   },
   {
     title: "Account",
     items: [
-      { label: "Profile", icon: User, href: "#profile" },
-      { label: "Purchases", icon: CreditCard, href: "#purchases" },
-      { label: "Messages", icon: MessageSquare, href: "#messages" },
-      { label: "Settings", icon: Settings, href: "#settings" },
+      { label: "My Profile", icon: User, href: "/student/dashboard#profile" },
+      { label: "Purchase History", icon: ShoppingBag, href: "/student/dashboard#purchases" },
+      { label: "Order History", icon: History, href: "/student/dashboard#orders" },
+      { label: "Refer & Earn", icon: Gift, href: "/student/dashboard#refer-earn" },
+      { label: "DRS Ticket", icon: Headphones, href: "/student/dashboard#drs-ticket" },
     ],
   },
 ];
 
-export function StudentSidebar() {
+type StudentSidebarProps = {
+  onNavigate?: () => void;
+};
+
+export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -51,7 +55,7 @@ export function StudentSidebar() {
   return (
     <>
       <div className="flex h-[78px] items-center gap-3 border-b border-[#e4e8f1] px-6">
-        <Link href="/" className="flex min-w-0 items-center gap-3 transition hover:opacity-90">
+        <Link href="/" className="flex min-w-0 items-center gap-3 transition hover:opacity-90" onClick={onNavigate}>
           <Image
             src="/logics-logo.jpeg"
             alt="KR Logics logo"
@@ -66,17 +70,20 @@ export function StudentSidebar() {
         </Link>
       </div>
 
-      <div className="h-[calc(100vh-78px)] overflow-y-auto px-4 py-5 pb-24">
+      <div className="flex-1 overflow-y-auto px-4 py-5">
         {navGroups.map((group) => (
           <div key={group.title} className="mb-8">
             <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#9aa4b5]">{group.title}</p>
             <div className="space-y-1.5">
               {group.items.map((item) => {
-                const active = pathname === item.href;
+                const active = item.href === "/student/dashboard"
+                  ? pathname === "/student/dashboard" && typeof window !== "undefined" && !window.location.hash
+                  : pathname === item.href.split("#")[0] && (item.href.includes("#") ? typeof window !== "undefined" && window.location.hash === `#${item.href.split("#")[1]}` : pathname === item.href);
                 return (
                   <Link
                     key={item.label}
                     href={item.href}
+                    onClick={onNavigate}
                     className={`flex h-11 items-center gap-3 rounded-2xl px-3.5 text-[14px] font-semibold transition ${
                       active
                         ? "bg-[#eef2ff] text-[#172a69] shadow-sm ring-1 ring-[#dfe5ff]"
@@ -93,7 +100,7 @@ export function StudentSidebar() {
         ))}
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 border-t border-[#e4e8f1] bg-white p-4">
+      <div className="border-t border-[#e4e8f1] bg-white p-4">
         <button
           type="button"
           onClick={handleSignOut}

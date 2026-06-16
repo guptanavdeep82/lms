@@ -48,7 +48,7 @@ export default function StudentCoursesPage() {
     <main className="min-h-screen bg-[#f6f8fc] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
 
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[282px] border-r border-[#e4e8f1] bg-white lg:block relative">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[282px] flex-col border-r border-[#e4e8f1] bg-white lg:flex">
         <StudentSidebar />
       </aside>
 
@@ -83,7 +83,7 @@ export default function StudentCoursesPage() {
                 <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f0a500]">Purchased Learning</p>
                 <h1 className="mt-2 text-[28px] font-extrabold tracking-[-0.04em] text-[#172a69] sm:text-[36px]">My Courses</h1>
                 <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#667085]">
-                  Yahan student ke purchased courses, progress, next lessons, notes aur validity ek clean dashboard me show honge.
+                  Purchased courses, progress, next lessons, notes and validity are shown here in one clean dashboard.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   {["All Courses", "In Progress", "Live Batch", "Completed"].map((tab, index) => (

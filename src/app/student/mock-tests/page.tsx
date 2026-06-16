@@ -98,7 +98,7 @@ export default function StudentMockTestsPage() {
     <main className="min-h-screen bg-[#f6f8fc] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
 
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[282px] border-r border-[#e4e8f1] bg-white lg:block relative">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[282px] flex-col border-r border-[#e4e8f1] bg-white lg:flex">
         <StudentSidebar />
       </aside>
 

@@ -1,29 +1,27 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Bell,
   CalendarDays,
   CheckCircle2,
-  Clock3,
   Filter,
   MonitorPlay,
-  PlayCircle,
   Radio,
   Search,
   Video,
 } from "lucide-react";
 import { PublicPageShell } from "@/components/PublicPageShell";
-import { LiveClassActionButton } from "@/components/live-classes/LiveClassActionButton";
+import { CoursePromoCard } from "@/components/courses/CoursePromoCard";
+import { LiveSessionPromoCard } from "@/components/courses/LiveSessionPromoCard";
 import {
-  formatLiveSessionSchedule,
   groupLiveSessionsByDate,
   liveSessionsUrl,
-  liveSessionStatusLabel,
   type LiveClassSessionItem,
 } from "@/lib/live-classes";
+import { fetchCourses, mapApiCourseToListingCourse } from "@/lib/courses";
 import { getStudentSession } from "@/lib/student-auth";
+import "@/styles/courses-catalog.css";
 
 const filters = {
   status: [
@@ -46,41 +44,9 @@ const filters = {
   ],
 };
 
-function statusBadgeClass(status: LiveClassSessionItem["display_status"]) {
-  if (status === "live") return "bg-red-600 text-white";
-  if (status === "replay") return "bg-white text-[#1b2e6b]";
-  return "bg-[#f5c518] text-[#1b2e6b]";
-}
-
-function SessionThumb({ session }: { session: LiveClassSessionItem }) {
-  const src = session.course.image_url;
-
-  return (
-    <div className="relative h-28 w-full overflow-hidden bg-gradient-to-br from-[#0f1e4a] via-[#1b2e6b] to-[#243580] sm:h-32">
-      {src ? (
-        <>
-          <img src={src} alt={session.title} className="h-full w-full object-cover opacity-90" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0f1e4a]/90 via-[#1b2e6b]/40 to-transparent" />
-        </>
-      ) : (
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,197,24,0.25),transparent_40%)]" />
-      )}
-      <span
-        className={`absolute left-4 top-4 rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide ${statusBadgeClass(session.display_status)}`}
-      >
-        {liveSessionStatusLabel(session.display_status)}
-      </span>
-      <div className="absolute inset-0 grid place-items-center">
-        <div className="grid size-10 place-items-center rounded-full bg-[#f5c518] text-[#1b2e6b] shadow-lg shadow-black/20">
-          <PlayCircle size={22} fill="currentColor" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function LiveClassesPage() {
   const [liveSessions, setLiveSessions] = useState<LiveClassSessionItem[]>([]);
+  const [liveCourses, setLiveCourses] = useState<ReturnType<typeof mapApiCourseToListingCourse>[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [status, setStatus] = useState("all");
@@ -110,6 +76,7 @@ export default function LiveClassesPage() {
 
   useEffect(() => {
     loadSessions();
+    fetchCourses("live").then((items) => setLiveCourses(items.map(mapApiCourseToListingCourse)));
   }, [loadSessions]);
 
   const recordedSessions = useMemo(
@@ -232,6 +199,20 @@ export default function LiveClassesPage() {
 
             {/* Cards grid */}
             <div>
+              {liveCourses.length ? (
+                <div className="mb-10">
+                  <div className="mb-4 flex items-center gap-2">
+                    <Video size={18} className="text-[#e8a800]" />
+                    <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#8a6500]">Live Course Plans</h2>
+                  </div>
+                  <div className="courses-promo-grid">
+                    {liveCourses.map((course) => (
+                      <CoursePromoCard key={course.id} course={course} href={`/live-classes/course/${course.slug}`} />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               {loadError ? (
                 <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
                   {loadError}
@@ -245,18 +226,18 @@ export default function LiveClassesPage() {
                     <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#8a6500]">Recorded Classes</h2>
                     <span className="rounded-full bg-[#fff9e0] px-2 py-0.5 text-[10px] font-bold text-[#6b4d00]">{recordedSessions.length}</span>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  <div className="courses-promo-grid">
                     {recordedSessions.map((session) => (
-                      <SessionCard key={`rec-${session.id}`} session={session} onAccessChange={loadSessions} />
+                      <LiveSessionPromoCard key={`rec-${session.id}`} session={session} onAccessChange={loadSessions} />
                     ))}
                   </div>
                 </div>
               ) : null}
 
               {loading ? (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="courses-promo-grid">
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-[300px] animate-pulse rounded-xl bg-slate-200" />
+                    <div key={i} className="h-[420px] animate-pulse rounded-[18px] bg-slate-200" />
                   ))}
                 </div>
               ) : filteredSessions.length ? (
@@ -267,9 +248,9 @@ export default function LiveClassesPage() {
                         <CalendarDays size={18} className="text-[#e8a800]" />
                         <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#8a6500]">{dateLabel}</h2>
                       </div>
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                      <div className="courses-promo-grid">
                         {sessions.map((session) => (
-                          <SessionCard
+                          <LiveSessionPromoCard
                             key={`${session.source}-${session.course.id}-${session.id}`}
                             session={session}
                             onAccessChange={loadSessions}
@@ -305,69 +286,6 @@ export default function LiveClassesPage() {
         </div>
       </section>
     </PublicPageShell>
-  );
-}
-
-function SessionCard({
-  session,
-  onAccessChange,
-}: {
-  session: LiveClassSessionItem;
-  onAccessChange: () => void;
-}) {
-  return (
-    <article className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[#1b2e6b]/25 hover:shadow-md">
-      <Link href={`/live-classes/course/${session.course.slug}`} className="block">
-        <SessionThumb session={session} />
-      </Link>
-      <div className="flex flex-1 flex-col p-4">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <Link href={`/live-classes/course/${session.course.slug}`}>
-            <h2 className="font-rajdhani text-base font-bold leading-snug text-[#1b2e6b] transition group-hover:text-[#0f1e4a]">
-              {session.title}
-            </h2>
-          </Link>
-          <span
-            className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase ${
-              session.course.is_free
-                ? "bg-emerald-100 text-emerald-800"
-                : "bg-[#1b2e6b] text-[#f5c518]"
-            }`}
-          >
-            {session.course.is_free ? "Free" : `₹${session.course.effective_price}`}
-          </span>
-        </div>
-        <p className="mt-1.5 text-xs font-medium leading-5 text-slate-600">
-          {session.faculty_name || session.course.exam_type || "KR Logics Faculty"}
-        </p>
-        <p className="mt-1 text-xs font-semibold text-[#b78600]">
-          {session.has_recording ? "Recorded · " : ""}
-          {formatLiveSessionSchedule(session.scheduled_at)}
-        </p>
-
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700">
-            <Clock3 size={11} /> {session.duration_minutes} min
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700">
-            <Video size={11} /> {(session.course.subject || "General").toUpperCase()}
-          </span>
-          {session.has_recording ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#fff9e0] px-2 py-1 text-[10px] font-bold text-[#6b4d00]">
-              <MonitorPlay size={11} /> Replay
-            </span>
-          ) : null}
-        </div>
-
-        <div className="mt-auto border-t border-slate-100 pt-3">
-          <LiveClassActionButton
-            session={session}
-            onAccessChange={onAccessChange}
-            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#1b2e6b] text-xs font-bold text-[#f5c518] shadow-sm transition hover:bg-[#0f1e4a] disabled:opacity-70"
-          />
-        </div>
-      </div>
-    </article>
   );
 }
 

@@ -65,6 +65,7 @@ export default function DynamicMockExamPage() {
     saveMockResult({
       slug,
       testTitle: data.test.title,
+      testType: data.test.test_type,
       total: questions.length,
       answered: answeredCount,
       correct,

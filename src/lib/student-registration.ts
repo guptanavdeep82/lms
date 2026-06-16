@@ -15,6 +15,7 @@ export type RegisterStudentInput = {
   provider?: string;
   mobile_verified?: boolean;
   referral_code?: string;
+  invite_code?: string;
 };
 
 export type StudentCheckoutProfile = {

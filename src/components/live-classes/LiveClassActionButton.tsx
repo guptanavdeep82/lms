@@ -10,13 +10,14 @@ import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 type LiveClassActionButtonProps = {
   session: LiveClassSessionItem;
   className?: string;
+  style?: React.CSSProperties;
   onAccessChange?: () => void;
 };
 
 const defaultBtnClass =
   "inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#1b2e6b] text-sm font-bold text-[#f5c518] shadow-sm transition hover:bg-[#0f1e4a] disabled:opacity-70";
 
-export function LiveClassActionButton({ session, className, onAccessChange }: LiveClassActionButtonProps) {
+export function LiveClassActionButton({ session, className, style, onAccessChange }: LiveClassActionButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [loginHref, setLoginHref] = useState("/login");
@@ -30,7 +31,7 @@ export function LiveClassActionButton({ session, className, onAccessChange }: Li
 
   if (session.source === "course") {
     return (
-      <Link href={`/live-classes/course/${session.course.slug}`} className={className || defaultBtnClass}>
+      <Link href={`/live-classes/course/${session.course.slug}`} className={className || defaultBtnClass} style={style}>
         View Live Plan
       </Link>
     );
@@ -38,7 +39,7 @@ export function LiveClassActionButton({ session, className, onAccessChange }: Li
 
   if (!isStudentLoggedIn()) {
     return (
-      <Link href={loginHref} className={className || defaultBtnClass}>
+      <Link href={loginHref} className={className || defaultBtnClass} style={style}>
         Login to {label}
       </Link>
     );
@@ -50,6 +51,7 @@ export function LiveClassActionButton({ session, className, onAccessChange }: Li
         <button
           type="button"
           className={className || defaultBtnClass}
+          style={style}
           disabled={loading}
           onClick={async () => {
             const student = getStudentSession();
@@ -109,7 +111,7 @@ export function LiveClassActionButton({ session, className, onAccessChange }: Li
 
   return (
     <div className="grid gap-2">
-      <button type="button" className={className || defaultBtnClass} disabled={loading} onClick={handleAction}>
+      <button type="button" className={className || defaultBtnClass} style={style} disabled={loading} onClick={handleAction}>
         {loading ? <Loader2 className="inline size-4 animate-spin" /> : <PlayCircle className="inline size-4" />}
         {loading ? "Please wait..." : label}
       </button>
