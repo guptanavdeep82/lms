@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import {
   BookOpen,
   CheckCircle2,
@@ -35,11 +35,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
   const isPdfCourse = course.courseType === "pdf";
   const isLiveCourse = course.courseType === "live";
 
-  if (isLiveCourse) {
-    redirect(`/live-classes/course/${slug}`);
-  }
-
-  const courseTypeLabel = isPdfCourse ? "PDF Course" : "Video Course";
+  const courseTypeLabel = isPdfCourse ? "PDF Course" : isLiveCourse ? "Live Class Course" : "Video Course";
   const price = course.price === 0 ? "Free" : `Rs ${course.price.toLocaleString("en-IN")}`;
   const original = course.original ? `Rs ${course.original.toLocaleString("en-IN")}` : null;
   const pdfUrl = course.pdfUrl;
@@ -68,7 +64,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
             <div className="mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
               {[
-                [Clock3, isPdfCourse ? "Lifetime" : `${course.hours}+ hrs`, isPdfCourse ? "PDF access" : "Video content"],
+                [Clock3, isPdfCourse ? "Lifetime" : `${course.hours}+ hrs`, isPdfCourse ? "PDF access" : isLiveCourse ? "Live sessions" : "Video content"],
                 [FileText, `${course.tests}+`, "Tests"],
                 [UsersRound, course.students.toLocaleString("en-IN"), "Students"],
                 [Star, course.rating.toFixed(1), `${course.reviews} reviews`],
@@ -100,7 +96,17 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                 courseTitle={course.title}
                 price={course.price}
                 isPdfCourse={isPdfCourse}
+                isLiveCourse={isLiveCourse}
               />
+
+              {isLiveCourse ? (
+                <Link
+                  href={`/live-classes/course/${slug}`}
+                  className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-[#ded9c8] bg-[#fff8dc] text-sm font-extrabold text-[#050808]"
+                >
+                  <PlayCircle className="size-4" /> View Class Schedule
+                </Link>
+              ) : null}
 
               {isPdfCourse && pdfUrl ? (
                 <a
@@ -116,7 +122,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
               <div className="mt-5 grid gap-2 text-sm font-semibold text-slate-700">
                 <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Secure payment and student login</span>
                 <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Course access starts after purchase</span>
-                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> {isPdfCourse ? "Downloadable study notes included" : "Mock tests and notes included"}</span>
+                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> {isPdfCourse ? "Downloadable study notes included" : isLiveCourse ? "Live classes and replays included" : "Mock tests and notes included"}</span>
               </div>
             </div>
           </aside>
@@ -158,7 +164,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
             <h3 className="font-['Sora'] text-xl font-extrabold text-[#050808]">This course includes</h3>
             <div className="mt-5 grid gap-4 text-sm font-semibold text-slate-700">
               {[
-                [Video, isPdfCourse ? "Downloadable PDF modules" : `${course.hours}+ hours recorded videos`],
+                [isPdfCourse ? FileText : Video, isPdfCourse ? "Downloadable PDF modules" : isLiveCourse ? `${course.hours}+ hours live classes` : `${course.hours}+ hours recorded videos`],
                 [BookOpen, "Structured subject-wise learning"],
                 [FileText, isPdfCourse ? "Topic-wise notes and practice sheets" : "Downloadable notes and PDFs"],
                 [PlayCircle, `${course.tests}+ mock and practice tests`],

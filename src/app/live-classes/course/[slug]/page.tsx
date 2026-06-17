@@ -68,8 +68,8 @@ export default function LiveCourseDetailPage() {
     <PublicPageShell active="live-classes">
       <section className="border-b border-[#ded9c8] bg-[#f7f6ef] px-4 py-8 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-6xl">
-          <Link href="/live-classes" className="inline-flex items-center gap-2 text-sm font-bold text-[#1b2e6b]">
-            <ArrowLeft size={16} /> Back to live classes
+          <Link href="/courses?type=video" className="inline-flex items-center gap-2 text-sm font-bold text-[#1b2e6b]">
+            <ArrowLeft size={16} /> Back to video courses
           </Link>
 
           {loading ? (

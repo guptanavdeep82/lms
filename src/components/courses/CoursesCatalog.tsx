@@ -38,18 +38,14 @@ export function CoursesCatalog() {
 
   useEffect(() => {
     fetchCourses()
-      .then((items) => setCourses(
-        items
-          .filter((course) => course.course_type !== "live")
-          .map(mapApiCourseToListingCourse),
-      ))
+      .then((items) => setCourses(items.map(mapApiCourseToListingCourse)))
       .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
     const type = searchParams.get("type");
     if (type === "live") {
-      router.replace("/live-classes");
+      router.replace("/courses?type=video");
       return;
     }
     if (type === "video" || type === "pdf") {
@@ -60,7 +56,11 @@ export function CoursesCatalog() {
   const filtered = useMemo(() => {
     let list = [...courses];
 
-    if (filters.type !== "all") list = list.filter((course) => course.type === filters.type);
+    if (filters.type === "video") {
+      list = list.filter((course) => course.type === "video" || course.type === "live");
+    } else if (filters.type === "pdf") {
+      list = list.filter((course) => course.type === "pdf");
+    }
     if (filters.cat !== "all") list = list.filter((course) => course.category === filters.cat);
     if (filters.exam !== "all") list = list.filter((course) => course.exam === filters.exam || course.exam === "all");
     if (filters.level !== "all") list = list.filter((course) => course.level === filters.level);
