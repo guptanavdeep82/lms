@@ -54,6 +54,14 @@ export type SupportTicketRecord = {
   created_at?: string | null;
 };
 
+export type StudentNoteRecord = {
+  id: number;
+  title: string;
+  content: string;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
 function apiUrl(path: string) {
   return typeof window !== "undefined"
     ? `/api/student-dashboard${path}`
@@ -142,6 +150,45 @@ export async function createSupportTicket(input: {
   const data = await response.json().catch(() => ({})) as { ticket?: SupportTicketRecord; message?: string };
   if (!response.ok) throw new Error(data.message || "Unable to create ticket.");
   return data.ticket || null;
+}
+
+export async function fetchStudentNotes(email: string) {
+  const response = await fetch(apiUrl(`/notes?email=${encodeURIComponent(email)}`), { cache: "no-store" });
+  if (!response.ok) return [] as StudentNoteRecord[];
+  const data = await response.json() as { notes?: StudentNoteRecord[] };
+  return data.notes || [];
+}
+
+export async function createStudentNote(input: { email: string; title: string; content: string }) {
+  const response = await fetch(apiUrl("/notes"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(input),
+  });
+  const data = await response.json().catch(() => ({})) as { note?: StudentNoteRecord; message?: string };
+  if (!response.ok) throw new Error(data.message || "Unable to save note.");
+  return data.note || null;
+}
+
+export async function updateStudentNote(input: { email: string; id: number; title: string; content: string }) {
+  const response = await fetch(apiUrl(`/notes/${input.id}`), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ email: input.email, title: input.title, content: input.content }),
+  });
+  const data = await response.json().catch(() => ({})) as { note?: StudentNoteRecord; message?: string };
+  if (!response.ok) throw new Error(data.message || "Unable to update note.");
+  return data.note || null;
+}
+
+export async function deleteStudentNote(email: string, id: number) {
+  const response = await fetch(apiUrl(`/notes/${id}`), {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  const data = await response.json().catch(() => ({})) as { message?: string };
+  if (!response.ok) throw new Error(data.message || "Unable to delete note.");
 }
 
 export async function fetchStudentLibraryData(email: string): Promise<StudentLibraryResponse | null> {

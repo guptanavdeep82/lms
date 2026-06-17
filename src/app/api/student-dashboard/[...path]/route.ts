@@ -34,3 +34,18 @@ export async function POST(request: NextRequest, context: { params: Promise<{ pa
   const { path } = await context.params;
   return proxy(request, `/api/student/${path.join("/")}`);
 }
+
+export async function PUT(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+  const { path } = await context.params;
+  return proxy(request, `/api/student/${path.join("/")}`);
+}
+
+export async function PATCH(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+  const { path } = await context.params;
+  return proxy(request, `/api/student/${path.join("/")}`);
+}
+
+export async function DELETE(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+  const { path } = await context.params;
+  return proxy(request, `/api/student/${path.join("/")}`);
+}

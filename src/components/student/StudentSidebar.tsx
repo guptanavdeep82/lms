@@ -11,6 +11,7 @@ import {
   History,
   LogOut,
   ShoppingBag,
+  StickyNote,
   Target,
   User,
   WalletCards,
@@ -24,6 +25,7 @@ const navGroups = [
       { label: "Dashboard", icon: Grid2X2, href: "/student/dashboard" },
       { label: "My Courses", icon: BookOpen, href: "/student/courses" },
       { label: "Mock Tests", icon: WalletCards, href: "/student/mock-tests" },
+      { label: "My Notes", icon: StickyNote, href: "/student/notes" },
       { label: "Test Results", icon: Target, href: "/student/test-results" },
     ],
   },
@@ -71,8 +73,8 @@ export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
             className="h-12 w-12 rounded-2xl border-2 border-[#ffd21f] object-cover shadow-xl shadow-black/10"
           />
           <div className="min-w-0">
-            <p className="text-[16px] font-extrabold leading-tight text-[#172a69]">KR Logics</p>
-            <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#8791a5]">Student LMS</p>
+            <p className="text-sm font-extrabold leading-tight text-[#172a69]">KR Logics</p>
+            <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8791a5]">Student LMS</p>
           </div>
         </Link>
       </div>
@@ -89,7 +91,7 @@ export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
                     key={item.label}
                     href={item.href}
                     onClick={onNavigate}
-                    className={`flex h-11 items-center gap-3 rounded-2xl px-3.5 text-[14px] font-semibold transition ${
+                    className={`flex h-10 items-center gap-3 rounded-2xl px-3.5 text-[13px] font-semibold transition ${
                       active
                         ? "bg-[#eef2ff] text-[#172a69] shadow-sm ring-1 ring-[#dfe5ff]"
                         : "text-[#334155] hover:bg-[#f3f6fb] hover:text-[#172a69]"

@@ -60,7 +60,7 @@ export function StudentDashboardOverview() {
         <div className="flex items-center gap-3 border-b border-[#edf1f7] bg-[#172a69] px-5 py-3 text-white">
           <Megaphone size={18} className="text-[#f5c518]" />
           <div className="relative flex-1 overflow-hidden whitespace-nowrap">
-            <div className="inline-flex min-w-max gap-10 text-sm font-semibold" style={{ animation: "krTicker 26s linear infinite" }}>
+            <div className="inline-flex min-w-max gap-10 text-xs font-semibold sm:text-sm" style={{ animation: "krTicker 26s linear infinite" }}>
               {[...tickerMessages, ...tickerMessages].map((message, index) => (
                 <span key={`${message}-${index}`} className="inline-flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#f5c518]" />
@@ -81,18 +81,18 @@ export function StudentDashboardOverview() {
             <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[#f7d85a] ring-1 ring-white/15">
               <CheckCircle2 size={14} /> Active Student
             </span>
-            <h1 className="mt-5 text-[28px] font-extrabold leading-tight tracking-[-0.04em] sm:text-[36px]">
+            <h1 className="mt-5 text-[22px] font-extrabold leading-tight tracking-[-0.04em] sm:text-[26px]">
               Welcome back, {firstName}
             </h1>
-            <p className="mt-3 max-w-xl text-[15px] leading-7 text-white/72">
+            <p className="mt-3 max-w-xl text-[13px] leading-6 text-white/72 sm:text-sm">
               Today&apos;s goal: complete 2 classes, attempt one mini mock, and finish your current affairs revision.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/student/courses" className="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#f5c518] px-5 text-sm font-extrabold text-[#172a69] shadow-lg shadow-black/10 transition hover:bg-[#ffd844]">
-                Continue Learning <ArrowRight size={17} />
+              <Link href="/student/courses" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-[#f5c518] px-4 text-xs font-extrabold text-[#172a69] shadow-lg shadow-black/10 transition hover:bg-[#ffd844] sm:text-sm">
+                Continue Learning <ArrowRight size={16} />
               </Link>
-              <Link href="/student/mock-tests" className="inline-flex h-12 items-center gap-2 rounded-2xl bg-white/10 px-5 text-sm font-bold text-white ring-1 ring-white/20 transition hover:bg-white/15">
-                Start Mock Test <PlayCircle size={17} />
+              <Link href="/student/mock-tests" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-white/10 px-4 text-xs font-bold text-white ring-1 ring-white/20 transition hover:bg-white/15 sm:text-sm">
+                Start Mock Test <PlayCircle size={16} />
               </Link>
             </div>
           </div>
@@ -104,9 +104,9 @@ export function StudentDashboardOverview() {
             ["Tests Taken", metrics.tests, "/student/test-results"],
             ["Orders", metrics.orders, "/student/orders"],
           ].map(([label, value, href]) => (
-            <Link key={label as string} href={href as string} className="rounded-[22px] border border-[#dfe5ef] bg-white p-5 shadow-sm transition hover:border-[#c7d2fe]">
-              <p className="text-sm font-bold text-[#7d8799]">{label}</p>
-              <p className="mt-2 text-3xl font-extrabold text-[#172a69]">{value}</p>
+            <Link key={label as string} href={href as string} className="rounded-[22px] border border-[#dfe5ef] bg-white p-4 shadow-sm transition hover:border-[#c7d2fe]">
+              <p className="text-xs font-bold text-[#7d8799] sm:text-sm">{label}</p>
+              <p className="mt-2 text-2xl font-extrabold text-[#172a69]">{value}</p>
             </Link>
           ))}
         </div>

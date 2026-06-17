@@ -28,7 +28,7 @@ export function StudentDashboardShell({ children }: StudentDashboardShellProps) 
   }, [router]);
 
   return (
-    <main className="min-h-screen bg-[#f6f8fc] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
+    <main className="min-h-screen bg-[#f6f8fc] text-[13px] text-[#111827] sm:text-sm" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
 
       {sidebarOpen ? (
