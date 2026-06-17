@@ -1,5 +1,6 @@
 import { publicBackendBaseUrl } from "@/lib/mock-tests";
 import { buildStudentCheckoutProfile } from "@/lib/student-registration";
+import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 
 export type CheckoutItemType = "course" | "mock_test" | "mock_category" | "package";
 
@@ -174,8 +175,17 @@ export async function startRazorpayCheckout(input: {
   couponCode?: string;
   onSuccess?: (purchases: StudentPurchase[]) => void;
 }): Promise<void> {
+  if (!isStudentLoggedIn()) {
+    throw new Error("Please login to purchase.");
+  }
+
+  const session = getStudentSession();
+  if (!session?.email) {
+    throw new Error("Please login to purchase.");
+  }
+
   const checkout = await createCheckoutOrder({
-    email: input.email,
+    email: session.email,
     itemType: input.itemType,
     itemId: input.itemId,
     couponCode: input.couponCode,
@@ -209,7 +219,7 @@ export async function startRazorpayCheckout(input: {
       }) => {
         try {
           const verified = await verifyCheckoutPayment({
-            email: input.email,
+            email: session.email,
             razorpay_order_id: paymentResponse.razorpay_order_id,
             razorpay_payment_id: paymentResponse.razorpay_payment_id,
             razorpay_signature: paymentResponse.razorpay_signature,

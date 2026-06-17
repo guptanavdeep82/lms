@@ -128,7 +128,6 @@ export function PublicHeader({ active }: PublicHeaderProps) {
           </Link>
 
           <nav>
-            <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer">Blog</a>
             <div className="course-menu-wrap">
               <Link href="/courses" onClick={(event) => handleMobileMenuClick(event, "courses")} className={`exam-menu-trigger ${active === "courses" || active === "live-classes" ? "active" : ""}`}>Courses <span className="chev">⌄</span></Link>
               <div className={`course-dropdown ${openMenu === "courses" ? "open" : ""}`}>
@@ -181,6 +180,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
             </div>
             {navLink("/mock-tests", "Mock Tests", "mock-tests")}
             {navLink("/faculty", "Faculty", "faculty")}
+            <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer">Blog</a>
             {navLink("/contact", "Contact", "contact")}
           </nav>
 

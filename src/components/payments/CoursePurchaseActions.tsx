@@ -9,7 +9,6 @@ type CoursePurchaseActionsProps = {
   courseTitle: string;
   price: number;
   isPdfCourse: boolean;
-  isLiveCourse: boolean;
 };
 
 export function CoursePurchaseActions({
@@ -17,7 +16,6 @@ export function CoursePurchaseActions({
   courseTitle,
   price,
   isPdfCourse,
-  isLiveCourse,
 }: CoursePurchaseActionsProps) {
   return (
     <div className="mt-5 grid gap-3">
@@ -32,7 +30,7 @@ export function CoursePurchaseActions({
         className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#ffd21f] text-sm font-extrabold text-[#050808] transition hover:bg-[#ffe164]"
       />
       <Link href="/register" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[#050808] text-sm font-extrabold text-[#050808] transition hover:bg-[#050808] hover:text-white">
-        <PlayCircle className="size-4" /> {isPdfCourse ? "Register and Download Sample" : isLiveCourse ? "Register and Join Live Class" : "Register and Preview"}
+        <PlayCircle className="size-4" /> {isPdfCourse ? "Register and Download Sample" : "Register and Preview"}
       </Link>
     </div>
   );

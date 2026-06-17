@@ -6,7 +6,7 @@ import { CoursePromoCard } from "@/components/courses/CoursePromoCard";
 import { fetchCourses, mapApiCourseToListingCourse, type ListingCourse } from "@/lib/courses";
 
 type Filters = {
-  type: "all" | "video" | "pdf" | "live";
+  type: "all" | "video" | "pdf";
   cat: string;
   exam: string;
   level: string;
@@ -38,16 +38,24 @@ export function CoursesCatalog() {
 
   useEffect(() => {
     fetchCourses()
-      .then((items) => setCourses(items.map(mapApiCourseToListingCourse)))
+      .then((items) => setCourses(
+        items
+          .filter((course) => course.course_type !== "live")
+          .map(mapApiCourseToListingCourse),
+      ))
       .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
     const type = searchParams.get("type");
-    if (type === "video" || type === "pdf" || type === "live") {
+    if (type === "live") {
+      router.replace("/live-classes");
+      return;
+    }
+    if (type === "video" || type === "pdf") {
       setFilters((current) => ({ ...current, type }));
     }
-  }, [searchParams]);
+  }, [router, searchParams]);
 
   const filtered = useMemo(() => {
     let list = [...courses];
@@ -137,7 +145,6 @@ export function CoursesCatalog() {
                 ["all", "All Types"],
                 ["video", "Video Courses"],
                 ["pdf", "PDF Courses"],
-                ["live", "Live Courses"],
               ]}
               value={filters.type}
               onChange={(value) => setType(value as Filters["type"])}
