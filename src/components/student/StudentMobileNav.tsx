@@ -4,6 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { studentMobileNavItems } from "@/components/student/StudentSidebar";
 
+function isNavItemActive(pathname: string, href: string) {
+  if (href === "/student/dashboard") {
+    return pathname === href;
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function StudentMobileNav() {
   const pathname = usePathname();
   const items = studentMobileNavItems();
@@ -15,7 +22,7 @@ export function StudentMobileNav() {
           key={item.label}
           href={item.href}
           className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl px-3 text-xs font-extrabold ${
-            pathname === item.href ? "bg-[#172a69] text-white" : "bg-[#f3f6fb] text-[#334155]"
+            isNavItemActive(pathname, item.href) ? "bg-[#172a69] text-white" : "bg-[#f3f6fb] text-[#334155]"
           }`}
         >
           <item.icon size={15} />

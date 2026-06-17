@@ -186,7 +186,10 @@ export function PublicHeader({ active }: PublicHeaderProps) {
 
           <div className="hdr-btns">
             {isLoggedIn ? (
-              <button type="button" onClick={handleLogout} className="btn-ghost">Logout</button>
+              <>
+                <Link href="/student/dashboard" className="btn-primary">Dashboard</Link>
+                <button type="button" onClick={handleLogout} className="btn-ghost">Logout</button>
+              </>
             ) : (
               <>
                 <Link href="/login" className="btn-ghost">Login</Link>

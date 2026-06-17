@@ -22,22 +22,29 @@ const navGroups = [
     title: "Learn",
     items: [
       { label: "Dashboard", icon: Grid2X2, href: "/student/dashboard" },
-      { label: "My Courses", icon: BookOpen, href: "/student/dashboard#courses" },
+      { label: "My Courses", icon: BookOpen, href: "/student/courses" },
       { label: "Mock Tests", icon: WalletCards, href: "/student/mock-tests" },
-      { label: "Test Results", icon: Target, href: "/student/dashboard#test-results" },
+      { label: "Test Results", icon: Target, href: "/student/test-results" },
     ],
   },
   {
     title: "Account",
     items: [
-      { label: "My Profile", icon: User, href: "/student/dashboard#profile" },
-      { label: "Purchase History", icon: ShoppingBag, href: "/student/dashboard#purchases" },
-      { label: "Order History", icon: History, href: "/student/dashboard#orders" },
-      { label: "Refer & Earn", icon: Gift, href: "/student/dashboard#refer-earn" },
-      { label: "DRS Ticket", icon: Headphones, href: "/student/dashboard#drs-ticket" },
+      { label: "My Profile", icon: User, href: "/student/profile" },
+      { label: "Purchase History", icon: ShoppingBag, href: "/student/purchases" },
+      { label: "Order History", icon: History, href: "/student/orders" },
+      { label: "Refer & Earn", icon: Gift, href: "/student/refer-earn" },
+      { label: "DRS Ticket", icon: Headphones, href: "/student/drs-ticket" },
     ],
   },
 ];
+
+function isNavItemActive(pathname: string, href: string) {
+  if (href === "/student/dashboard") {
+    return pathname === href;
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 type StudentSidebarProps = {
   onNavigate?: () => void;
@@ -76,9 +83,7 @@ export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
             <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#9aa4b5]">{group.title}</p>
             <div className="space-y-1.5">
               {group.items.map((item) => {
-                const active = item.href === "/student/dashboard"
-                  ? pathname === "/student/dashboard" && typeof window !== "undefined" && !window.location.hash
-                  : pathname === item.href.split("#")[0] && (item.href.includes("#") ? typeof window !== "undefined" && window.location.hash === `#${item.href.split("#")[1]}` : pathname === item.href);
+                const active = isNavItemActive(pathname, item.href);
                 return (
                   <Link
                     key={item.label}

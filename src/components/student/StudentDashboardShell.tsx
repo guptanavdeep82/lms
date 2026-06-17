@@ -19,7 +19,8 @@ export function StudentDashboardShell({ children }: StudentDashboardShellProps) 
 
   useEffect(() => {
     if (!isStudentLoggedIn()) {
-      router.replace("/login?redirect=/student/dashboard");
+      const redirect = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
+      router.replace(`/login?redirect=${redirect}`);
       return;
     }
     const session = getStudentSession();
