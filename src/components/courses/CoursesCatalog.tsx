@@ -37,10 +37,13 @@ export function CoursesCatalog() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchCourses()
+    const type = searchParams.get("type");
+    const apiType = type === "pdf" ? "pdf" : type === "video" || type === "live" ? "video" : undefined;
+
+    fetchCourses(apiType)
       .then((items) => setCourses(items.map(mapApiCourseToListingCourse)))
       .finally(() => setLoading(false));
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     const type = searchParams.get("type");
