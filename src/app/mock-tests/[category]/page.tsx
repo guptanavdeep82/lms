@@ -240,7 +240,12 @@ export default function MockSeriesDetailPage() {
               label="Buy Now"
               purchasedLabel="Series Purchased"
               alreadyPurchased={categoryPurchased}
-              onPurchased={() => setCategoryPurchased(true)}
+              onPurchased={() => {
+                const session = getStudentSession();
+                if (session?.email) {
+                  fetchStudentPurchases(session.email).then(setPurchases);
+                }
+              }}
               className="mt-4 h-11 w-full rounded-lg bg-[#d6a900] text-sm font-extrabold text-black shadow-[0_10px_22px_rgba(214,169,0,0.22)]"
             />
             <div className="mt-4 grid gap-3 border-t border-[#ececec] pt-4 text-xs font-bold text-[#6a707c]">
