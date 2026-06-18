@@ -136,12 +136,6 @@ export function applyHomePageData(markup: string, settings: HomePageSettings): s
 }
 
 const courseCardColors = ["#1B2E6B", "#1D9E75", "#D85A30", "#7F77DD", "#BA7517", "#378ADD"];
-const courseCardBadges = [
-  { label: "POPULAR", style: "background:#EEF6FF;color:#1B2E6B" },
-  { label: "HOT", style: "background:#E1F5EE;color:#0F6E56" },
-  { label: "PREMIUM", style: "background:#FAECE7;color:#993C1D" },
-  { label: "NEW", style: "background:#FAEEDA;color:#633806" },
-];
 
 function courseIconClass(type: string): string {
   if (type === "pdf") return "fa-file-pdf";
@@ -154,24 +148,11 @@ export function buildTopCoursesMarkup(courses: HomeTopCourse[]): string {
 
   return courses
     .map((course, index) => {
-      const badge = course.is_featured ? courseCardBadges[index % courseCardBadges.length] : null;
-      const priceLabel = course.effective_price <= 0 ? "Free" : `₹${course.effective_price.toLocaleString("en-IN")}`;
-      const description = escapeHtml((course.short_description || "Expert-designed banking exam course.").slice(0, 110));
       const thumb = course.image_url
-        ? `<div class="course-thumb">${badge ? `<span class="course-badge" style="${badge.style}">${badge.label}</span>` : ""}<img src="${escapeHtml(course.image_url)}" alt="${escapeHtml(course.title)}"></div>`
-        : `<div class="course-thumb course-thumb-fallback" style="background:${courseCardColors[index % courseCardColors.length]}">${badge ? `<span class="course-badge" style="${badge.style}">${badge.label}</span>` : ""}<i class="fa ${courseIconClass(course.course_type)}"></i></div>`;
+        ? `<div class="course-thumb"><img src="${escapeHtml(course.image_url)}" alt="${escapeHtml(course.title)}"></div>`
+        : `<div class="course-thumb course-thumb-fallback" style="background:${courseCardColors[index % courseCardColors.length]}"><i class="fa ${courseIconClass(course.course_type)}"></i></div>`;
 
-      return `<a href="/courses/${escapeHtml(course.slug)}" class="course-card">
-      ${thumb}
-      <div class="course-top">
-        <div class="course-title">${escapeHtml(course.title)}</div>
-        <div class="course-desc">${description}</div>
-      </div>
-      <div class="course-bottom">
-        <div class="course-meta"><span><i class="fa fa-clock"></i> ${course.duration_hours} hrs</span><span><i class="fa fa-file-alt"></i> ${course.lessons_count}+ Lessons</span></div>
-        <div class="course-price">${priceLabel}</div>
-      </div>
-    </a>`;
+      return `<a href="/courses/${escapeHtml(course.slug)}" class="course-card course-card-thumb-only" aria-label="${escapeHtml(course.title)}">${thumb}</a>`;
     })
     .join("");
 }
