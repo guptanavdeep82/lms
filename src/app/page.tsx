@@ -308,22 +308,29 @@ const brandStyles = `
 .kr-logics-reference-home .course-card-thumb-only {
   display: block;
   overflow: hidden;
+  line-height: 0;
+  background: #fff;
 }
 .kr-logics-reference-home .course-card-thumb-only .course-thumb {
   height: auto;
-  min-height: 220px;
-  aspect-ratio: 3 / 4;
-  background: #fff;
+  min-height: 0;
+  aspect-ratio: auto;
+  background: transparent;
+  line-height: 0;
 }
 .kr-logics-reference-home .course-card-thumb-only .course-thumb img {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: auto;
+  max-height: none;
+  object-fit: initial;
   object-position: center;
+  display: block;
+  vertical-align: top;
 }
 .kr-logics-reference-home .course-card-thumb-only .course-thumb-fallback {
-  min-height: 220px;
-  aspect-ratio: 3 / 4;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  min-height: 140px;
 }
 .kr-logics-reference-home .course-thumb img {
   width: 100%;
