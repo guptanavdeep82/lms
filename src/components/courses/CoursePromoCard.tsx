@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import {
@@ -24,44 +23,22 @@ export function CoursePromoCard({ course, href, actionLabel, onAction }: CourseP
 
   return (
     <article className="promo-course-card group flex h-full flex-col overflow-hidden rounded-[18px] border border-[#1f2937] bg-white shadow-[0_16px_40px_rgba(15,23,42,0.12)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(15,23,42,0.16)]">
-      <div className={`relative overflow-hidden text-white ${course.image_url ? "aspect-[16/10] bg-[#050808]" : "min-h-[168px]"}`}>
+      <div className={`relative overflow-hidden ${course.image_url ? "aspect-[16/10] bg-[#f8fafc]" : "min-h-[120px]"}`}>
         {course.image_url ? (
-          <>
-            <img
-              src={course.image_url}
-              alt={course.title}
-              className="absolute inset-0 h-full w-full object-contain object-center"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050808]/90 via-transparent to-[#050808]/20" />
-          </>
+          <img
+            src={course.image_url}
+            alt={course.title}
+            className="h-full w-full object-contain object-center"
+          />
         ) : (
           <div className="absolute inset-0" style={{ background: theme.gradient }} />
         )}
-
-        <div className="relative z-10 px-4 pb-5 pt-4">
-          <div className="mb-3 flex items-start justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Image src="/logics-logo.jpeg" alt="KR Logics" width={28} height={28} className="h-7 w-7 rounded-full border border-white/70 object-cover shadow-sm" />
-            </div>
-            <span className="rounded-md bg-[#f97316] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-sm">
-              {course.badge || theme.statusLabel}
-            </span>
-          </div>
-
-          <h3 className="text-[15px] font-extrabold leading-snug tracking-[-0.02em] text-white drop-shadow sm:text-[16px]">
-            {course.title}
-          </h3>
-
-          <div
-            className="mt-3 inline-block max-w-full rounded-md px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#111827] shadow-sm"
-            style={{ background: theme.accent }}
-          >
-            {theme.subtitle}
-          </div>
-        </div>
       </div>
 
       <div className="flex flex-1 flex-col px-4 py-4">
+        <h3 className="mb-3 text-[15px] font-extrabold leading-snug tracking-[-0.02em] text-[#111827] sm:text-[16px]">
+          {course.title}
+        </h3>
         <ul className="space-y-3">
           {features.map((feature) => (
             <li key={feature} className="flex items-start gap-2.5 text-[12px] font-semibold leading-5 text-[#374151]">
