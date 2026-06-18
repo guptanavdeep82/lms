@@ -109,13 +109,13 @@ export default function PackagesPage() {
               <div className="spotlight-card">
                 <div className="spotlight-top">
                   <span className="spotlight-badge"><Crown size={15} /> Popular Combo</span>
-                  <span className="spotlight-badge">{featuredPackage.validity_days} Days</span>
+                  <span className="spotlight-badge">{featuredPackage.validity_months} Months</span>
                 </div>
                 <h2>{featuredPackage.title}</h2>
                 <p>{featuredPackage.short_description || "Complete preparation bundle for banking exams."}</p>
                 <div className="package-summary">
                   <div className="summary-card"><strong>{packages.length}</strong><span>Live Packages</span></div>
-                  <div className="summary-card"><strong>{featuredPackage.validity_days}</strong><span>Days Access</span></div>
+                  <div className="summary-card"><strong>{featuredPackage.validity_months}</strong><span>Months Access</span></div>
                   <div className="summary-card"><strong>{featuredPackage.includes.length}</strong><span>Included Items</span></div>
                   <div className="summary-card"><strong>{formatInr(packageEffectivePrice(featuredPackage))}</strong><span>Offer Price</span></div>
                 </div>
@@ -154,14 +154,14 @@ export default function PackagesPage() {
                   </div>
                   <div className="package-body">
                     <div className="include-list">
-                      {(item.includes?.length ? item.includes : ["courses", "mock_tests"]).map((include) => (
-                        <div key={include}><CheckCircle2 size={17} /> {packageIncludeLabel(include)}</div>
+                      {(item.includes?.length ? item.includes : []).map((include, includeIndex) => (
+                        <div key={`${include.type}-${include.id ?? includeIndex}`}><CheckCircle2 size={17} /> {packageIncludeLabel(include)}</div>
                       ))}
                     </div>
                     <div className="package-price">
                       <strong>{formatInr(price)}</strong>
                       {original ? <del>{formatInr(original)}</del> : null}
-                      <div className="package-note">{item.validity_days} days access included</div>
+                      <div className="package-note">{item.validity_months} months access included</div>
                       <div className="package-btn-wrap">
                         <RazorpayCheckoutButton
                           itemType="package"

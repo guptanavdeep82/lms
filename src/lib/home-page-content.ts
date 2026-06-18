@@ -154,18 +154,16 @@ export function buildTopCoursesMarkup(courses: HomeTopCourse[]): string {
 
   return courses
     .map((course, index) => {
-      const color = courseCardColors[index % courseCardColors.length];
       const badge = course.is_featured ? courseCardBadges[index % courseCardBadges.length] : null;
       const priceLabel = course.effective_price <= 0 ? "Free" : `₹${course.effective_price.toLocaleString("en-IN")}`;
       const description = escapeHtml((course.short_description || "Expert-designed banking exam course.").slice(0, 110));
       const thumb = course.image_url
-        ? `<img src="${escapeHtml(course.image_url)}" alt="${escapeHtml(course.title)}" style="width:50px;height:50px;border-radius:14px;object-fit:cover">`
-        : `<div class="course-icon-wrap" style="background:${color}"><i class="fa ${courseIconClass(course.course_type)}"></i></div>`;
+        ? `<div class="course-thumb">${badge ? `<span class="course-badge" style="${badge.style}">${badge.label}</span>` : ""}<img src="${escapeHtml(course.image_url)}" alt="${escapeHtml(course.title)}"></div>`
+        : `<div class="course-thumb course-thumb-fallback" style="background:${courseCardColors[index % courseCardColors.length]}">${badge ? `<span class="course-badge" style="${badge.style}">${badge.label}</span>` : ""}<i class="fa ${courseIconClass(course.course_type)}"></i></div>`;
 
       return `<a href="/courses/${escapeHtml(course.slug)}" class="course-card">
+      ${thumb}
       <div class="course-top">
-        ${thumb}
-        ${badge ? `<span class="course-badge" style="${badge.style}">${badge.label}</span>` : ""}
         <div class="course-title">${escapeHtml(course.title)}</div>
         <div class="course-desc">${description}</div>
       </div>

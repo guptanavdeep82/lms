@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { BarChart3, Check, ChevronRight, Clock3, FileText, Languages, Loader2, LockKeyhole, PlayCircle, ShieldCheck, Sparkles, Trophy } from "lucide-react";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { RazorpayCheckoutButton } from "@/components/payments/RazorpayCheckoutButton";
-import { fetchStudentPurchases, hasPurchase } from "@/lib/checkout";
+import { fetchStudentPurchases, hasItemAccess, hasPurchase } from "@/lib/checkout";
 import { hasCompletedMock } from "@/lib/mock-results";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
@@ -25,7 +25,7 @@ export default function MockSeriesDetailPage() {
   const [activeTab, setActiveTab] = useState("full_length");
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
-  const [categoryPurchased, setCategoryPurchased] = useState(false);
+  const [purchases, setPurchases] = useState<Awaited<ReturnType<typeof fetchStudentPurchases>>>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -57,12 +57,18 @@ export default function MockSeriesDetailPage() {
     const session = getStudentSession();
     if (!session?.email) return;
 
-    fetchStudentPurchases(session.email).then((purchases) => {
-      setCategoryPurchased(hasPurchase(purchases, "mock_category", category.id));
-    });
+    fetchStudentPurchases(session.email).then(setPurchases);
   }, [category]);
 
-  const isTestLocked = (test: MockTest) => test.is_locked && !categoryPurchased;
+  const categoryPurchased = category
+    ? hasPurchase(purchases, "mock_category", category.id)
+      || category.tests.some((test) => hasItemAccess(purchases, "mock_test", test.id, { mockCategoryId: category.id }))
+    : false;
+
+  const isTestLocked = (test: MockTest) => {
+    if (!test.is_locked) return false;
+    return !hasItemAccess(purchases, "mock_test", test.id, { mockCategoryId: category?.id });
+  };
 
   const visibleTests = useMemo(() => {
     return (category?.tests ?? []).filter((test) => test.test_type === activeTab);

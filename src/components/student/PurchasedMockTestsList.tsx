@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, Clock3, FileText, Loader2, Play, WalletCards } from "lucide-react";
-import { fetchStudentPurchases, hasPurchase, type StudentPurchase } from "@/lib/checkout";
+import { fetchStudentPurchases, hasItemAccess, type StudentPurchase } from "@/lib/checkout";
 import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
 import { getStudentSession } from "@/lib/student-auth";
 
@@ -26,11 +26,8 @@ function collectPurchasedTests(categories: MockCategory[], purchases: StudentPur
   const tests: PurchasedMockTest[] = [];
 
   for (const category of categories) {
-    const categoryPurchased = hasPurchase(purchases, "mock_category", category.id);
-
     for (const test of category.tests) {
-      const testPurchased = hasPurchase(purchases, "mock_test", test.id);
-      if (categoryPurchased || testPurchased) {
+      if (hasItemAccess(purchases, "mock_test", test.id, { mockCategoryId: category.id })) {
         tests.push({ ...test, categoryId: category.id });
       }
     }

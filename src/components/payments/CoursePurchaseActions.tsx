@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { PlayCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Loader2, PlayCircle } from "lucide-react";
 import { RazorpayCheckoutButton } from "@/components/payments/RazorpayCheckoutButton";
+import { fetchStudentAccess } from "@/lib/checkout";
+import { getStudentSession } from "@/lib/student-auth";
 
 type CoursePurchaseActionsProps = {
   courseId: number;
@@ -19,6 +22,45 @@ export function CoursePurchaseActions({
   isPdfCourse,
   isLiveCourse = false,
 }: CoursePurchaseActionsProps) {
+  const [checkingAccess, setCheckingAccess] = useState(true);
+  const [hasAccess, setHasAccess] = useState(false);
+
+  useEffect(() => {
+    const session = getStudentSession();
+    if (!session?.email) {
+      setCheckingAccess(false);
+      return;
+    }
+
+    fetchStudentAccess(session.email, "course", courseId)
+      .then(setHasAccess)
+      .finally(() => setCheckingAccess(false));
+  }, [courseId]);
+
+  if (checkingAccess) {
+    return (
+      <div className="mt-5 grid place-items-center py-4">
+        <Loader2 className="size-5 animate-spin text-[#172a69]" />
+      </div>
+    );
+  }
+
+  if (hasAccess) {
+    return (
+      <div className="mt-5 grid gap-3">
+        <span className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-[#ecfdf3] text-sm font-extrabold text-[#027a48]">
+          Course Unlocked
+        </span>
+        <Link
+          href="/student/courses"
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#172a69] text-sm font-extrabold text-white transition hover:bg-[#10215a]"
+        >
+          <PlayCircle className="size-4" /> Continue Learning
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="mt-5 grid gap-3">
       <RazorpayCheckoutButton

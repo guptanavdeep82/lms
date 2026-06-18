@@ -12,9 +12,11 @@ export type ApiCourse = {
   slug: string;
   course_type: "video" | "pdf" | "live" | string;
   image_url: string | null;
+  banner_url?: string | null;
   pdf_url?: string | null;
   short_description: string | null;
   description?: string | null;
+  course_includes?: string[];
   level: string;
   price: number;
   sale_price: number | null;
@@ -240,12 +242,15 @@ export function mapApiCourseToCatalogItem(course: ApiCourse, lessons: ApiCourseL
   const listing = mapApiCourseToListingCourse(course);
   const effectivePrice = course.sale_price ?? course.price;
   const original = course.sale_price !== null && course.sale_price < course.price ? course.price : 0;
+  const courseType = (course.course_type === "pdf" || course.course_type === "live" ? course.course_type : "video") as "video" | "pdf" | "live";
+  const isPdfCourse = courseType === "pdf";
+  const isLiveCourse = courseType === "live";
 
   return {
     slug: course.slug,
     title: course.title,
     desc: course.short_description || course.description || listing.desc,
-    courseType: (course.course_type === "pdf" || course.course_type === "live" ? course.course_type : "video") as "video" | "pdf" | "live",
+    courseType,
     category: course.category || listing.category.toUpperCase(),
     exam: course.exam_type || "All Exams",
     level: course.level.charAt(0).toUpperCase() + course.level.slice(1),
@@ -258,8 +263,16 @@ export function mapApiCourseToCatalogItem(course: ApiCourse, lessons: ApiCourseL
     reviews: listing.reviews,
     badge: listing.badge || undefined,
     tags: listing.tags,
-    image: course.image_url || "/hero-students.png",
+    image: course.banner_url || course.image_url || "/hero-students.png",
+    thumbnail: course.image_url || "/hero-students.png",
     pdfUrl: course.pdf_url || null,
+    includes: (course.course_includes?.length ? course.course_includes : [
+      isPdfCourse ? "Downloadable PDF modules" : isLiveCourse ? `${course.duration_hours || listing.hours}+ hours live classes` : `${course.duration_hours || listing.hours}+ hours recorded videos`,
+      "Structured subject-wise learning",
+      isPdfCourse ? "Topic-wise notes and practice sheets" : "Downloadable notes and PDFs",
+      `${course.lessons_count || listing.tests}+ mock and practice tests`,
+      "Doubt support and mentoring",
+    ]),
     outcomes: course.subjects.length > 0
       ? course.subjects.map((subject) => `${subject.name} preparation and practice`)
       : ["Structured syllabus coverage", "Exam-focused preparation", "Practice with expert guidance"],

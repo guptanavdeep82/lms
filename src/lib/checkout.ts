@@ -167,6 +167,32 @@ export async function fetchStudentPurchases(email: string): Promise<StudentPurch
   return data.purchases || [];
 }
 
+export async function fetchStudentAccess(
+  email: string,
+  itemType: CheckoutItemType,
+  itemId: number,
+): Promise<boolean> {
+  const params = new URLSearchParams({
+    email,
+    item_type: itemType,
+    item_id: String(itemId),
+  });
+  const response = await fetch(`${publicBackendBaseUrl}/api/student/access?${params.toString()}`);
+  if (!response.ok) return false;
+  const data = await response.json() as { has_access?: boolean };
+  return Boolean(data.has_access);
+}
+
+export function hasPurchase(
+  purchases: StudentPurchase[],
+  itemType: CheckoutItemType,
+  itemId: number,
+): boolean {
+  return purchases.some(
+    (purchase) => purchase.purchasable_type === itemType && purchase.purchasable_id === itemId,
+  );
+}
+
 export async function startRazorpayCheckout(input: {
   email: string;
   itemType: CheckoutItemType;
@@ -243,12 +269,19 @@ export async function startRazorpayCheckout(input: {
   });
 }
 
-export function hasPurchase(
+export function hasItemAccess(
   purchases: StudentPurchase[],
   itemType: CheckoutItemType,
   itemId: number,
+  options?: { mockCategoryId?: number },
 ): boolean {
-  return purchases.some(
-    (purchase) => purchase.purchasable_type === itemType && purchase.purchasable_id === itemId,
-  );
+  if (hasPurchase(purchases, itemType, itemId)) {
+    return true;
+  }
+
+  if (itemType === "mock_test" && options?.mockCategoryId) {
+    return hasPurchase(purchases, "mock_category", options.mockCategoryId);
+  }
+
+  return false;
 }

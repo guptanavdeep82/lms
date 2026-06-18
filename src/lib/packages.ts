@@ -1,5 +1,11 @@
 import { publicBackendBaseUrl } from "@/lib/mock-tests";
 
+export type PackageIncludeItem = {
+  type: string;
+  id: number | null;
+  label: string;
+};
+
 export type PackageItem = {
   id: number;
   title: string;
@@ -8,10 +14,11 @@ export type PackageItem = {
   short_description: string | null;
   description?: string | null;
   image_url: string | null;
-  includes: string[];
+  includes: PackageIncludeItem[];
   price: number;
   sale_price: number | null;
   validity_days: number;
+  validity_months: number;
   is_featured: boolean;
 };
 
@@ -31,9 +38,12 @@ export type StudentLibraryPackage = {
   title: string;
   slug: string;
   package_type: string;
-  includes: string[];
+  includes: PackageIncludeItem[];
   validity_days: number;
+  validity_months: number;
   image_url: string | null;
+  expires_at: string | null;
+  purchased_at: string | null;
 };
 
 export type StudentLibraryMockCategory = {
@@ -78,8 +88,12 @@ const includeLabels: Record<string, string> = {
   pdf: "PDF Notes",
 };
 
-export function packageIncludeLabel(value: string) {
-  return includeLabels[value] || value;
+export function packageIncludeLabel(value: string | PackageIncludeItem) {
+  if (typeof value === "object" && value?.label) {
+    return value.label;
+  }
+
+  return includeLabels[value] || String(value);
 }
 
 export function packageEffectivePrice(pkg: PackageItem) {

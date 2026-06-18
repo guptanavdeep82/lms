@@ -298,6 +298,37 @@ const brandStyles = `
 .kr-logics-reference-home .faq-item {
   box-shadow: 0 14px 36px rgba(5, 8, 8, 0.08);
 }
+.kr-logics-reference-home .course-thumb {
+  position: relative;
+  width: 100%;
+  height: 168px;
+  overflow: hidden;
+  background: #eef1f8;
+}
+.kr-logics-reference-home .course-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.kr-logics-reference-home .course-thumb-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.kr-logics-reference-home .course-thumb-fallback i {
+  font-size: 34px;
+  color: #fff;
+}
+.kr-logics-reference-home .course-top {
+  padding-top: 18px;
+}
+.kr-logics-reference-home .course-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+}
 .kr-logics-reference-home .about-main-card,
 .kr-logics-reference-home .mini-card-dark,
 .kr-logics-reference-home .testi-section,

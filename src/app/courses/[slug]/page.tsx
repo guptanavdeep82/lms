@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  BookOpen,
   CheckCircle2,
   Clock3,
   FileText,
@@ -10,7 +9,6 @@ import {
   ShieldCheck,
   Star,
   UsersRound,
-  Video,
 } from "lucide-react";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { CoursePurchaseActions } from "@/components/payments/CoursePurchaseActions";
@@ -163,16 +161,10 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
           <div className="rounded-xl border border-[#ded9c8] bg-white p-6 shadow-sm">
             <h3 className="font-['Sora'] text-xl font-extrabold text-[#050808]">This course includes</h3>
             <div className="mt-5 grid gap-4 text-sm font-semibold text-slate-700">
-              {[
-                [isPdfCourse ? FileText : Video, isPdfCourse ? "Downloadable PDF modules" : isLiveCourse ? `${course.hours}+ hours live classes` : `${course.hours}+ hours recorded videos`],
-                [BookOpen, "Structured subject-wise learning"],
-                [FileText, isPdfCourse ? "Topic-wise notes and practice sheets" : "Downloadable notes and PDFs"],
-                [PlayCircle, `${course.tests}+ mock and practice tests`],
-                [UsersRound, "Doubt support and mentoring"],
-              ].map(([Icon, label]) => (
-                <span key={label as string} className="flex items-center gap-3">
-                  <Icon className="size-5 text-[#8a6500]" />
-                  {label as string}
+              {course.includes.map((item) => (
+                <span key={item} className="flex items-center gap-3">
+                  <CheckCircle2 className="size-5 shrink-0 text-[#8a6500]" />
+                  {item}
                 </span>
               ))}
             </div>
