@@ -24,31 +24,36 @@ export function CoursePromoCard({ course, href, actionLabel, onAction }: CourseP
 
   return (
     <article className="promo-course-card group flex h-full flex-col overflow-hidden rounded-[18px] border border-[#1f2937] bg-white shadow-[0_16px_40px_rgba(15,23,42,0.12)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(15,23,42,0.16)]">
-      <div className="relative px-4 pb-5 pt-4 text-white" style={{ background: theme.gradient }}>
+      <div className={`relative overflow-hidden text-white ${course.image_url ? "aspect-[16/10] bg-[#050808]" : "min-h-[168px]"}`}>
         {course.image_url ? (
-          <div className="absolute inset-0 opacity-25">
-            <img src={course.image_url} alt="" className="h-full w-full object-cover" />
-            <div className="absolute inset-0" style={{ background: theme.gradient, opacity: 0.82 }} />
-          </div>
-        ) : null}
+          <>
+            <img
+              src={course.image_url}
+              alt={course.title}
+              className="absolute inset-0 h-full w-full object-contain object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050808]/90 via-transparent to-[#050808]/20" />
+          </>
+        ) : (
+          <div className="absolute inset-0" style={{ background: theme.gradient }} />
+        )}
 
-        <div className="relative z-10">
+        <div className="relative z-10 px-4 pb-5 pt-4">
           <div className="mb-3 flex items-start justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Image src="/logics-logo.jpeg" alt="KR Logics" width={28} height={28} className="h-7 w-7 rounded-full border border-white/70 object-cover" />
-              <Image src="/logics-logo.jpeg" alt="KR Logics" width={28} height={28} className="-ml-2 h-7 w-7 rounded-full border border-white/70 object-cover" />
+              <Image src="/logics-logo.jpeg" alt="KR Logics" width={28} height={28} className="h-7 w-7 rounded-full border border-white/70 object-cover shadow-sm" />
             </div>
-            <span className="rounded-md bg-[#f97316] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white">
+            <span className="rounded-md bg-[#f97316] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white shadow-sm">
               {course.badge || theme.statusLabel}
             </span>
           </div>
 
-          <h3 className="text-[15px] font-extrabold leading-snug tracking-[-0.02em] text-white sm:text-[16px]">
+          <h3 className="text-[15px] font-extrabold leading-snug tracking-[-0.02em] text-white drop-shadow sm:text-[16px]">
             {course.title}
           </h3>
 
           <div
-            className="mt-3 inline-block max-w-full rounded-md px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#111827]"
+            className="mt-3 inline-block max-w-full rounded-md px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#111827] shadow-sm"
             style={{ background: theme.accent }}
           >
             {theme.subtitle}
