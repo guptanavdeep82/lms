@@ -89,11 +89,11 @@ const includeLabels: Record<string, string> = {
 };
 
 export function packageIncludeLabel(value: string | PackageIncludeItem) {
-  if (typeof value === "object" && value?.label) {
-    return value.label;
+  if (typeof value === "object") {
+    return value.label || includeLabels[value.type] || value.type || "Included item";
   }
 
-  return includeLabels[value] || String(value);
+  return includeLabels[value] || value;
 }
 
 export function packageEffectivePrice(pkg: PackageItem) {
