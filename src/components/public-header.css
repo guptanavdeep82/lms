@@ -252,17 +252,23 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
-  overflow: hidden;
+  min-height: 40px;
+  height: auto;
+  overflow: visible;
   border: 1px solid #dfe3ea;
   border-radius: 7px;
   background: #fff;
   color: #121827;
   font-size: 12px;
   font-weight: 600;
-  padding: 0 10px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  padding: 8px 10px;
+  white-space: normal;
+  line-height: 1.35;
+}
+
+.public-home-header .exam-link-label {
+  min-width: 0;
+  flex: 1;
 }
 
 .public-home-header .exam-link:hover {

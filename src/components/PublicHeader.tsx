@@ -143,7 +143,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
                   {cmsPages.map((page, index) => (
                     <Link key={page.id} href={cmsPageHref(page.slug)} className="exam-link">
                       <span className={`exam-icon ${examTone(index)}`}>{initials(page.title)}</span>
-                      {page.title}
+                      <span className="exam-link-label">{page.title}</span>
                     </Link>
                   ))}
                   {!cmsPages.length && <div className="exam-empty">No exam pages available yet.</div>}
@@ -170,7 +170,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
                   {displayTests(activeTests).map(({ test, title }, index) => (
                     <Link key={test.slug} href={`/mock-tests/${test.category_slug ?? activeCategory?.slug ?? ""}`} className="exam-link">
                       <span className={`exam-icon ${examTone(index)}`}>{initials(test.title)}</span>
-                      {title}
+                      <span className="exam-link-label">{title}</span>
                     </Link>
                   ))}
                   {!activeTests.length && <div className="exam-empty">No mock tests available in this category.</div>}

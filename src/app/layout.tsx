@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat, Poppins, Rajdhani, Sora } from "next/font/google";
+import { FcmProvider } from "@/components/notifications/FcmProvider";
 import "./globals.css";
 import "@/components/public-header.css";
 import "@/components/public-footer.css";
@@ -50,7 +51,7 @@ export default function RootLayout({
       className={`${poppins.variable} ${montserrat.variable} ${sora.variable} ${bebasNeue.variable} ${rajdhani.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-[family-name:var(--font-poppins)]">
-        {children}
+        <FcmProvider>{children}</FcmProvider>
       </body>
     </html>
   );

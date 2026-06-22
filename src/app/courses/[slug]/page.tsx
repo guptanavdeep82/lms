@@ -91,6 +91,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
               <CoursePurchaseActions
                 courseId={payload.course.id}
+                courseSlug={slug}
                 courseTitle={course.title}
                 price={course.price}
                 isPdfCourse={isPdfCourse}

@@ -9,6 +9,7 @@ import { getStudentSession } from "@/lib/student-auth";
 
 type CoursePurchaseActionsProps = {
   courseId: number;
+  courseSlug: string;
   courseTitle: string;
   price: number;
   isPdfCourse: boolean;
@@ -17,6 +18,7 @@ type CoursePurchaseActionsProps = {
 
 export function CoursePurchaseActions({
   courseId,
+  courseSlug,
   courseTitle,
   price,
   isPdfCourse,
@@ -52,7 +54,7 @@ export function CoursePurchaseActions({
           Course Unlocked
         </span>
         <Link
-          href="/student/courses"
+          href={isPdfCourse ? `/courses/${courseSlug}` : isLiveCourse ? `/live-classes/course/${courseSlug}` : `/student/courses/${courseSlug}/learn`}
           className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#172a69] text-sm font-extrabold text-white transition hover:bg-[#10215a]"
         >
           <PlayCircle className="size-4" /> Continue Learning

@@ -255,19 +255,25 @@ canvas {
 }
 
 .exam-link {
-  height: 40px !important;
+  min-height: 40px !important;
+  height: auto !important;
   border: 1px solid;
   border-radius: 7px;
   display: flex !important;
   align-items: center;
   gap: 8px;
-  overflow: hidden;
-  padding: 0 10px;
+  overflow: visible;
+  padding: 8px 10px;
   font-size: 12px !important;
   font-weight: 600;
-  text-overflow: ellipsis;
   transition: all 0.18s ease;
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.35;
+}
+
+.exam-link-label {
+  min-width: 0;
+  flex: 1;
 }
 
 .exam-link:hover {
