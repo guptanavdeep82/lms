@@ -1,9 +1,11 @@
 "use client";
 
 import { type MouseEvent, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
 import { cmsPageHref, fetchCmsPages, type CmsPageSummary } from "@/lib/cms-pages";
+import { BRAND_LOGO_ALT, BRAND_LOGO_SRC } from "@/lib/brand";
 import { getStudentSession, logoutStudent } from "@/lib/student-auth";
 
 const fallbackCategories: MockCategory[] = [
@@ -112,19 +114,14 @@ export function PublicHeader({ active }: PublicHeaderProps) {
       <header className="public-home-header">
         <div className="header-inner">
           <Link href="/" className="logo-wrap">
-            <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="24" cy="19" r="16" stroke="#F5C518" strokeWidth="2.5" fill="none" />
-              <text x="19" y="27" fontFamily="Sora,sans-serif" fontWeight="800" fontSize="15" fill="#1B2E6B">K</text>
-              <text x="28" y="25" fontFamily="Sora,sans-serif" fontWeight="800" fontSize="15" fill="#E8A800">R</text>
-              <rect x="9" y="33" width="9" height="2" rx="1" fill="#1B2E6B" />
-              <rect x="30" y="33" width="9" height="2" rx="1" fill="#1B2E6B" />
-              <line x1="24" y1="33" x2="24" y2="46" stroke="#E8A800" strokeWidth="1.8" />
-              <rect x="20" y="42" width="8" height="3" rx=".5" fill="#E8A800" />
-            </svg>
-            <div className="logo-text-group">
-              <div className="brand">KR <span>Logics</span></div>
-              <div className="tagline">IBPS · SBI · RBI · Insurance</div>
-            </div>
+            <Image
+              src={BRAND_LOGO_SRC}
+              alt={BRAND_LOGO_ALT}
+              width={160}
+              height={52}
+              priority
+              className="h-11 w-auto object-contain"
+            />
           </Link>
 
           <nav>

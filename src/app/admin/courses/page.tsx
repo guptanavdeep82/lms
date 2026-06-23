@@ -450,7 +450,7 @@ export default function AdminCoursesPage() {
         <aside className="hidden w-[280px] border-r border-white/10 bg-[#050808] p-5 text-white lg:block">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logics-logo.jpeg" alt="KR Logics" className="h-12 w-12 rounded-2xl object-cover ring-1 ring-[#ffd21f]/35" />
+            <img src="/kr-logics-logo.png" alt="KR Logics" className="h-12 w-auto object-contain" />
             <div>
               <p className="text-lg font-black leading-none">KR Logics</p>
               <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-[#ffd21f]">Admin Panel</p>

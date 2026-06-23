@@ -16,6 +16,7 @@ import {
   User,
   WalletCards,
 } from "lucide-react";
+import { BRAND_LOGO_ALT, BRAND_LOGO_SRC } from "@/lib/brand";
 import { logoutStudent } from "@/lib/student-auth";
 
 const navGroups = [
@@ -66,14 +67,14 @@ export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
       <div className="flex h-[78px] items-center gap-3 border-b border-[#e4e8f1] px-6">
         <Link href="/" className="flex min-w-0 items-center gap-3 transition hover:opacity-90" onClick={onNavigate}>
           <Image
-            src="/logics-logo.jpeg"
-            alt="KR Logics logo"
-            width={48}
+            src={BRAND_LOGO_SRC}
+            alt={BRAND_LOGO_ALT}
+            width={160}
             height={48}
-            className="h-12 w-12 rounded-2xl border-2 border-[#ffd21f] object-cover shadow-xl shadow-black/10"
+            className="h-11 w-auto object-contain"
           />
           <div className="min-w-0">
-            <p className="text-sm font-extrabold leading-tight text-[#172a69]">KR Logics</p>
+            <p className="text-sm font-extrabold leading-tight text-[#000000]">KR Logics</p>
             <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8791a5]">Student LMS</p>
           </div>
         </Link>

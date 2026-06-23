@@ -43,11 +43,11 @@
 }
 
 .public-site-footer-brand img {
-  width: 52px;
+  width: auto;
   height: 52px;
-  border-radius: 9999px;
-  object-fit: cover;
-  box-shadow: 0 0 0 2px rgba(255, 210, 31, 0.45);
+  border-radius: 0;
+  object-fit: contain;
+  box-shadow: none;
 }
 
 .public-site-footer-brand-title {
@@ -55,11 +55,25 @@
   font-size: 1.125rem;
   font-weight: 800;
   line-height: 1.2;
-  color: #050808;
+  color: #000000;
 }
 
 .public-site-footer-brand-title span {
-  color: #d6a900;
+  color: #0066ff;
+}
+
+.public-site-footer-social:hover {
+  background: #0066ff;
+  border-color: #0066ff;
+  color: #ffffff;
+}
+
+.public-site-footer-col h5 {
+  color: #000000;
+}
+
+.public-site-footer-bottom span {
+  color: #0066ff;
 }
 
 .public-site-footer-brand-tag {
@@ -97,9 +111,9 @@
 }
 
 .public-site-footer-social:hover {
-  background: #ffd21f;
-  border-color: #ffd21f;
-  color: #050808;
+  background: #0066ff;
+  border-color: #0066ff;
+  color: #ffffff;
 }
 
 .public-site-footer-col h5 {
@@ -108,7 +122,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #1b2e6b;
+  color: #000000;
 }
 
 .public-site-footer-links {
@@ -159,5 +173,5 @@
 }
 
 .public-site-footer-bottom span {
-  color: #d6a900;
+  color: #0066ff;
 }

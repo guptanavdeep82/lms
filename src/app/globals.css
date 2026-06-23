@@ -21,12 +21,12 @@ body {
 }
 
 ::selection {
-  background: #ffd400;
-  color: #001f63;
+  background: #0066ff;
+  color: #ffffff;
 }
 
 .gold-ring {
-  box-shadow: 0 0 0 1px rgba(255, 212, 0, 0.22), 0 24px 80px rgba(0, 31, 99, 0.2);
+  box-shadow: 0 0 0 1px rgba(0, 102, 255, 0.22), 0 24px 80px rgba(0, 31, 99, 0.2);
 }
 
 .glass-panel {
@@ -84,12 +84,12 @@ canvas {
 .topbar .logo-row::before {
   content: "";
   display: block;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
-  border-radius: 50%;
-  background: url("/logics-logo.jpeg") center / cover no-repeat;
-  box-shadow: 0 0 0 2px rgba(255, 210, 31, 0.32), 0 10px 24px rgba(0, 0, 0, 0.16);
+  width: 148px;
+  height: 48px;
+  flex: 0 0 148px;
+  border-radius: 0;
+  background: url("/kr-logics-logo.png") left center / contain no-repeat;
+  box-shadow: none;
 }
 
 .topbar {
@@ -156,7 +156,7 @@ canvas {
 
 .topbar-nav > a.active,
 .nav-links > a.active {
-  border-bottom-color: var(--kr-gold);
+  border-bottom-color: var(--kr-blue);
 }
 
 .topbar-btns,
@@ -305,15 +305,17 @@ canvas {
   color: #1b6aa8;
 }
 
-/* KR Logics brand theme layer: keeps every route aligned with the black/gold logo. */
+/* KR Logics brand theme layer: blue / black logo palette across routes. */
 :root {
-  --kr-black: #050808;
-  --kr-ink: #151a18;
-  --kr-gold: #ffd21f;
-  --kr-gold-strong: #ffc400;
-  --kr-cream: #f7f6ef;
-  --kr-cream-2: #fff8dc;
-  --kr-border: #ded9c8;
+  --kr-black: #000000;
+  --kr-ink: #0a0f1a;
+  --kr-blue: #0066ff;
+  --kr-blue-strong: #0052cc;
+  --kr-blue-light: #4d94ff;
+  --kr-blue-soft: #e8f1ff;
+  --kr-cream: #f5f7fa;
+  --kr-cream-2: #eef4ff;
+  --kr-border: #d7e3f4;
 }
 
 [class*="bg-[#1b2e6b]"],
@@ -374,8 +376,8 @@ canvas {
 .mock-cta,
 .hero-btn-main,
 .btn-primary {
-  background-color: var(--kr-gold) !important;
-  color: var(--kr-black) !important;
+  background-color: var(--kr-blue) !important;
+  color: #ffffff !important;
 }
 
 [class*="hover:bg-[#ffd844]"]:hover,
@@ -386,8 +388,8 @@ canvas {
 .mock-cta:hover,
 .hero-btn-main:hover,
 .btn-primary:hover {
-  background-color: #ffe164 !important;
-  color: var(--kr-black) !important;
+  background-color: var(--kr-blue-strong) !important;
+  color: #ffffff !important;
 }
 
 [class*="text-[#1b2e6b]"],
@@ -425,7 +427,7 @@ canvas {
 .cc-category,
 .sec-eyebrow,
 .footer-col h5 {
-  color: var(--kr-gold-strong) !important;
+  color: var(--kr-blue) !important;
 }
 
 [class*="border-[#1b2e6b]"],
@@ -446,7 +448,7 @@ canvas {
 [class*="border-[#f5c518]"],
 [class*="border-[#e8a800]"],
 [class*="border-[#ffd21f]"] {
-  border-color: var(--kr-gold) !important;
+  border-color: var(--kr-blue) !important;
 }
 
 [class*="bg-[#f8f9fc]"],
@@ -493,14 +495,14 @@ canvas {
 [class*="to-[#e8a800]"],
 [class*="to-[#f5c518]"],
 [class*="to-[#ffcf33]"] {
-  --tw-gradient-to: var(--kr-gold) var(--tw-gradient-to-position) !important;
+  --tw-gradient-to: var(--kr-blue) var(--tw-gradient-to-position) !important;
 }
 
 .topbar {
   min-height: 72px !important;
-  background: rgba(5, 8, 8, 0.96) !important;
-  border-bottom-color: rgba(255, 210, 31, 0.28) !important;
-  box-shadow: 0 12px 30px rgba(5, 8, 8, 0.12) !important;
+  background: rgba(0, 0, 0, 0.96) !important;
+  border-bottom-color: rgba(0, 102, 255, 0.28) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18) !important;
 }
 
 .topbar .logo-text,
@@ -520,32 +522,32 @@ canvas {
 .nav-links > a:hover,
 .nav-links > a.active,
 .topbar .exam-menu-trigger:hover {
-  color: var(--kr-gold) !important;
+  color: var(--kr-blue-light) !important;
 }
 
 .topbar .btn-outline-sm,
 .topbar .nbtn {
-  border-color: var(--kr-gold) !important;
-  color: var(--kr-gold) !important;
+  border-color: var(--kr-blue) !important;
+  color: var(--kr-blue-light) !important;
 }
 
 .topbar .btn-fill-sm,
 .topbar .nbtn.fill,
 .topbar .nbtn-teal {
-  background: var(--kr-gold) !important;
-  color: var(--kr-black) !important;
+  background: var(--kr-blue) !important;
+  color: #ffffff !important;
 }
 
 .topbar .btn-outline-sm:hover,
 .topbar .nbtn:hover {
-  background: var(--kr-gold) !important;
-  color: var(--kr-black) !important;
+  background: var(--kr-blue) !important;
+  color: #ffffff !important;
 }
 
 .exam-mega {
   background: #ffffff !important;
-  border-color: rgba(255, 210, 31, 0.22) !important;
-  box-shadow: 0 24px 60px rgba(5, 8, 8, 0.16) !important;
+  border-color: rgba(0, 102, 255, 0.18) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.16) !important;
 }
 
 .exam-mega a,
@@ -564,9 +566,9 @@ canvas {
 
 .exam-cat.active {
   background: var(--kr-cream-2) !important;
-  border-color: rgba(255, 210, 31, 0.45) !important;
+  border-color: rgba(0, 102, 255, 0.35) !important;
   color: var(--kr-black) !important;
-  box-shadow: 0 12px 28px rgba(255, 210, 31, 0.12) !important;
+  box-shadow: 0 12px 28px rgba(0, 102, 255, 0.12) !important;
 }
 
 .exam-link:hover {
@@ -582,13 +584,13 @@ canvas {
 .exam-icon.red,
 .exam-icon.soft {
   background: var(--kr-black) !important;
-  color: var(--kr-gold) !important;
-  border-color: rgba(255, 210, 31, 0.3) !important;
+  color: var(--kr-blue-light) !important;
+  border-color: rgba(0, 102, 255, 0.3) !important;
 }
 
 .exam-icon.gold {
-  background: var(--kr-gold) !important;
-  color: var(--kr-black) !important;
+  background: var(--kr-blue) !important;
+  color: #ffffff !important;
 }
 
 /* Responsive safety layer for imported public HTML pages. */

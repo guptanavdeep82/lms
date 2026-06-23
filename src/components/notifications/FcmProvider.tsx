@@ -25,7 +25,7 @@ export function NotificationPermissionPrompt() {
           if (data?.title) {
             new Notification(data.title, {
               body: data.body,
-              icon: "/logics-logo.jpeg",
+              icon: "/kr-logics-logo.png",
             }).onclick = () => {
               if (clickUrl) window.location.href = clickUrl;
             };

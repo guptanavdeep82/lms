@@ -37,8 +37,8 @@ export function LiveSessionPromoCard({ session, onAccessChange }: LiveSessionPro
           <div className="relative z-10">
             <div className="mb-3 flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Image src="/logics-logo.jpeg" alt="KR Logics" width={28} height={28} className="h-7 w-7 rounded-full border border-white/70 object-cover" />
-                <Image src="/logics-logo.jpeg" alt="KR Logics" width={28} height={28} className="-ml-2 h-7 w-7 rounded-full border border-white/70 object-cover" />
+                <Image src="/kr-logics-logo.png" alt="KR Logics" width={28} height={28} className="h-7 w-7 rounded-full border border-white/70 object-cover" />
+                <Image src="/kr-logics-logo.png" alt="KR Logics" width={28} height={28} className="-ml-2 h-7 w-7 rounded-full border border-white/70 object-cover" />
               </div>
               <span className="rounded-md bg-[#f97316] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white">
                 {liveSessionStatusLabel(session.display_status)}

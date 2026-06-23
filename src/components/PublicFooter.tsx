@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import type { HomePageSettings } from "@/lib/home-page";
+import { BRAND_LOGO_ALT, BRAND_LOGO_SRC } from "@/lib/brand";
 
 type PublicFooterProps = {
   settings?: HomePageSettings | null;
@@ -59,7 +60,7 @@ export function PublicFooter({ settings }: PublicFooterProps) {
         <div className="public-site-footer-grid">
           <div>
             <div className="public-site-footer-brand">
-              <Image src="/logics-logo.jpeg" alt="KR Logics" width={52} height={52} />
+              <Image src={BRAND_LOGO_SRC} alt={BRAND_LOGO_ALT} width={160} height={52} className="h-[52px] w-auto object-contain" />
               <div>
                 <div className="public-site-footer-brand-title">
                   KR <span>Logics</span>
@@ -115,15 +116,15 @@ export function PublicFooter({ settings }: PublicFooterProps) {
           <div className="public-site-footer-col public-site-footer-contact">
             <h5>Get in touch</h5>
             <p className="flex items-start gap-2">
-              <MapPin size={14} className="mt-0.5 shrink-0 text-[#d6a900]" />
+              <MapPin size={14} className="mt-0.5 shrink-0 text-[#0066ff]" />
               <span>KR Logics Institute, Near City Mall, Jodhpur, Rajasthan — 342001</span>
             </p>
             <p className="flex items-start gap-2">
-              <Mail size={14} className="mt-0.5 shrink-0 text-[#d6a900]" />
+              <Mail size={14} className="mt-0.5 shrink-0 text-[#0066ff]" />
               <span>admissions@krlogics.com</span>
             </p>
             <p className="flex items-start gap-2">
-              <Phone size={14} className="mt-0.5 shrink-0 text-[#d6a900]" />
+              <Phone size={14} className="mt-0.5 shrink-0 text-[#0066ff]" />
               <span>{settings?.whatsapp_number?.trim() || "+91 98765 43210"} (Mon–Sat, 9 AM – 8 PM)</span>
             </p>
           </div>

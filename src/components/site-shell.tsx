@@ -14,7 +14,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-8">
         <div>
           <div className="flex items-center gap-3">
-            <Image src="/logics-logo.jpeg" alt="Logics logo" width={54} height={54} className="rounded-md object-cover" />
+            <Image src="/kr-logics-logo.png" alt="Logics logo" width={54} height={54} className="rounded-md object-cover" />
             <div>
               <p className="font-black uppercase tracking-[0.2em]">Kaneesh Reena Logics</p>
               <p className="text-sm text-white/55">SBI, RBI, IBPS, Insurance and competitive exams.</p>

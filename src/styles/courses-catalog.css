@@ -1,5 +1,5 @@
 .courses-hero-strip {
-  background: #050808;
+  background: #000000;
   padding: 44px 32px;
   display: flex;
   align-items: center;
@@ -33,7 +33,7 @@
   font-family: "Sora", sans-serif;
   font-size: 28px;
   font-weight: 800;
-  color: #f5c518;
+  color: #0066ff;
 }
 
 .courses-hero-stats small {

@@ -9,7 +9,7 @@ messaging.onBackgroundMessage(function (payload) {
   const title = payload.notification?.title || payload.data?.title || "KR Logics";
   const options = {
     body: payload.notification?.body || payload.data?.message || "",
-    icon: payload.notification?.icon || "/logics-logo.jpeg",
+    icon: payload.notification?.icon || "/kr-logics-logo.png",
     image: payload.notification?.image || payload.data?.image_url,
     data: {
       click_url: payload.data?.click_url || payload.fcmOptions?.link || "/",
