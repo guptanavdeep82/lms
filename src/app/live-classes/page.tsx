@@ -121,10 +121,10 @@ export default function LiveClassesPage() {
     <PublicPageShell active="live-classes">
 
       {/* Hero — compact, matches PDF/courses page */}
-      <section className="border-b border-[#e5e8f0] bg-[#1b2e6b] px-6 py-11 text-white sm:px-8">
+      <section className="border-b border-[#0066ff]/15 bg-[#0066ff] px-6 py-11 text-white sm:px-8">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#f5c518] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#1b2e6b]">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0066ff]">
               <Radio size={12} /> Live Classes on Zoom
             </span>
             <h1 className="mt-4 font-['Sora'] text-[28px] font-extrabold leading-tight text-white">
@@ -141,7 +141,7 @@ export default function LiveClassesPage() {
               ["Recorded", stats.replay],
             ].map(([label, count]) => (
               <div key={label as string} className="text-center">
-                <strong className="block font-['Sora'] text-[28px] font-extrabold text-[#f5c518]">{count as number}</strong>
+                <strong className="block font-['Sora'] text-[28px] font-extrabold text-white">{count as number}</strong>
                 <small className="text-[11px] font-semibold uppercase tracking-wide text-white/50">{label as string}</small>
               </div>
             ))}
@@ -155,22 +155,22 @@ export default function LiveClassesPage() {
           {/* Search + filter toggle */}
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="relative w-full lg:max-w-xl">
-              <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[#b78600]" />
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[#0066ff]/60" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search class, faculty, course..."
-                className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-12 pr-4 text-sm font-semibold text-slate-800 shadow-sm outline-none transition focus:border-[#1b2e6b] focus:ring-2 focus:ring-[#1b2e6b]/10"
+                className="h-12 w-full rounded-xl border border-[#0066ff]/20 bg-white pl-12 pr-4 text-sm font-semibold text-[#0066ff] shadow-sm outline-none transition focus:border-[#0066ff] focus:ring-2 focus:ring-[#0066ff]/10"
               />
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-xl border border-[#ead694] bg-[#fff9e0] px-4 py-2.5 text-sm font-bold text-[#6b4d00]">
+              <span className="rounded-xl border border-[#0066ff]/20 bg-[#0066ff]/6 px-4 py-2.5 text-sm font-bold text-[#0066ff]">
                 {filteredSessions.length} classes found
               </span>
               <button
                 type="button"
                 onClick={() => setShowFilters((v) => !v)}
-                className="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-[#1b2e6b] shadow-sm lg:hidden"
+                className="inline-flex h-12 items-center gap-2 rounded-xl border border-[#0066ff]/20 bg-white px-4 text-sm font-bold text-[#0066ff] shadow-sm lg:hidden"
               >
                 <Filter size={18} /> Filters
               </button>
@@ -180,10 +180,10 @@ export default function LiveClassesPage() {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]">
             {/* Sidebar filters */}
             <aside
-              className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:block lg:h-max ${showFilters ? "block" : "hidden"}`}
+              className={`rounded-2xl border border-[#0066ff]/15 bg-white p-5 shadow-sm lg:sticky lg:top-24 lg:block lg:h-max ${showFilters ? "block" : "hidden"}`}
             >
-              <div className="mb-5 flex items-center gap-2 font-rajdhani text-xl font-bold text-[#1b2e6b]">
-                <Filter size={20} className="text-[#e8a800]" /> Filters
+              <div className="mb-5 flex items-center gap-2 font-rajdhani text-xl font-bold text-[#0066ff]">
+                <Filter size={20} className="text-[#0066ff]" /> Filters
               </div>
               <FilterGroup title="Status" options={filters.status} value={status} onChange={setStatus} />
               <FilterGroup title="Subject" options={filters.subject} value={subject} onChange={setSubject} />
@@ -191,7 +191,7 @@ export default function LiveClassesPage() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="mt-5 h-11 w-full rounded-xl border-2 border-[#1b2e6b] bg-white text-sm font-bold text-[#1b2e6b] transition hover:bg-[#1b2e6b] hover:text-white"
+                className="mt-5 h-11 w-full rounded-xl border-2 border-[#0066ff] bg-white text-sm font-bold text-[#0066ff] transition hover:bg-[#0066ff] hover:text-white"
               >
                 Clear Filters
               </button>
@@ -202,8 +202,8 @@ export default function LiveClassesPage() {
               {liveCourses.length ? (
                 <div className="mb-10">
                   <div className="mb-4 flex items-center gap-2">
-                    <Video size={18} className="text-[#e8a800]" />
-                    <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#8a6500]">Live Course Plans</h2>
+                    <Video size={18} className="text-[#0066ff]" />
+                    <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#0066ff]">Live Course Plans</h2>
                   </div>
                   <div className="courses-promo-grid">
                     {liveCourses.map((course) => (
@@ -222,9 +222,9 @@ export default function LiveClassesPage() {
               {!loading && recordedSessions.length > 0 ? (
                 <div className="mb-10">
                   <div className="mb-4 flex items-center gap-2">
-                    <MonitorPlay size={18} className="text-[#e8a800]" />
-                    <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#8a6500]">Recorded Classes</h2>
-                    <span className="rounded-full bg-[#fff9e0] px-2 py-0.5 text-[10px] font-bold text-[#6b4d00]">{recordedSessions.length}</span>
+                    <MonitorPlay size={18} className="text-[#0066ff]" />
+                    <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#0066ff]">Recorded Classes</h2>
+                    <span className="rounded-full bg-[#0066ff]/10 px-2 py-0.5 text-[10px] font-bold text-[#0066ff]">{recordedSessions.length}</span>
                   </div>
                   <div className="courses-promo-grid">
                     {recordedSessions.map((session) => (
@@ -237,7 +237,7 @@ export default function LiveClassesPage() {
               {loading ? (
                 <div className="courses-promo-grid">
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-[420px] animate-pulse rounded-[18px] bg-slate-200" />
+                    <div key={i} className="h-[420px] animate-pulse rounded-[18px] bg-[#0066ff]/10" />
                   ))}
                 </div>
               ) : filteredSessions.length ? (
@@ -245,8 +245,8 @@ export default function LiveClassesPage() {
                   {groupedSessions.map(([dateLabel, sessions]) => (
                     <div key={dateLabel}>
                       <div className="mb-4 flex items-center gap-2">
-                        <CalendarDays size={18} className="text-[#e8a800]" />
-                        <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#8a6500]">{dateLabel}</h2>
+                        <CalendarDays size={18} className="text-[#0066ff]" />
+                        <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-[#0066ff]">{dateLabel}</h2>
                       </div>
                       <div className="courses-promo-grid">
                         {sessions.map((session) => (
@@ -262,8 +262,8 @@ export default function LiveClassesPage() {
                 </div>
               ) : (
                 <div className="rounded-2xl border border-dashed border-[#c7b26b] bg-[#fffdf3] px-6 py-16 text-center">
-                  <p className="font-rajdhani text-2xl font-bold text-[#6b4d00]">No live classes found</p>
-                  <p className="mt-2 text-sm font-medium text-slate-600">Try changing filters or check back later.</p>
+                  <p className="font-rajdhani text-2xl font-bold text-[#0066ff]">No live classes found</p>
+                  <p className="mt-2 text-sm font-medium text-[#0066ff]/70">Try changing filters or check back later.</p>
                 </div>
               )}
 
@@ -274,10 +274,10 @@ export default function LiveClassesPage() {
                   { icon: MonitorPlay, title: "Auto Recording", text: "Cloud recordings sync when the Zoom session ends." },
                   { icon: CheckCircle2, title: "Free & Paid Access", text: "Free courses after login. Paid courses after purchase." },
                 ].map(({ icon: Icon, title, text }) => (
-                  <div key={title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <Icon className="size-6 text-[#e8a800]" />
-                    <h3 className="mt-3 font-rajdhani text-lg font-bold text-[#1b2e6b]">{title}</h3>
-                    <p className="mt-2 text-sm leading-7 text-slate-600">{text}</p>
+                  <div key={title} className="rounded-2xl border border-[#0066ff]/15 bg-white p-6 shadow-sm">
+                    <Icon className="size-6 text-[#0066ff]" />
+                    <h3 className="mt-3 font-rajdhani text-lg font-bold text-[#0066ff]">{title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[#0066ff]/70">{text}</p>
                   </div>
                 ))}
               </div>
@@ -301,8 +301,8 @@ function FilterGroup({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="border-t border-slate-100 py-4 first:border-t-0 first:pt-0">
-      <h3 className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#b78600]">{title}</h3>
+    <div className="border-t border-[#0066ff]/10 py-4 first:border-t-0 first:pt-0">
+      <h3 className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#0066ff]/70">{title}</h3>
       <div className="grid gap-2">
         {options.map(([optionValue, label]) => (
           <button
@@ -311,8 +311,8 @@ function FilterGroup({
             onClick={() => onChange(optionValue)}
             className={`h-10 rounded-lg px-3 text-left text-sm font-bold transition ${
               value === optionValue
-                ? "bg-[#1b2e6b] text-[#f5c518]"
-                : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+                ? "bg-[#0066ff] text-white"
+                : "bg-[#0066ff]/6 text-[#0066ff] hover:bg-[#0066ff]/12"
             }`}
           >
             {label}

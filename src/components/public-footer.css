@@ -1,7 +1,7 @@
 .public-site-footer {
   background: #ffffff;
-  color: #050808;
-  border-top: 1px solid #e5e8f0;
+  color: #0066ff;
+  border-top: 1px solid rgba(0, 102, 255, 0.12);
   font-family: var(--font-poppins), "Poppins", ui-sans-serif, system-ui, sans-serif;
   flex-shrink: 0;
 }
@@ -55,24 +55,10 @@
   font-size: 1.125rem;
   font-weight: 800;
   line-height: 1.2;
-  color: #000000;
-}
-
-.public-site-footer-brand-title span {
   color: #0066ff;
 }
 
-.public-site-footer-social:hover {
-  background: #0066ff;
-  border-color: #0066ff;
-  color: #ffffff;
-}
-
-.public-site-footer-col h5 {
-  color: #000000;
-}
-
-.public-site-footer-bottom span {
+.public-site-footer-brand-title span {
   color: #0066ff;
 }
 
@@ -80,7 +66,7 @@
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: rgba(0, 102, 255, 0.6);
 }
 
 .public-site-footer-about {
@@ -88,7 +74,7 @@
   max-width: 18rem;
   font-size: 0.8125rem;
   line-height: 1.75;
-  color: #6b7280;
+  color: rgba(0, 102, 255, 0.7);
 }
 
 .public-site-footer-socials {
@@ -104,9 +90,9 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 0.5rem;
-  border: 1px solid #e5e8f0;
-  background: #f8f9fc;
-  color: #4b5563;
+  border: 1px solid rgba(0, 102, 255, 0.15);
+  background: #ffffff;
+  color: #0066ff;
   transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
@@ -122,7 +108,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #000000;
+  color: #0066ff;
 }
 
 .public-site-footer-links {
@@ -134,13 +120,13 @@
 .public-site-footer-contact p {
   font-size: 0.8125rem;
   line-height: 1.6;
-  color: #6b7280;
+  color: rgba(0, 102, 255, 0.7);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .public-site-footer-links a:hover {
-  color: #050808;
+  color: #0066ff;
 }
 
 .public-site-footer-contact p {
@@ -154,7 +140,7 @@
 .public-site-footer-bottom {
   margin-top: 2.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid #e5e8f0;
+  border-top: 1px solid rgba(0, 102, 255, 0.12);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -162,7 +148,7 @@
   justify-content: space-between;
   text-align: center;
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: rgba(0, 102, 255, 0.55);
 }
 
 @media (min-width: 640px) {

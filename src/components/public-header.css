@@ -5,9 +5,9 @@
   width: 100%;
   max-width: none;
   padding: 0 5%;
-  background: rgba(0, 0, 0, 0.96);
-  border-bottom: 1px solid rgba(0, 102, 255, 0.28);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid rgba(0, 102, 255, 0.12);
+  box-shadow: 0 8px 30px rgba(0, 102, 255, 0.06);
   backdrop-filter: blur(10px);
   font-family: var(--font-poppins), "Poppins", ui-sans-serif, system-ui, sans-serif;
   font-size: 16px;
@@ -45,31 +45,6 @@
   object-fit: contain;
 }
 
-.public-home-header .logo-text-group {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-.public-home-header .brand {
-  font-family: var(--font-sora), "Sora", ui-sans-serif, system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  color: #fff;
-}
-
-.public-home-header .brand span {
-  color: #4d94ff;
-}
-
-.public-home-header .tagline {
-  font-size: 9px;
-  color: rgba(255, 255, 255, 0.62);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
 .public-home-header nav {
   display: flex;
   gap: 24px;
@@ -83,7 +58,7 @@
   align-items: center;
   height: 100%;
   border-bottom: 2px solid transparent;
-  color: rgba(255, 255, 255, 0.74);
+  color: rgba(0, 102, 255, 0.72);
   font-size: 13px;
   font-weight: 600;
   line-height: 1;
@@ -97,7 +72,7 @@
 .public-home-header nav > a.active,
 .public-home-header .exam-menu-trigger:hover,
 .public-home-header .exam-menu-trigger.active {
-  color: #4d94ff;
+  color: #0066ff;
   border-bottom-color: #0066ff;
 }
 
@@ -127,10 +102,10 @@
   z-index: 140;
   min-width: 210px;
   padding: 10px;
-  background: #fff;
-  border: 1px solid #ded9c8;
+  background: #ffffff;
+  border: 1px solid rgba(0, 102, 255, 0.15);
   border-radius: 0 0 12px 12px;
-  box-shadow: 0 18px 45px rgba(5, 8, 8, 0.16);
+  box-shadow: 0 18px 45px rgba(0, 102, 255, 0.1);
   opacity: 0;
   visibility: hidden;
   transform: translate(-50%, 10px);
@@ -152,14 +127,14 @@
   border: 0;
   border-radius: 8px;
   padding: 10px;
-  color: #050808;
+  color: #0066ff;
   font-size: 12px;
   font-weight: 800;
 }
 
 .public-home-header .course-dropdown a:hover {
-  background: #fff8dc;
-  color: #050808;
+  background: rgba(0, 102, 255, 0.06);
+  color: #0066ff;
 }
 
 .public-home-header .course-dropdown span {
@@ -168,8 +143,8 @@
   width: 26px;
   height: 26px;
   border-radius: 7px;
-  background: #050808;
-  color: #0066ff;
+  background: #0066ff;
+  color: #ffffff;
   font-size: 12px;
 }
 
@@ -186,10 +161,10 @@
   max-height: calc(100vh - 96px);
   overflow: auto;
   padding: 20px;
-  background: #fff;
-  border: 1px solid #ded9c8;
+  background: #ffffff;
+  border: 1px solid rgba(0, 102, 255, 0.15);
   border-radius: 0 0 14px 14px;
-  box-shadow: 0 18px 45px rgba(15, 30, 74, 0.12);
+  box-shadow: 0 18px 45px rgba(0, 102, 255, 0.1);
   opacity: 0;
   visibility: hidden;
   transform: translate(-50%, 10px);
@@ -224,18 +199,18 @@
   align-items: center;
   justify-content: space-between;
   height: 40px;
-  border: 1px solid #ded9c8;
+  border: 1px solid rgba(0, 102, 255, 0.15);
   border-radius: 7px;
-  background: #fff;
-  color: #050808;
+  background: #ffffff;
+  color: #0066ff;
   font-size: 12px;
   font-weight: 600;
   padding: 0 10px;
 }
 
 .public-home-header .exam-cat.active {
-  background: #fff8dc;
-  border-color: rgba(255, 210, 31, 0.45);
+  background: rgba(0, 102, 255, 0.06);
+  border-color: #0066ff;
 }
 
 .public-home-header .exam-grid {
@@ -252,10 +227,10 @@
   min-height: 40px;
   height: auto;
   overflow: visible;
-  border: 1px solid #dfe3ea;
+  border: 1px solid rgba(0, 102, 255, 0.15);
   border-radius: 7px;
-  background: #fff;
-  color: #121827;
+  background: #ffffff;
+  color: #0066ff;
   font-size: 12px;
   font-weight: 600;
   padding: 8px 10px;
@@ -269,9 +244,9 @@
 }
 
 .public-home-header .exam-link:hover {
-  border-color: #050808;
-  box-shadow: 0 8px 18px rgba(27, 46, 107, 0.12);
-  color: #050808;
+  border-color: #0066ff;
+  box-shadow: 0 8px 18px rgba(0, 102, 255, 0.12);
+  color: #0066ff;
   transform: translateY(-1px);
 }
 
@@ -283,9 +258,9 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  color: #0066ff;
-  background: #050808;
-  border: 1px solid rgba(255, 210, 31, 0.3);
+  color: #ffffff;
+  background: #0066ff;
+  border: 1px solid rgba(0, 102, 255, 0.2);
   font-size: 10px;
   font-weight: 800;
 }
@@ -297,10 +272,10 @@
 
 .public-home-header .exam-empty {
   grid-column: 1 / -1;
-  border: 1px dashed #ded9c8;
+  border: 1px dashed rgba(0, 102, 255, 0.25);
   border-radius: 8px;
   padding: 18px;
-  color: #667085;
+  color: rgba(0, 102, 255, 0.6);
   font-size: 13px;
   font-weight: 700;
   text-align: center;
@@ -337,18 +312,18 @@
 
 .public-home-header .btn-ghost:hover {
   background: #0066ff;
-  color: #050808;
+  color: #ffffff;
 }
 
 .public-home-header .btn-primary {
   border: 0;
   background: #0066ff;
-  color: #050808;
+  color: #ffffff;
 }
 
 .public-home-header .btn-primary:hover {
-  background: #ffe164;
-  color: #050808;
+  filter: brightness(0.92);
+  color: #ffffff;
   transform: translateY(-1px);
 }
 
@@ -382,12 +357,6 @@
     flex-wrap: wrap;
     padding-block: 10px;
     gap: 12px;
-  }
-
-  .public-home-header .logo-wrap::before {
-    width: 46px;
-    height: 46px;
-    flex-basis: 46px;
   }
 
   .public-home-header .brand {
@@ -475,10 +444,6 @@
 }
 
 @media (max-width: 640px) {
-  .public-home-header .tagline {
-    display: none;
-  }
-
   .public-home-header .btn-ghost,
   .public-home-header .btn-primary {
     padding-inline: 12px;

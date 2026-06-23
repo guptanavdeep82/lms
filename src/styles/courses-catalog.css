@@ -1,5 +1,5 @@
 .courses-hero-strip {
-  background: #000000;
+  background: #0066ff;
   padding: 44px 32px;
   display: flex;
   align-items: center;
@@ -12,13 +12,13 @@
   font-family: "Sora", sans-serif;
   font-size: 28px;
   font-weight: 800;
-  color: #fff;
+  color: #ffffff;
   margin-bottom: 8px;
 }
 
 .courses-hero-strip p {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(255, 255, 255, 0.82);
   max-width: 520px;
   line-height: 1.75;
 }
@@ -33,18 +33,18 @@
   font-family: "Sora", sans-serif;
   font-size: 28px;
   font-weight: 800;
-  color: #0066ff;
+  color: #ffffff;
 }
 
 .courses-hero-stats small {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.72);
   font-weight: 600;
 }
 
 .courses-search-bar {
-  background: #fff;
-  border-bottom: 1px solid #e5e8f0;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0, 102, 255, 0.12);
   padding: 14px 32px;
   display: flex;
   align-items: center;
@@ -64,29 +64,29 @@
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #6b7280;
+  color: rgba(0, 102, 255, 0.5);
 }
 
 .courses-search-input-wrap input {
   width: 100%;
   padding: 10px 14px 10px 42px;
-  border: 1.5px solid #e5e8f0;
+  border: 1.5px solid rgba(0, 102, 255, 0.15);
   border-radius: 8px;
   font-size: 13px;
-  color: #1a1d2e;
-  background: #f8f9fc;
+  color: #0066ff;
+  background: #ffffff;
   outline: none;
 }
 
 .courses-search-input-wrap input:focus {
-  border-color: #050808;
-  background: #fff;
+  border-color: #0066ff;
+  background: #ffffff;
 }
 
 .courses-results-count {
   font-size: 13px;
   font-weight: 700;
-  color: #050808;
+  color: #0066ff;
   white-space: nowrap;
 }
 
@@ -96,17 +96,17 @@
   gap: 8px;
   margin-left: auto;
   font-size: 12px;
-  color: #6b7280;
+  color: rgba(0, 102, 255, 0.6);
   font-weight: 600;
 }
 
 .courses-sort-wrap select {
   padding: 8px 12px;
-  border: 1.5px solid #e5e8f0;
+  border: 1.5px solid rgba(0, 102, 255, 0.15);
   border-radius: 7px;
   font-size: 12px;
-  color: #1a1d2e;
-  background: #fff;
+  color: #0066ff;
+  background: #ffffff;
   outline: none;
 }
 
@@ -119,11 +119,9 @@
 .courses-sidebar {
   width: 260px;
   min-width: 260px;
-  background:
-    radial-gradient(circle at 88% 4%, rgba(255, 210, 31, 0.22), transparent 28%),
-    linear-gradient(180deg, #fffdf2 0%, #ffffff 54%, #fff9df 100%);
-  border-right: 1px solid rgba(214, 169, 0, 0.28);
-  box-shadow: 14px 0 34px rgba(5, 8, 8, 0.05);
+  background: #ffffff;
+  border-right: 1px solid rgba(0, 102, 255, 0.12);
+  box-shadow: 14px 0 34px rgba(0, 102, 255, 0.04);
   padding: 24px 20px;
   display: flex;
   flex-direction: column;
@@ -134,7 +132,7 @@
 .courses-filter-section h3 {
   font-size: 11px;
   font-weight: 700;
-  color: #9c7411;
+  color: rgba(0, 102, 255, 0.6);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   margin-bottom: 12px;
@@ -152,23 +150,22 @@
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  border: 1.5px solid rgba(245, 197, 24, 0.48);
-  color: #6f5200;
-  background: #fff8dc;
+  border: 1.5px solid rgba(0, 102, 255, 0.2);
+  color: #0066ff;
+  background: #ffffff;
   transition: all 0.2s;
 }
 
 .courses-chip-group button:hover {
-  border-color: #d6a900;
-  color: #050808;
-  background: #fff1a8;
+  border-color: #0066ff;
+  background: rgba(0, 102, 255, 0.06);
 }
 
 .courses-chip-group button.active {
-  background: linear-gradient(135deg, #050808 0%, #171711 58%, #d6a900 100%);
-  border-color: #f5c518;
-  color: #ffd84d;
-  box-shadow: 0 8px 20px rgba(214, 169, 0, 0.2);
+  background: #0066ff;
+  border-color: #0066ff;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 102, 255, 0.2);
 }
 
 .courses-price-inputs {
@@ -181,10 +178,11 @@
 .courses-price-inputs input {
   flex: 1;
   padding: 7px 10px;
-  border: 1.5px solid rgba(214, 169, 0, 0.32);
+  border: 1.5px solid rgba(0, 102, 255, 0.15);
   border-radius: 7px;
   font-size: 12px;
-  background: #fffdf3;
+  background: #ffffff;
+  color: #0066ff;
   outline: none;
   min-width: 0;
 }
@@ -206,55 +204,55 @@
   background: transparent;
   font-size: 13px;
   font-weight: 600;
-  color: #1a1d2e;
+  color: #0066ff;
 }
 
 .courses-level-list button:hover,
 .courses-level-list button.active {
-  background: #fff4bd;
-  border-color: rgba(245, 197, 24, 0.42);
+  background: rgba(0, 102, 255, 0.06);
+  border-color: rgba(0, 102, 255, 0.15);
 }
 
 .courses-level-cb {
   width: 16px;
   height: 16px;
   border-radius: 4px;
-  border: 1.5px solid #e5e8f0;
-  background: #fff;
+  border: 1.5px solid rgba(0, 102, 255, 0.2);
+  background: #ffffff;
   display: grid;
   place-items: center;
-  color: #fff;
+  color: #ffffff;
   font-size: 9px;
 }
 
 .courses-level-list button.active .courses-level-cb {
-  background: #050808;
-  border-color: #f5c518;
+  background: #0066ff;
+  border-color: #0066ff;
 }
 
 .courses-clear-btn {
   width: 100%;
   padding: 9px;
-  background: #050808;
-  border: 1px solid #f5c518;
+  background: #0066ff;
+  border: 1px solid #0066ff;
   border-radius: 8px;
   font-size: 12px;
   font-weight: 700;
-  color: #ffd84d;
+  color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(5, 8, 8, 0.12);
+  box-shadow: 0 10px 24px rgba(0, 102, 255, 0.18);
 }
 
 .courses-clear-btn:hover {
-  background: #f5c518;
-  color: #050808;
+  filter: brightness(0.92);
+  color: #ffffff;
 }
 
 .courses-area {
   flex: 1;
   padding: 24px;
   overflow: hidden;
-  background: #f8f9fc;
+  background: #ffffff;
 }
 
 .courses-promo-grid {
@@ -266,20 +264,20 @@
 .courses-no-results {
   text-align: center;
   padding: 70px 20px;
-  color: #6b7280;
+  color: rgba(0, 102, 255, 0.6);
 }
 
 .courses-no-results i {
   font-size: 44px;
   margin-bottom: 14px;
   display: block;
-  color: #e5e8f0;
+  color: rgba(0, 102, 255, 0.2);
 }
 
 .courses-no-results h3 {
   font-size: 18px;
   font-weight: 700;
-  color: #050808;
+  color: #0066ff;
   margin-bottom: 8px;
 }
 
@@ -292,7 +290,7 @@
     width: 100%;
     min-width: 0;
     border-right: 0;
-    border-bottom: 1px solid rgba(214, 169, 0, 0.28);
+    border-bottom: 1px solid rgba(0, 102, 255, 0.12);
   }
 
   .courses-search-bar,
