@@ -172,57 +172,25 @@ const brandStyles = `
 .kr-logics-reference-home > div > header {
   display: none !important;
 }
-.kr-logics-reference-home header {
-  background: rgba(0, 102, 255, 0.96);
-  border-bottom-color: rgba(255, 255, 255, 0.28);
-}
-.kr-logics-reference-home .logo-wrap svg,
+/* Footer logo only — header is rendered by PublicHeader (public-header.css) */
 .kr-logics-reference-home .fbrand-row svg {
   display: none;
 }
-.kr-logics-reference-home .logo-wrap::before,
 .kr-logics-reference-home .fbrand-row::before {
   content: "";
   display: block;
-  width: 148px;
-  height: 48px;
-  flex: 0 0 148px;
-  border-radius: 0;
-  background: url("/kr-logics-logo.png") left center / contain no-repeat;
-  box-shadow: none;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border-radius: 10px;
+  background: #000000 url("/kr-logics-logo.png") center / contain no-repeat;
 }
-.kr-logics-reference-home .fbrand-row::before {
-  width: 48px;
-  height: 48px;
-  flex-basis: 48px;
-}
-.kr-logics-reference-home .logo-text-group .brand,
-.kr-logics-reference-home .logo-text-group .brand span,
-.kr-logics-reference-home nav a,
-.kr-logics-reference-home .exam-menu-trigger {
-  color: #ffffff;
-}
-.kr-logics-reference-home .logo-text-group .tagline,
-.kr-logics-reference-home nav a:hover,
-.kr-logics-reference-home .exam-menu-trigger:hover {
-  color: var(--gold);
-}
-.kr-logics-reference-home .btn-ghost {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-.kr-logics-reference-home .btn-ghost:hover {
-  background: var(--gold);
-  color: #ffffff;
-}
-.kr-logics-reference-home .btn-primary,
 .kr-logics-reference-home .hero-btn-main,
 .kr-logics-reference-home .mock-nav .next,
 .kr-logics-reference-home .cf-submit {
   background: var(--gold);
   color: #ffffff;
 }
-.kr-logics-reference-home .btn-primary:hover,
 .kr-logics-reference-home .hero-btn-main:hover,
 .kr-logics-reference-home .mock-nav .next:hover,
 .kr-logics-reference-home .cf-submit:hover {
@@ -557,7 +525,7 @@ const brandStyles = `
   gap: 14px;
 }
 .kr-logics-reference-home .hero-card-head a {
-  color: #9a008e;
+  color: #0066ff;
   font-size: 13px;
   font-weight: 900;
   white-space: nowrap;

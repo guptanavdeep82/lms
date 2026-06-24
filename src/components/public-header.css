@@ -39,10 +39,12 @@
 
 .public-home-header .logo-wrap > img {
   display: block;
-  height: 44px;
-  width: auto;
-  max-width: 160px;
-  object-fit: contain;
+  height: 46px;
+  width: 46px;
+  max-width: 46px;
+  object-fit: cover;
+  border-radius: 11px;
+  box-shadow: 0 4px 12px rgba(0, 41, 122, 0.18);
 }
 
 .public-home-header nav {
