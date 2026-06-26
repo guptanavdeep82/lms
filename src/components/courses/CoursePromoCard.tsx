@@ -22,7 +22,7 @@ export function CoursePromoCard({ course, href, actionLabel, onAction }: CourseP
   const buttonText = actionLabel || (course.price === 0 ? "Enroll Free" : "Buy Now");
 
   return (
-    <article className="promo-course-card group flex h-full flex-col overflow-hidden rounded-[18px] border border-[#1f2937] bg-white shadow-[0_16px_40px_rgba(15,23,42,0.12)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(15,23,42,0.16)]">
+    <article className="promo-course-card group flex h-full flex-col overflow-hidden rounded-[18px] border border-[#e6ebf3] bg-white shadow-[0_16px_40px_rgba(10,28,68,0.10)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(10,28,68,0.16)]">
       <div className={`relative overflow-hidden ${course.image_url ? "aspect-[16/10] bg-[#f8fafc]" : "min-h-[120px]"}`}>
         {course.image_url ? (
           <img
@@ -36,13 +36,13 @@ export function CoursePromoCard({ course, href, actionLabel, onAction }: CourseP
       </div>
 
       <div className="flex flex-1 flex-col px-4 py-4">
-        <h3 className="mb-3 text-[15px] font-extrabold leading-snug tracking-[-0.02em] text-[#111827] sm:text-[16px]">
+        <h3 className="mb-3 text-[15px] font-extrabold leading-snug tracking-[-0.02em] text-[#14213f] sm:text-[16px]">
           {course.title}
         </h3>
         <ul className="space-y-3">
           {features.map((feature) => (
-            <li key={feature} className="flex items-start gap-2.5 text-[12px] font-semibold leading-5 text-[#374151]">
-              <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#111827] text-white">
+            <li key={feature} className="flex items-start gap-2.5 text-[12px] font-semibold leading-5 text-[#3a4763]">
+              <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#0066ff] text-white">
                 <ChevronRight size={12} strokeWidth={3} />
               </span>
               <span>{feature}</span>

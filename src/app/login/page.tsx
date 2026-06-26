@@ -161,9 +161,9 @@ export default function LoginPage() {
   };
 
   return (
-    <PublicPageShell className="min-h-screen bg-white text-[#0066ff]">
+    <PublicPageShell className="min-h-screen bg-white text-[#14213f]">
       <section className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_540px] lg:px-8">
-        <div className="relative overflow-hidden rounded-[32px] bg-[#0066ff] p-7 text-white shadow-[0_24px_70px_rgba(0,102,255,0.24)] sm:p-10">
+        <div className="relative overflow-hidden rounded-[32px] p-7 text-white shadow-[0_24px_70px_rgba(10,28,68,0.28)] sm:p-10" style={{ background: "linear-gradient(135deg, #081a40 0%, #0a3bb0 52%, #0066ff 100%)" }}>
           <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/10" />
           <div className="absolute bottom-0 right-12 hidden h-44 w-44 rounded-t-full border-[24px] border-white/15 lg:block" />
           <div className="relative z-10 max-w-2xl">
@@ -196,15 +196,15 @@ export default function LoginPage() {
               <>
                 <div>
                   <div className="inline-flex rounded-full bg-[#0066ff] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.2em] text-white shadow-lg shadow-[#0066ff]/20">Welcome Back</div>
-                  <h2 className="mt-7 text-3xl font-black tracking-[-0.05em] text-[#0066ff] sm:text-4xl">Login to LMS</h2>
-                  <p className="mt-4 text-[15px] font-semibold leading-7 text-[#0066ff]/70">Use Gmail or mobile OTP to access your student account.</p>
+                  <h2 className="mt-7 text-3xl font-black tracking-[-0.05em] text-[#14213f] sm:text-4xl">Login to LMS</h2>
+                  <p className="mt-4 text-[15px] font-semibold leading-7 text-[#5d6b85]">Use Gmail or mobile OTP to access your student account.</p>
                 </div>
 
                 <div className="mt-8 rounded-[28px] border border-[#0066ff]/15 bg-white p-5 shadow-[0_18px_44px_rgba(0,102,255,0.08)]">
                   <div className="flex items-start gap-3">
                     <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#0066ff] text-lg font-black text-white">G</span>
                     <div>
-                      <p className="text-sm font-black text-[#0066ff]">Continue with Gmail</p>
+                      <p className="text-sm font-black text-[#14213f]">Continue with Gmail</p>
                       <p className="mt-1 text-xs font-semibold leading-5 text-[#667085]">Use your Google account for quick student access.</p>
                     </div>
                   </div>
@@ -216,7 +216,7 @@ export default function LoginPage() {
                 </div>
 
                 <form
-                  className="grid gap-4 rounded-[28px] border border-[#ead694] bg-white/62 p-5 ring-1 ring-white/60"
+                  className="grid gap-4 rounded-[28px] border border-[#e6ebf3] bg-white/62 p-5 ring-1 ring-white/60"
                   onSubmit={(event) => {
                     event.preventDefault();
                     const form = event.currentTarget;
@@ -242,8 +242,8 @@ export default function LoginPage() {
                 <button type="button" onClick={() => { setPendingStudent(null); setOtpSent(false); setOtp(""); setError(""); }} className="mb-5 inline-flex items-center gap-2 text-sm font-extrabold text-[#0066ff]">
                   <ArrowLeft size={16} /> Back to Login
                 </button>
-                <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f0a500]">Mobile Verification</p>
-                <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-[#0066ff]">Verify Mobile OTP</h2>
+                <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#0066ff]">Mobile Verification</p>
+                <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-[#14213f]">Verify Mobile OTP</h2>
                 <div className="mt-4 rounded-2xl bg-[#f8fafc] p-4 ring-1 ring-[#dfe5ef]">
                   <p className="text-sm font-bold text-[#111827]">{pendingStudent.name}</p>
                   <p className="mt-1 text-sm font-semibold text-[#667085]">{pendingStudent.email}</p>
@@ -275,7 +275,7 @@ export default function LoginPage() {
               </>
             )}
 
-            {error && <p className="mt-4 rounded-2xl bg-[#fff8d6] px-4 py-3 text-sm font-bold leading-6 text-[#7a5b00]">{error}</p>}
+            {error && <p className="mt-4 rounded-2xl bg-[#eef3ff] px-4 py-3 text-sm font-bold leading-6 text-[#0a1c44]">{error}</p>}
 
             <p className="mt-6 text-center text-sm font-semibold text-[#667085]">
               Do not have an account? <Link href={registerHref} className="font-extrabold text-[#0066ff]">Create student account</Link>

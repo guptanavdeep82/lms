@@ -1,20 +1,36 @@
-/* KR Logics — strict white + logo blue design system */
+/* KR Logics — professional blue design system
+   Three tones: deep navy (structure/text) + bright logo blue (accent) + neutral slate (body),
+   on white / soft-neutral surfaces. Blue is used as an ACCENT, not for every element. */
 
 :root {
   --kr-white: #ffffff;
+
+  /* Accent — logo blue */
   --kr-blue: #0066ff;
+  --kr-blue-dark: #0052cc;
   --kr-blue-80: rgba(0, 102, 255, 0.8);
-  --kr-blue-60: rgba(0, 102, 255, 0.6);
-  --kr-blue-40: rgba(0, 102, 255, 0.4);
   --kr-blue-20: rgba(0, 102, 255, 0.2);
   --kr-blue-12: rgba(0, 102, 255, 0.12);
+  --kr-blue-08: rgba(0, 102, 255, 0.08);
   --kr-blue-06: rgba(0, 102, 255, 0.06);
+
+  /* Structure — deep navy */
+  --kr-navy: #0a1c44;
+  --kr-ink: #14213f;
+
+  /* Text — slate neutrals */
+  --kr-text: #3a4763;
+  --kr-muted: #64748b;
+
+  /* Surfaces */
+  --kr-border: #e6ebf3;
+  --kr-surface: #f4f7fc;
 }
 
 /* ─── Global base ─── */
 body {
   background: var(--kr-white) !important;
-  color: var(--kr-blue) !important;
+  color: var(--kr-ink) !important;
 }
 
 ::selection {
@@ -23,6 +39,7 @@ body {
 }
 
 /* ─── Legacy tailwind / hardcoded color remapping ─── */
+/* Dark / brand backgrounds → bright blue (CTAs, hero strips) */
 [class*="bg-[#1b2e6b]"],
 [class*="bg-[#0f1e4a]"],
 [class*="bg-[#243580]"],
@@ -32,7 +49,6 @@ body {
 [class*="bg-[#2f78bf]"],
 [class*="bg-[#2768a5]"],
 [class*="bg-[#2268aa]"],
-[class*="bg-[#172a69]"],
 [class*="bg-[#174b82]"],
 [class*="bg-[#050808]"],
 [class*="bg-[#000000]"],
@@ -70,11 +86,11 @@ body {
 .cf-submit:hover,
 .tc-btn.start:hover,
 .tc-btn.review:hover {
-  background-color: var(--kr-blue) !important;
-  filter: brightness(0.92);
+  background-color: var(--kr-blue-dark) !important;
   color: var(--kr-white) !important;
 }
 
+/* Old gold/yellow backgrounds → blue accent */
 [class*="bg-[#f5c518]"],
 [class*="bg-[#e8a800]"],
 [class*="bg-[#f7c843]"],
@@ -95,38 +111,46 @@ body {
   color: var(--kr-white) !important;
 }
 
-/* On blue surfaces, keep white copy */
-[class*="bg-[#0066ff]"] [class*="text-white"],
+/* On blue/dark surfaces, keep white copy */
 .courses-hero-strip *,
-.topbar[class*="bg-[#0066ff]"] *,
 .hero-strip * {
   color: var(--kr-white);
 }
+
+/* Dark heading text classes → deep navy ink (readable, not bright blue) */
 [class*="text-[#0f1e4a]"],
 [class*="text-[#243580]"],
 [class*="text-[#172a69]"],
 [class*="text-[#10215a]"],
-[class*="text-[#3378b9]"],
-[class*="text-[#2f78bf]"],
-[class*="text-[#2768a5]"],
-[class*="text-[#2268aa]"],
-[class*="text-[#172a69]"],
 [class*="text-[#1f4f86]"],
 [class*="text-[#174b82]"],
 [class*="text-[#050808]"],
 [class*="text-[#000000]"],
-[class*="text-slate-"],
-[class*="text-gray-"],
-[class*="text-[#6b7280]"],
 [class*="text-[#1a1d2e]"],
 .cc-title,
-.cc-price,
 .tc-title,
 .sec-title,
 .results-count {
+  color: var(--kr-ink) !important;
+}
+
+/* Mid links / secondary blues → keep as accent blue */
+[class*="text-[#3378b9]"],
+[class*="text-[#2f78bf]"],
+[class*="text-[#2768a5]"],
+[class*="text-[#2268aa]"],
+.cc-price {
   color: var(--kr-blue) !important;
 }
 
+/* Neutral grey body text → slate */
+[class*="text-slate-"],
+[class*="text-gray-"],
+[class*="text-[#6b7280]"] {
+  color: var(--kr-text) !important;
+}
+
+/* Old gold accent text → blue accent */
 [class*="text-[#f5c518]"],
 [class*="text-[#e8a800]"],
 [class*="text-[#f7c843]"],
@@ -151,9 +175,10 @@ body {
 [class*="border-slate-"],
 [class*="focus:border-[#1b2e6b]"]:focus,
 [class*="hover:border-[#1b2e6b]"]:hover {
-  border-color: var(--kr-blue-20) !important;
+  border-color: var(--kr-border) !important;
 }
 
+/* Light tinted backgrounds → soft neutral surface */
 [class*="bg-[#f8f9fc]"],
 [class*="bg-[#f6f8fc]"],
 [class*="bg-[#f3f6fb]"],
@@ -163,7 +188,10 @@ body {
 [class*="bg-[#eef2ff]"],
 [class*="bg-[#eaf3ff]"],
 [class*="bg-[#d8ebff]"],
-[class*="bg-slate-"],
+[class*="bg-slate-"] {
+  background-color: var(--kr-surface) !important;
+}
+
 .search-bar-wrap,
 .sidebar,
 .courses-section,
@@ -185,41 +213,91 @@ body {
 [class*="to-[#f5c518]"],
 [class*="to-[#ffcf33]"],
 [class*="to-[#050808]"] {
-  --tw-gradient-to: var(--kr-blue) var(--tw-gradient-to-position) !important;
+  --tw-gradient-to: var(--kr-blue-dark) var(--tw-gradient-to-position) !important;
 }
 
-/* ─── Home reference page overrides ─── */
+/* ════════════════════════════════════════════════
+   HOME reference page
+   ════════════════════════════════════════════════ */
 .kr-logics-reference-home {
   background: var(--kr-white) !important;
-  color: var(--kr-blue) !important;
+  color: var(--kr-text) !important;
 }
 
+/* Dark/premium sections — deep navy */
 .kr-logics-reference-home .about-main-card,
 .kr-logics-reference-home .mini-card-dark,
 .kr-logics-reference-home .testi-section,
 .kr-logics-reference-home footer {
-  background: var(--kr-blue) !important;
+  background: var(--kr-navy) !important;
   color: var(--kr-white) !important;
 }
 
+/* Hero — deep navy → bright blue gradient (brand moment) */
 .kr-logics-reference-home .hero {
   background:
-    radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.16), transparent 42%),
-    radial-gradient(circle at 5% 95%, rgba(255, 255, 255, 0.10), transparent 46%),
-    linear-gradient(135deg, #004fd6 0%, #0066ff 50%, #2f86ff 100%) !important;
+    radial-gradient(circle at 84% 12%, rgba(255, 255, 255, 0.14), transparent 40%),
+    radial-gradient(circle at 0% 100%, rgba(0, 0, 0, 0.12), transparent 50%),
+    linear-gradient(130deg, #081a40 0%, #0a3bb0 52%, #0066ff 100%) !important;
 }
 
-/* Hero cards float as solid white surfaces for strong contrast on blue */
+/* Hero left copy */
+.kr-logics-reference-home .hero h1,
+.kr-logics-reference-home .hero-p,
+.kr-logics-reference-home .hero-stats small,
+.kr-logics-reference-home .hero h1 em,
+.kr-logics-reference-home .hstat strong {
+  color: var(--kr-white) !important;
+}
+.kr-logics-reference-home .hero-p,
+.kr-logics-reference-home .hero-stats small {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.kr-logics-reference-home .hero-badge {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: var(--kr-white) !important;
+}
+.kr-logics-reference-home .chip {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: var(--kr-white) !important;
+}
+
+/* Hero CTAs */
+.kr-logics-reference-home .hero-btn-main {
+  background: var(--kr-white) !important;
+  color: var(--kr-blue) !important;
+  border: 1px solid var(--kr-white) !important;
+  box-shadow: 0 12px 26px rgba(3, 18, 56, 0.28) !important;
+}
+.kr-logics-reference-home .hero-btn-sec {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--kr-white) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Hero floating cards — solid white, dark text, blue accents */
 .kr-logics-reference-home .hero-quick-card,
 .kr-logics-reference-home .hero-exams-card,
 .kr-logics-reference-home .hero-card,
 .kr-logics-reference-home .mini-card-light {
   background: var(--kr-white) !important;
-  border: 1px solid rgba(255, 255, 255, 0.65) !important;
-  box-shadow: 0 24px 50px rgba(0, 41, 122, 0.28) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  box-shadow: 0 22px 48px rgba(3, 18, 56, 0.26) !important;
+  color: var(--kr-text) !important;
+}
+.kr-logics-reference-home .hero-quick-card h3,
+.kr-logics-reference-home .hero-card-head h3 {
+  color: var(--kr-ink) !important;
+}
+.kr-logics-reference-home .hero-product b,
+.kr-logics-reference-home .hero-exam b {
+  color: var(--kr-ink) !important;
 }
 
-/* Product/exam icon tiles: solid blue with white glyphs */
+/* Icon tiles — blue accent */
 .kr-logics-reference-home .hero-product-icon,
 .kr-logics-reference-home .hero-product-icon.orange,
 .kr-logics-reference-home .hero-product-icon.violet,
@@ -231,84 +309,39 @@ body {
 .kr-logics-reference-home .hero-exam-icon.bank,
 .kr-logics-reference-home .hero-exam-icon.office,
 .kr-logics-reference-home .hero-exam-icon.sbi,
-.kr-logics-reference-home .hero-exam-icon.ibps {
-  background: linear-gradient(135deg, #0066ff, #0052cc) !important;
+.kr-logics-reference-home .hero-exam-icon.ibps,
+.kr-logics-reference-home .hero-quick-card .hero-product-icon {
+  background: linear-gradient(135deg, #0a3bb0, #0066ff) !important;
   color: var(--kr-white) !important;
-  box-shadow: 0 8px 18px rgba(0, 82, 204, 0.28) !important;
+  box-shadow: 0 8px 18px rgba(0, 82, 204, 0.26) !important;
 }
 
-.kr-logics-reference-home .hero-product b,
-.kr-logics-reference-home .hero-exam b {
+.kr-logics-reference-home .hero-card-head a {
   color: var(--kr-blue) !important;
 }
 
-.kr-logics-reference-home .hero-quick-card h3,
-.kr-logics-reference-home .hero-card-head h3 {
-  color: var(--kr-blue) !important;
-}
-
-/* Badge + chips on the blue hero stay readable */
-.kr-logics-reference-home .hero-badge {
-  background: rgba(255, 255, 255, 0.16) !important;
-  border: 1px solid rgba(255, 255, 255, 0.32) !important;
-  color: var(--kr-white) !important;
-}
-
-.kr-logics-reference-home .chip {
-  background: rgba(255, 255, 255, 0.14) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  color: var(--kr-white) !important;
-}
-
-/* Primary hero CTA: white button with blue label pops on blue */
-.kr-logics-reference-home .hero-btn-main {
-  background: var(--kr-white) !important;
-  color: var(--kr-blue) !important;
-  border: 1px solid var(--kr-white) !important;
-  box-shadow: 0 12px 26px rgba(0, 41, 122, 0.26) !important;
-}
-
-.kr-logics-reference-home .hero-btn-sec {
-  background: rgba(255, 255, 255, 0.10) !important;
-  color: var(--kr-white) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
-}
-
-.kr-logics-reference-home .hero h1 em {
-  color: var(--kr-white) !important;
-  opacity: 0.92;
-}
-
-.kr-logics-reference-home .hstat strong {
-  color: var(--kr-white) !important;
-}
-
-.kr-logics-reference-home .hero-stats small {
-  color: rgba(255, 255, 255, 0.72) !important;
-}
-
-/* Ad slider slides: white cards with blue content so they read clearly on blue hero */
+/* Ad slider — white cards, dark text, blue accents */
 .kr-logics-reference-home .hero-admin-ad-slider {
-  box-shadow: 0 24px 50px rgba(0, 41, 122, 0.28) !important;
-  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 22px 48px rgba(3, 18, 56, 0.26) !important;
+  border: 1px solid rgba(255, 255, 255, 0.65) !important;
 }
 .kr-logics-reference-home .hero-ad-slide,
 .kr-logics-reference-home .hero-ad-slide.alt,
 .kr-logics-reference-home .hero-ad-slide.dark {
   background: var(--kr-white) !important;
-  color: var(--kr-blue) !important;
+  color: var(--kr-text) !important;
 }
 .kr-logics-reference-home .hero-ad-slide span,
 .kr-logics-reference-home .hero-ad-slide.alt span {
   color: var(--kr-blue) !important;
-  opacity: 0.7;
+  opacity: 1;
 }
 .kr-logics-reference-home .hero-ad-slide strong {
-  color: var(--kr-blue) !important;
+  color: var(--kr-ink) !important;
 }
 .kr-logics-reference-home .hero-ad-slide em,
 .kr-logics-reference-home .hero-ad-slide.alt em {
-  color: rgba(0, 102, 255, 0.72) !important;
+  color: var(--kr-muted) !important;
 }
 .kr-logics-reference-home .hero-ad-slide b {
   background: var(--kr-blue) !important;
@@ -316,22 +349,21 @@ body {
 }
 .kr-logics-reference-home .hero-ad-slide::after {
   background:
-    linear-gradient(135deg, rgba(0, 102, 255, 0.12), rgba(0, 102, 255, 0.04)),
-    repeating-linear-gradient(90deg, rgba(0, 102, 255, 0.10) 0 2px, transparent 2px 20px) !important;
+    linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 102, 255, 0.03)),
+    repeating-linear-gradient(90deg, rgba(0, 102, 255, 0.08) 0 2px, transparent 2px 20px) !important;
 }
 
-/* Banner card: deep blue with crisp white border so it stays a distinct tile */
+/* Banner card — deep navy/blue tile with white copy */
 .kr-logics-reference-home .hero-banner-card {
   background:
-    linear-gradient(135deg, rgba(0, 53, 138, 0.92), rgba(0, 102, 255, 0.85)),
+    linear-gradient(135deg, rgba(8, 26, 64, 0.92), rgba(0, 102, 255, 0.82)),
     url("/banking-mock-test-hero.png") center / cover no-repeat !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
-  box-shadow: 0 24px 50px rgba(0, 41, 122, 0.32) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 22px 48px rgba(3, 18, 56, 0.32) !important;
 }
 .kr-logics-reference-home .hero-banner-card span,
 .kr-logics-reference-home .hero-banner-card strong,
-.kr-logics-reference-home .hero-banner-card em,
-.kr-logics-reference-home .hero-banner-card b {
+.kr-logics-reference-home .hero-banner-card em {
   color: var(--kr-white) !important;
 }
 .kr-logics-reference-home .hero-banner-card b {
@@ -339,32 +371,20 @@ body {
   color: var(--kr-blue) !important;
 }
 
-.kr-logics-reference-home .hero h1,
-.kr-logics-reference-home .hero-p,
-.kr-logics-reference-home .hero-stats small,
-.kr-logics-reference-home .hero h1 em,
-.kr-logics-reference-home .hstat strong {
-  color: var(--kr-white) !important;
-}
-
-.kr-logics-reference-home .hero-badge,
-.kr-logics-reference-home .chip,
-.kr-logics-reference-home .hero-card,
-.kr-logics-reference-home .mini-card-light,
+/* Content cards — white with dark text */
 .kr-logics-reference-home .course-card,
 .kr-logics-reference-home .faculty-card,
 .kr-logics-reference-home .contact-form-box,
 .kr-logics-reference-home .c-card,
 .kr-logics-reference-home .faq-item,
-.kr-logics-reference-home .mock-ui,
-.kr-logics-reference-home .hero-quick-card,
-.kr-logics-reference-home .hero-exams-card {
+.kr-logics-reference-home .mock-ui {
   background: var(--kr-white) !important;
-  border-color: var(--kr-blue-20) !important;
-  color: var(--kr-blue) !important;
-  box-shadow: 0 16px 40px var(--kr-blue-06) !important;
+  border-color: var(--kr-border) !important;
+  color: var(--kr-text) !important;
+  box-shadow: 0 12px 32px rgba(10, 28, 68, 0.06) !important;
 }
 
+/* Headings — deep navy ink */
 .kr-logics-reference-home .sec-title,
 .kr-logics-reference-home .course-title,
 .kr-logics-reference-home .faculty-name,
@@ -373,26 +393,31 @@ body {
 .kr-logics-reference-home .c-text h4,
 .kr-logics-reference-home .mock-q-text,
 .kr-logics-reference-home .mock-feat h4,
-.kr-logics-reference-home .a-pt-body h4,
-.kr-logics-reference-home .hero-quick-card h3,
-.kr-logics-reference-home .hero-card-head h3 {
-  color: var(--kr-blue) !important;
+.kr-logics-reference-home .a-pt-body h4 {
+  color: var(--kr-ink) !important;
 }
 
+/* Body / secondary text — slate */
 .kr-logics-reference-home .sec-sub,
-.kr-logics-reference-home .sec-eyebrow,
 .kr-logics-reference-home .course-desc,
 .kr-logics-reference-home .faculty-exp,
 .kr-logics-reference-home .faq-ans p,
 .kr-logics-reference-home .mock-feat p,
 .kr-logics-reference-home .a-pt-body p,
-.kr-logics-reference-home .c-text p,
-.kr-logics-reference-home .footer-brand p,
-.kr-logics-reference-home .testi-text {
-  color: var(--kr-blue-80) !important;
+.kr-logics-reference-home .c-text p {
+  color: var(--kr-text) !important;
 }
 
-.kr-logics-reference-home .sec-eyebrow,
+/* Eyebrows / small labels — blue accent */
+.kr-logics-reference-home .sec-eyebrow {
+  color: var(--kr-blue) !important;
+}
+
+/* Copy that sits on the navy sections stays light */
+.kr-logics-reference-home .footer-brand p,
+.kr-logics-reference-home .testi-text {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
 .kr-logics-reference-home .faculty-role,
 .kr-logics-reference-home .testi-bank,
 .kr-logics-reference-home .footer-col h5,
@@ -401,24 +426,29 @@ body {
   color: var(--kr-white) !important;
 }
 
+/* Alternating section rhythm: white base, soft-neutral accents */
 .kr-logics-reference-home .courses-section,
 .kr-logics-reference-home .faculty-section,
-.kr-logics-reference-home .faq-section,
 .kr-logics-reference-home .contact-section,
-.kr-logics-reference-home .mock-section,
 .kr-logics-reference-home .about-section {
   background: var(--kr-white) !important;
 }
+.kr-logics-reference-home .faq-section,
+.kr-logics-reference-home .mock-section {
+  background: var(--kr-surface) !important;
+}
 
+/* Secondary / ghost buttons — white with blue outline */
 .kr-logics-reference-home .hero-btn-sec,
 .kr-logics-reference-home .mock-cta,
 .kr-logics-reference-home .view-all-btn,
 .kr-logics-reference-home .btn-ghost {
   background: var(--kr-white) !important;
-  border: 2px solid var(--kr-blue) !important;
+  border: 1.5px solid var(--kr-blue) !important;
   color: var(--kr-blue) !important;
 }
 
+/* Primary buttons — solid blue */
 .kr-logics-reference-home .btn-primary,
 .kr-logics-reference-home .hero-btn-main,
 .kr-logics-reference-home .mock-nav .next,
@@ -429,37 +459,18 @@ body {
   border-color: var(--kr-blue) !important;
 }
 
-.kr-logics-reference-home .hero-quick-card {
-  background: var(--kr-white) !important;
-  border: 1px solid rgba(255, 255, 255, 0.65) !important;
-  box-shadow: 0 24px 50px rgba(0, 41, 122, 0.28) !important;
-}
-
-.kr-logics-reference-home .hero-product-icon,
-.kr-logics-reference-home .hero-quick-card .hero-product-icon,
-.kr-logics-reference-home .hero-product-icon.orange,
-.kr-logics-reference-home .hero-product-icon.violet,
-.kr-logics-reference-home .hero-product-icon.purple,
-.kr-logics-reference-home .hero-product-icon.teal,
-.kr-logics-reference-home .hero-product-icon.pink,
-.kr-logics-reference-home .hero-product-icon.red {
-  background: var(--kr-blue) !important;
-  color: var(--kr-white) !important;
-  box-shadow: 0 10px 22px var(--kr-blue-20) !important;
-}
-
+/* Exam mega menu */
 .kr-logics-reference-home .exam-mega .exam-cat,
 .kr-logics-reference-home .exam-mega .exam-link {
   background: var(--kr-white) !important;
-  color: var(--kr-blue) !important;
-  border-color: var(--kr-blue-20) !important;
+  color: var(--kr-ink) !important;
+  border-color: var(--kr-border) !important;
 }
-
 .kr-logics-reference-home .exam-mega .exam-cat.active {
   background: var(--kr-blue-06) !important;
   border-color: var(--kr-blue) !important;
+  color: var(--kr-blue) !important;
 }
-
 .kr-logics-reference-home .exam-icon,
 .kr-logics-reference-home .exam-icon.sky,
 .kr-logics-reference-home .exam-icon.blue,
@@ -473,22 +484,28 @@ body {
   border-color: var(--kr-blue-20) !important;
 }
 
-.kr-logics-reference-home .course-bottom,
+/* Course card meta */
+.kr-logics-reference-home .course-bottom {
+  background: var(--kr-surface) !important;
+}
 .kr-logics-reference-home .course-meta span,
-.kr-logics-reference-home .form-field label,
+.kr-logics-reference-home .form-field label {
+  color: var(--kr-muted) !important;
+}
+.kr-logics-reference-home .course-price {
+  color: var(--kr-blue) !important;
+}
 .kr-logics-reference-home .form-field input,
 .kr-logics-reference-home .form-field select,
 .kr-logics-reference-home .form-field textarea {
-  color: var(--kr-blue) !important;
+  color: var(--kr-ink) !important;
+  border-color: var(--kr-border) !important;
 }
 
-.kr-logics-reference-home .course-bottom {
-  background: var(--kr-blue-06) !important;
-}
-
+/* Chips / badges — soft blue accent */
 .kr-logics-reference-home .fchip,
 .kr-logics-reference-home .course-badge {
-  background: var(--kr-blue-06) !important;
+  background: var(--kr-blue-08) !important;
   color: var(--kr-blue) !important;
   border: 1px solid var(--kr-blue-20) !important;
 }
@@ -496,13 +513,12 @@ body {
 .kr-logics-reference-home .fsoc:hover {
   background: var(--kr-white) !important;
   border-color: var(--kr-white) !important;
-  color: var(--kr-blue) !important;
+  color: var(--kr-navy) !important;
 }
-
 .kr-logics-reference-home .fsoc i {
   color: var(--kr-white) !important;
 }
 
 .kr-logics-reference-home .divider {
-  background: var(--kr-blue-12) !important;
+  background: var(--kr-border) !important;
 }

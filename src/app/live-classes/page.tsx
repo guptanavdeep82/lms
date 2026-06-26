@@ -121,7 +121,7 @@ export default function LiveClassesPage() {
     <PublicPageShell active="live-classes">
 
       {/* Hero — compact, matches PDF/courses page */}
-      <section className="border-b border-[#0066ff]/15 bg-[#0066ff] px-6 py-11 text-white sm:px-8">
+      <section className="border-b border-[#0066ff]/15 px-6 py-11 text-white sm:px-8" style={{ background: "linear-gradient(130deg, #081a40 0%, #0a3bb0 52%, #0066ff 100%)" }}>
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#0066ff]">
