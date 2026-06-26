@@ -1,5 +1,5 @@
 .courses-hero-strip {
-  background: linear-gradient(130deg, #081a40 0%, #0a3bb0 52%, #0066ff 100%);
+  background: linear-gradient(130deg, #2e1065 0%, #6d28d9 52%, #7c3aed 100%);
   padding: 44px 32px;
   display: flex;
   align-items: center;
@@ -44,7 +44,7 @@
 
 .courses-search-bar {
   background: #ffffff;
-  border-bottom: 1px solid rgba(0, 102, 255, 0.12);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.12);
   padding: 14px 32px;
   display: flex;
   align-items: center;
@@ -64,29 +64,29 @@
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(0, 102, 255, 0.5);
+  color: rgba(124, 58, 237, 0.5);
 }
 
 .courses-search-input-wrap input {
   width: 100%;
   padding: 10px 14px 10px 42px;
-  border: 1.5px solid rgba(0, 102, 255, 0.15);
+  border: 1.5px solid rgba(124, 58, 237, 0.15);
   border-radius: 8px;
   font-size: 13px;
-  color: #14213f;
+  color: #1e1b3a;
   background: #ffffff;
   outline: none;
 }
 
 .courses-search-input-wrap input:focus {
-  border-color: #0066ff;
+  border-color: #7c3aed;
   background: #ffffff;
 }
 
 .courses-results-count {
   font-size: 13px;
   font-weight: 700;
-  color: #14213f;
+  color: #1e1b3a;
   white-space: nowrap;
 }
 
@@ -102,10 +102,10 @@
 
 .courses-sort-wrap select {
   padding: 8px 12px;
-  border: 1.5px solid rgba(0, 102, 255, 0.15);
+  border: 1.5px solid rgba(124, 58, 237, 0.15);
   border-radius: 7px;
   font-size: 12px;
-  color: #14213f;
+  color: #1e1b3a;
   background: #ffffff;
   outline: none;
 }
@@ -120,8 +120,8 @@
   width: 260px;
   min-width: 260px;
   background: #ffffff;
-  border-right: 1px solid rgba(0, 102, 255, 0.12);
-  box-shadow: 14px 0 34px rgba(0, 102, 255, 0.04);
+  border-right: 1px solid rgba(124, 58, 237, 0.12);
+  box-shadow: 14px 0 34px rgba(124, 58, 237, 0.04);
   padding: 24px 20px;
   display: flex;
   flex-direction: column;
@@ -150,22 +150,22 @@
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  border: 1.5px solid rgba(0, 102, 255, 0.2);
-  color: #14213f;
+  border: 1.5px solid rgba(124, 58, 237, 0.2);
+  color: #1e1b3a;
   background: #ffffff;
   transition: all 0.2s;
 }
 
 .courses-chip-group button:hover {
-  border-color: #0066ff;
-  background: rgba(0, 102, 255, 0.06);
+  border-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.06);
 }
 
 .courses-chip-group button.active {
-  background: #0066ff;
-  border-color: #0066ff;
+  background: #7c3aed;
+  border-color: #7c3aed;
   color: #ffffff;
-  box-shadow: 0 8px 20px rgba(0, 102, 255, 0.2);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
 }
 
 .courses-price-inputs {
@@ -178,11 +178,11 @@
 .courses-price-inputs input {
   flex: 1;
   padding: 7px 10px;
-  border: 1.5px solid rgba(0, 102, 255, 0.15);
+  border: 1.5px solid rgba(124, 58, 237, 0.15);
   border-radius: 7px;
   font-size: 12px;
   background: #ffffff;
-  color: #14213f;
+  color: #1e1b3a;
   outline: none;
   min-width: 0;
 }
@@ -209,15 +209,15 @@
 
 .courses-level-list button:hover,
 .courses-level-list button.active {
-  background: rgba(0, 102, 255, 0.06);
-  border-color: rgba(0, 102, 255, 0.15);
+  background: rgba(124, 58, 237, 0.06);
+  border-color: rgba(124, 58, 237, 0.15);
 }
 
 .courses-level-cb {
   width: 16px;
   height: 16px;
   border-radius: 4px;
-  border: 1.5px solid rgba(0, 102, 255, 0.2);
+  border: 1.5px solid rgba(124, 58, 237, 0.2);
   background: #ffffff;
   display: grid;
   place-items: center;
@@ -226,21 +226,21 @@
 }
 
 .courses-level-list button.active .courses-level-cb {
-  background: #0066ff;
-  border-color: #0066ff;
+  background: #7c3aed;
+  border-color: #7c3aed;
 }
 
 .courses-clear-btn {
   width: 100%;
   padding: 9px;
-  background: #0066ff;
-  border: 1px solid #0066ff;
+  background: #7c3aed;
+  border: 1px solid #7c3aed;
   border-radius: 8px;
   font-size: 12px;
   font-weight: 700;
   color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(0, 102, 255, 0.18);
+  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.18);
 }
 
 .courses-clear-btn:hover {
@@ -271,13 +271,13 @@
   font-size: 44px;
   margin-bottom: 14px;
   display: block;
-  color: rgba(0, 102, 255, 0.2);
+  color: rgba(124, 58, 237, 0.2);
 }
 
 .courses-no-results h3 {
   font-size: 18px;
   font-weight: 700;
-  color: #14213f;
+  color: #1e1b3a;
   margin-bottom: 8px;
 }
 
@@ -290,7 +290,7 @@
     width: 100%;
     min-width: 0;
     border-right: 0;
-    border-bottom: 1px solid rgba(0, 102, 255, 0.12);
+    border-bottom: 1px solid rgba(124, 58, 237, 0.12);
   }
 
   .courses-search-bar,

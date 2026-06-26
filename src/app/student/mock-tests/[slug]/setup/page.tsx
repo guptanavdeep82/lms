@@ -62,7 +62,7 @@ export default function DynamicMockSetupPage() {
       <header className="bg-[#3378b9] text-white shadow-sm">
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
           <div className="flex items-center gap-3">
-            <Image src="/kr-logics-logo.png" alt="KR Logics logo" width={36} height={36} className="h-9 w-9 rounded-full border border-[#0066ff] object-cover shadow-lg shadow-black/20" />
+            <Image src="/kr-logics-logo.png" alt="KR Logics logo" width={36} height={36} className="h-9 w-9 rounded-full border border-[#7c3aed] object-cover shadow-lg shadow-black/20" />
             <h1 className="text-[14px] font-semibold sm:text-[16px]">{test.title}</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs font-bold sm:gap-3 sm:text-sm">

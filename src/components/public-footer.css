@@ -1,7 +1,7 @@
 .public-site-footer {
-  background: #0a1c44;
+  background: #2e1065;
   color: rgba(255, 255, 255, 0.82);
-  border-top: 1px solid rgba(0, 102, 255, 0.4);
+  border-top: 1px solid rgba(124, 58, 237, 0.4);
   font-family: var(--font-poppins), "Poppins", ui-sans-serif, system-ui, sans-serif;
   flex-shrink: 0;
 }
@@ -44,10 +44,12 @@
 
 .public-site-footer-brand img {
   width: auto;
-  height: 52px;
-  border-radius: 0;
+  height: 56px;
+  border-radius: 12px;
   object-fit: contain;
-  box-shadow: none;
+  background: #ffffff;
+  padding: 6px 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 .public-site-footer-brand-title {
@@ -59,7 +61,7 @@
 }
 
 .public-site-footer-brand-title span {
-  color: #4d9bff;
+  color: #c4b5fd;
 }
 
 .public-site-footer-brand-tag {
@@ -97,8 +99,8 @@
 }
 
 .public-site-footer-social:hover {
-  background: #0066ff;
-  border-color: #0066ff;
+  background: #7c3aed;
+  border-color: #7c3aed;
   color: #ffffff;
 }
 
@@ -108,7 +110,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #4d9bff;
+  color: #c4b5fd;
 }
 
 .public-site-footer-links {
@@ -126,7 +128,7 @@
 }
 
 .public-site-footer-links a:hover {
-  color: #4d9bff;
+  color: #c4b5fd;
 }
 
 .public-site-footer-contact p {
@@ -159,5 +161,5 @@
 }
 
 .public-site-footer-bottom span {
-  color: #4d9bff;
+  color: #c4b5fd;
 }

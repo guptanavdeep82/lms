@@ -116,15 +116,15 @@ export function PublicFooter({ settings }: PublicFooterProps) {
           <div className="public-site-footer-col public-site-footer-contact">
             <h5>Get in touch</h5>
             <p className="flex items-start gap-2">
-              <MapPin size={14} className="mt-0.5 shrink-0 text-[#0066ff]" />
+              <MapPin size={14} className="mt-0.5 shrink-0 text-[#7c3aed]" />
               <span>KR Logics Institute, Near City Mall, Jodhpur, Rajasthan — 342001</span>
             </p>
             <p className="flex items-start gap-2">
-              <Mail size={14} className="mt-0.5 shrink-0 text-[#0066ff]" />
+              <Mail size={14} className="mt-0.5 shrink-0 text-[#7c3aed]" />
               <span>admissions@krlogics.com</span>
             </p>
             <p className="flex items-start gap-2">
-              <Phone size={14} className="mt-0.5 shrink-0 text-[#0066ff]" />
+              <Phone size={14} className="mt-0.5 shrink-0 text-[#7c3aed]" />
               <span>{settings?.whatsapp_number?.trim() || "+91 98765 43210"} (Mon–Sat, 9 AM – 8 PM)</span>
             </p>
           </div>

@@ -11,30 +11,30 @@ export type CoursePromoTheme = {
 export function getCoursePromoTheme(type: ListingCourse["type"]): CoursePromoTheme {
   if (type === "pdf") {
     return {
-      gradient: "linear-gradient(135deg, #0a1c44 0%, #0052cc 52%, #2f86ff 100%)",
+      gradient: "linear-gradient(135deg, #2e1065 0%, #6d28d9 52%, #a855f7 100%)",
       statusLabel: "PDF Course",
       subtitle: "Downloadable Notes & PDF Pack",
       accent: "#ffffff",
-      button: "#0066ff",
+      button: "#7c3aed",
     };
   }
 
   if (type === "live") {
     return {
-      gradient: "linear-gradient(135deg, #061533 0%, #0a3bb0 55%, #2f86ff 100%)",
+      gradient: "linear-gradient(135deg, #061533 0%, #6d28d9 55%, #a855f7 100%)",
       statusLabel: "On Going",
       subtitle: "Live Interactive Batch",
       accent: "#ffffff",
-      button: "#0066ff",
+      button: "#7c3aed",
     };
   }
 
   return {
-    gradient: "linear-gradient(135deg, #081a40 0%, #0a3bb0 50%, #0066ff 100%)",
+    gradient: "linear-gradient(135deg, #2e1065 0%, #6d28d9 50%, #7c3aed 100%)",
     statusLabel: "Video Course",
     subtitle: "Recorded Video Lessons",
     accent: "#ffffff",
-    button: "#0066ff",
+    button: "#7c3aed",
   };
 }
 

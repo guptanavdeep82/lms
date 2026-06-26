@@ -24,7 +24,7 @@ export function LiveSessionPromoCard({ session, onAccessChange }: LiveSessionPro
   ];
 
   return (
-    <article className="promo-course-card group flex h-full flex-col overflow-hidden rounded-[18px] border border-[#e6ebf3] bg-white shadow-[0_16px_40px_rgba(10,28,68,0.10)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(10,28,68,0.16)]">
+    <article className="promo-course-card group flex h-full flex-col overflow-hidden rounded-[18px] border border-[#e6ebf3] bg-white shadow-[0_16px_40px_rgba(46, 16, 101,0.10)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(46, 16, 101,0.16)]">
       <Link href={`/live-classes/course/${session.course.slug}`} className="block">
         <div className="relative px-4 pb-5 pt-4 text-white" style={{ background: theme.gradient }}>
           {session.course.image_url ? (
@@ -40,7 +40,7 @@ export function LiveSessionPromoCard({ session, onAccessChange }: LiveSessionPro
                 <Image src="/kr-logics-logo.png" alt="KR Logics" width={28} height={28} className="h-7 w-7 rounded-full border border-white/70 object-cover" />
                 <Image src="/kr-logics-logo.png" alt="KR Logics" width={28} height={28} className="-ml-2 h-7 w-7 rounded-full border border-white/70 object-cover" />
               </div>
-              <span className="rounded-md bg-[#0066ff] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white">
+              <span className="rounded-md bg-[#7c3aed] px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white">
                 {liveSessionStatusLabel(session.display_status)}
               </span>
             </div>
@@ -50,7 +50,7 @@ export function LiveSessionPromoCard({ session, onAccessChange }: LiveSessionPro
             </h3>
 
             <div
-              className="mt-3 inline-block max-w-full rounded-md px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#0a1c44]"
+              className="mt-3 inline-block max-w-full rounded-md px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#2e1065]"
               style={{ background: theme.accent }}
             >
               {session.course.title}
@@ -63,7 +63,7 @@ export function LiveSessionPromoCard({ session, onAccessChange }: LiveSessionPro
         <ul className="space-y-3">
           {features.map((feature) => (
             <li key={feature} className="flex items-start gap-2.5 text-[12px] font-semibold leading-5 text-[#3a4763]">
-              <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#0066ff] text-white">
+              <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#7c3aed] text-white">
                 <ChevronRight size={12} strokeWidth={3} />
               </span>
               <span>{feature}</span>

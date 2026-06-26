@@ -16,13 +16,15 @@ function escapeHtml(value: string): string {
 }
 
 export function buildHeroStatsMarkup(settings: HomePageSettings): string {
-  const experience = settings.experience?.trim() || "7+ Years";
+  const mockTests = formatStatNumber(settings.mock_tests) || "1000+";
+  const liveClasses = formatStatNumber(settings.selections) || "500+";
+  const videoLectures = formatStatNumber(settings.active_students) || "3000+";
 
   return `<div class="hero-stats">
-        <div class="hstat"><strong>${formatStatNumber(settings.active_students)}</strong><small>Active Students</small></div>
-        <div class="hstat"><strong>${formatStatNumber(settings.selections)}</strong><small>Selections</small></div>
-        <div class="hstat"><strong>${formatStatNumber(settings.mock_tests)}</strong><small>Mock Tests</small></div>
-        <div class="hstat"><strong>${escapeHtml(experience)}</strong><small>Experience</small></div>
+        <div class="hstat"><span class="hstat-ic ic1"><i class="fa fa-file-lines"></i></span><div class="hstat-meta"><strong>${mockTests}</strong><small>Mock Tests</small></div></div>
+        <div class="hstat"><span class="hstat-ic ic2"><i class="fa fa-video"></i></span><div class="hstat-meta"><strong>${liveClasses}</strong><small>Live Classes</small></div></div>
+        <div class="hstat"><span class="hstat-ic ic3"><i class="fa fa-circle-play"></i></span><div class="hstat-meta"><strong>${videoLectures}</strong><small>Video Lectures</small></div></div>
+        <div class="hstat"><span class="hstat-ic ic4"><i class="fa fa-headset"></i></span><div class="hstat-meta"><strong>24/7</strong><small>AI Doubt Support</small></div></div>
       </div>`;
 }
 
@@ -165,71 +167,33 @@ export function applyTopCoursesMarkup(markup: string, courses: HomeTopCourse[]):
 }
 
 export function buildHeroShowcaseMarkup(bannerImages: string[]): string {
-  const bannerMarkup = buildBannerSliderMarkup(bannerImages);
+  const defaultBanners = ["/hero-banner.png", "/hero-banner-2.png"];
+  const images = bannerImages.length > 0 ? bannerImages : defaultBanners;
+  const slides = images
+    .map(
+      (image, index) =>
+        `<div class="hero-ref-slide${index === 0 ? " active" : ""}"><img src="${escapeHtml(image)}" alt="Banking exam promotional banner" loading="${index === 0 ? "eager" : "lazy"}" /></div>`,
+    )
+    .join("");
+  const dots = images
+    .slice(0, 5)
+    .map((_, index) => `<span${index === 0 ? ' class="active"' : ""}></span>`)
+    .join("");
 
-  return `<div class="hero-showcase-stack">
-  <div class="hero-quick-grid">
-    <div class="hero-quick-card">
-      <h3>Popular Products</h3>
-      <div class="hero-icon-row">
-        <a href="/courses" class="hero-product"><span class="hero-product-icon orange"><i class="fa fa-file-pdf"></i></span><b>PDF Course</b></a>
-        <a href="/mock-tests" class="hero-product"><span class="hero-product-icon violet"><i class="fa fa-clipboard-check"></i></span><b>Mock Tests</b></a>
-        <a href="/courses" class="hero-product"><span class="hero-product-icon purple"><i class="fa fa-crown"></i></span><b>GOAT</b></a>
-        <a href="/courses" class="hero-product"><span class="hero-product-icon teal"><i class="fa fa-file-lines"></i></span><b>Super Plan</b></a>
+  return `<div class="hero-ref-wrap">
+    <div class="hero-ref-banner">
+      <div class="hero-ref-slides">${slides}</div>
+      <div class="hero-ref-dots">${dots}</div>
+      <button type="button" class="hero-ref-arrow left" aria-label="Previous banner"><i class="fa fa-chevron-left"></i></button>
+      <button type="button" class="hero-ref-arrow right" aria-label="Next banner"><i class="fa fa-chevron-right"></i></button>
+    </div>
+    <div class="hero-ref-trust">
+      <div class="hrt-head"><i class="fa fa-circle-check"></i> Trusted by aspirants across India</div>
+      <div class="hrt-row">
+        <div class="hrt-item"><span class="hrt-ic ic1"><i class="fa fa-star"></i></span><div class="hrt-meta"><strong>4.9/5</strong><small>Student Rating</small></div></div>
+        <div class="hrt-item"><span class="hrt-ic ic2"><i class="fa fa-user-graduate"></i></span><div class="hrt-meta"><strong>50,000+</strong><small>Enrolled</small></div></div>
+        <div class="hrt-item"><span class="hrt-ic ic3"><i class="fa fa-trophy"></i></span><div class="hrt-meta"><strong>5,000+</strong><small>Selections</small></div></div>
       </div>
     </div>
-    <div class="hero-quick-card">
-      <h3>Imp Materials</h3>
-      <div class="hero-icon-row">
-        <a href="/mock-tests" class="hero-product"><span class="hero-product-icon pink"><i class="fa fa-gift"></i></span><b>Smart Quiz</b></a>
-        <a href="/courses" class="hero-product"><span class="hero-product-icon teal"><i class="fa fa-book-open"></i></span><b>Study Notes</b></a>
-        <a href="/mock-tests" class="hero-product"><span class="hero-product-icon violet"><i class="fa fa-clipboard-list"></i></span><b>Live Test</b></a>
-        <a href="/courses" class="hero-product"><span class="hero-product-icon red"><i class="fa fa-file-arrow-down"></i></span><b>Free PDF</b></a>
-      </div>
-    </div>
-  </div>
-  ${bannerMarkup || `<div class="hero-admin-ad-slider" aria-label="Admin advertisement banner">
-    <div class="hero-ad-track">
-      <a href="/courses" class="hero-ad-slide">
-        <span>Admin Ad Banner</span>
-        <strong>Bank Foundation Batch 2026</strong>
-        <em>Promote courses, offers, events and live batches from admin panel.</em>
-        <b>Explore Now</b>
-      </a>
-      <a href="/mock-tests" class="hero-ad-slide alt">
-        <span>Mock Test Offer</span>
-        <strong>Practice Like Real Exam</strong>
-        <em>Add discount banners, test series ads and limited-time offers here.</em>
-        <b>Start Test</b>
-      </a>
-      <a href="/live-classes" class="hero-ad-slide dark">
-        <span>Live Class Update</span>
-        <strong>Daily Banking Classes</strong>
-        <em>Use this space for announcement banners and upcoming class schedules.</em>
-        <b>Join Class</b>
-      </a>
-    </div>
-  </div>`}
-  <div class="hero-bottom-grid">
-    <div class="hero-exams-card">
-      <div class="hero-card-head"><h3>Upcoming Exams</h3><a href="/mock-tests">View More</a></div>
-      <div class="hero-exam-list">
-        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon bank">RBI</span><b>RBI Assistant</b></a>
-        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon office">RBI</span><b>RBI Office</b></a>
-        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon sbi">SBI</span><b>SBI PO</b></a>
-        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon ibps">IBPS</span><b>IBPS PO</b></a>
-        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon sbi">SBI</span><b>SBI Clerk</b></a>
-        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon ibps">IBPS</span><b>IBPS Clerk</b></a>
-        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon bank">RRB</span><b>IBPS RRB</b></a>
-        <a href="/mock-tests" class="hero-exam"><span class="hero-exam-icon office">OICL</span><b>OICL AO</b></a>
-      </div>
-    </div>
-    <a href="/courses" class="hero-banner-card">
-      <span>Bank Foundation Batch 2026</span>
-      <strong>Har Ghar Banker</strong>
-      <em>One access. Unlimited prep.</em>
-      <b>₹1399</b>
-    </a>
-  </div>
-</div>`;
+  </div>`;
 }

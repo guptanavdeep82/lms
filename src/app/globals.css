@@ -3,7 +3,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #14213f;
+  --foreground: #1e1b3a;
 }
 
 @theme inline {
@@ -22,12 +22,12 @@ body {
 }
 
 ::selection {
-  background: #0066ff;
+  background: #7c3aed;
   color: #ffffff;
 }
 
 .gold-ring {
-  box-shadow: 0 0 0 1px rgba(0, 102, 255, 0.22), 0 24px 80px rgba(0, 31, 99, 0.2);
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.22), 0 24px 80px rgba(46, 16, 101, 0.2);
 }
 
 .glass-panel {
@@ -58,8 +58,8 @@ body {
 
 .diagonal-band {
   background:
-    linear-gradient(115deg, rgba(0, 102, 255, 0.08), transparent 34%),
-    radial-gradient(circle at 80% 10%, rgba(0, 102, 255, 0.06), transparent 28%),
+    linear-gradient(115deg, rgba(124, 58, 237, 0.08), transparent 34%),
+    radial-gradient(circle at 80% 10%, rgba(124, 58, 237, 0.06), transparent 28%),
     #ffffff;
 }
 
@@ -158,15 +158,15 @@ canvas {
 .topbar {
   min-height: 72px !important;
   background: rgba(255, 255, 255, 0.96) !important;
-  border-bottom: 1px solid rgba(0, 102, 255, 0.12) !important;
-  box-shadow: 0 8px 30px rgba(0, 102, 255, 0.06) !important;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.12) !important;
+  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.06) !important;
 }
 
 .topbar .logo-text,
 .topbar-nav > a,
 .nav-links > a,
 .topbar .exam-menu-trigger {
-  color: rgba(0, 102, 255, 0.72) !important;
+  color: rgba(124, 58, 237, 0.72) !important;
 }
 
 .topbar-nav > a:hover,
@@ -174,12 +174,12 @@ canvas {
 .nav-links > a:hover,
 .nav-links > a.active,
 .topbar .exam-menu-trigger:hover {
-  color: #0066ff !important;
+  color: #7c3aed !important;
 }
 
 .topbar-nav > a.active,
 .nav-links > a.active {
-  border-bottom-color: #0066ff !important;
+  border-bottom-color: #7c3aed !important;
 }
 
 .topbar-btns,
@@ -323,9 +323,9 @@ canvas {
 .exam-icon.purple,
 .exam-icon.red,
 .exam-icon.soft {
-  background: #0066ff;
+  background: #7c3aed;
   color: #ffffff;
-  border: 1px solid rgba(0, 102, 255, 0.2);
+  border: 1px solid rgba(124, 58, 237, 0.2);
 }
 
 /* Legacy exam icon hues unified to brand blue in kr-brand.css */
