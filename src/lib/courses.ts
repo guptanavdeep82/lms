@@ -158,7 +158,7 @@ function courseVisuals(course: ApiCourse) {
 
   const category = normalizeCategorySlug(course.category_slug);
   const map: Record<string, { icon: string; banner: string; iconColor: string }> = {
-    ibps: { icon: "fa-university", banner: "#E8EEFF", iconColor: "#1B2E6B" },
+    ibps: { icon: "fa-university", banner: "#E8EEFF", iconColor: "#0957D3" },
     sbi: { icon: "fa-piggy-bank", banner: "#E6FFF2", iconColor: "#1D9E75" },
     rbi: { icon: "fa-landmark", banner: "#FFF0EB", iconColor: "#D85A30" },
     insurance: { icon: "fa-shield-alt", banner: "#F3F0FF", iconColor: "#7F77DD" },
@@ -176,7 +176,7 @@ function courseBadge(course: ApiCourse): { badge: string; badgeStyle: string } {
     return { badge: "FREE", badgeStyle: "background:#DCFCE7;color:#15803D" };
   }
   if (course.is_featured) {
-    return { badge: "POPULAR", badgeStyle: "background:#EEF6FF;color:#1B2E6B" };
+    return { badge: "POPULAR", badgeStyle: "background:#EEF6FF;color:#0957D3" };
   }
   if (course.course_type === "live") {
     return { badge: "LIVE", badgeStyle: "background:#FAECE7;color:#993C1D" };

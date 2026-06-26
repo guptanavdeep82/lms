@@ -56,7 +56,7 @@ function CourseThumb({ imageUrl, title, gradient }: { imageUrl: string | null; t
 const gradients = [
   "from-[#172a69] via-[#2350b8] to-[#13a38b]",
   "from-[#0f9f78] via-[#19b98a] to-[#f5c518]",
-  "from-[#243580] via-[#6d5dfc] to-[#e8a800]",
+  "from-[#0538A1] via-[#0957D3] to-[#e8a800]",
 ];
 
 export function CourseLearnViewer() {

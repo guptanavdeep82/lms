@@ -93,7 +93,7 @@ export function StudentDrsTicketPanel() {
               <article key={ticket.id} className="rounded-2xl border border-[#edf1f7] bg-[#f8fafc] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#6d5dfc]">{ticket.ticket_no}</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#0957D3]">{ticket.ticket_no}</p>
                     <h4 className="mt-1 font-extrabold text-[#111827]">{ticket.subject}</h4>
                   </div>
                   <span className="rounded-full bg-white px-3 py-1 text-xs font-bold capitalize text-[#172a69]">{ticket.status.replace("_", " ")}</span>

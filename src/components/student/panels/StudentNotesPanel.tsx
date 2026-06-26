@@ -16,7 +16,7 @@ const cardAccents = [
   "border-t-[#172a69]",
   "border-t-[#0f9f78]",
   "border-t-[#f0a500]",
-  "border-t-[#6d5dfc]",
+  "border-t-[#0957D3]",
 ];
 
 type NoteFormState = {

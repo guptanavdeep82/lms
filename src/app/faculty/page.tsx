@@ -11,7 +11,7 @@ const strengths = [
   "Topic-wise revision strategy",
 ];
 
-const facultyTones = ["bg-[#1b2e6b]", "bg-emerald-600", "bg-blue-600", "bg-orange-600", "bg-violet-600", "bg-amber-600"];
+const facultyTones = ["bg-[#1b2e6b]", "bg-emerald-600", "bg-blue-600", "bg-orange-600", "bg-[#0957D3]", "bg-amber-600"];
 
 function initialsFromName(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);

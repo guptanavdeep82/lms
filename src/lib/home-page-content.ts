@@ -137,7 +137,7 @@ export function applyHomePageData(markup: string, settings: HomePageSettings): s
   return nextMarkup;
 }
 
-const courseCardColors = ["#1B2E6B", "#1D9E75", "#D85A30", "#7F77DD", "#BA7517", "#378ADD"];
+const courseCardColors = ["#0957D3", "#1D9E75", "#D85A30", "#7F77DD", "#BA7517", "#378ADD"];
 
 function courseIconClass(type: string): string {
   if (type === "pdf") return "fa-file-pdf";

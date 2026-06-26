@@ -45,7 +45,7 @@ export function StudentReferEarnPanel() {
     <section className="overflow-hidden rounded-[28px] border border-[#dfe5ef] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
       <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="p-6 sm:p-8">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#6d5dfc]">Refer & Earn</p>
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#0957D3]">Refer & Earn</p>
           <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.03em] text-[#172a69]">Learn & Grow As One! Refer & Earn Exciting Discounts!</h2>
           <p className="mt-3 text-sm leading-7 text-[#667085]">
             Introduce your friends to KR Logics. Share your referral code and help them purchase on our platform. Rewards are assured for every transaction made using your invite code.
@@ -56,7 +56,7 @@ export function StudentReferEarnPanel() {
               <span className="mb-2 block text-sm font-bold text-[#667085]">Your Invite Link</span>
               <div className="flex gap-2">
                 <input readOnly className="h-12 flex-1 rounded-2xl border border-[#dfe5ef] px-4 text-sm" value={referEarn?.invite_link || ""} />
-                <button type="button" onClick={() => copyText(referEarn?.invite_link || "", "Invite link")} className="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#6d5dfc] px-4 text-sm font-bold text-white">
+                <button type="button" onClick={() => copyText(referEarn?.invite_link || "", "Invite link")} className="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#0957D3] px-4 text-sm font-bold text-white">
                   <Copy size={16} /> Copy
                 </button>
               </div>
@@ -65,7 +65,7 @@ export function StudentReferEarnPanel() {
               <span className="mb-2 block text-sm font-bold text-[#667085]">Your Invite Code</span>
               <div className="flex gap-2">
                 <input readOnly className="h-12 flex-1 rounded-2xl border border-[#dfe5ef] px-4 text-sm font-extrabold tracking-[0.2em]" value={referEarn?.invite_code || ""} />
-                <button type="button" onClick={() => copyText(referEarn?.invite_code || "", "Invite code")} className="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#6d5dfc] px-4 text-sm font-bold text-white">
+                <button type="button" onClick={() => copyText(referEarn?.invite_code || "", "Invite code")} className="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#0957D3] px-4 text-sm font-bold text-white">
                   <Copy size={16} /> Copy
                 </button>
               </div>
@@ -73,8 +73,8 @@ export function StudentReferEarnPanel() {
           </div>
 
           <div className="mt-5 flex flex-wrap gap-2">
-            <button type="button" className="grid h-10 w-10 place-items-center rounded-xl bg-[#eef2ff] text-[#6d5dfc]"><Share2 size={16} /></button>
-            <button type="button" className="grid h-10 w-10 place-items-center rounded-xl bg-[#eef2ff] text-[#6d5dfc]"><Gift size={16} /></button>
+            <button type="button" className="grid h-10 w-10 place-items-center rounded-xl bg-[#eef2ff] text-[#0957D3]"><Share2 size={16} /></button>
+            <button type="button" className="grid h-10 w-10 place-items-center rounded-xl bg-[#eef2ff] text-[#0957D3]"><Gift size={16} /></button>
           </div>
 
           {copyMessage ? <p className="mt-3 text-sm font-semibold text-[#0f9f78]">{copyMessage}</p> : null}

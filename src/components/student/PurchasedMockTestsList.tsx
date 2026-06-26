@@ -10,7 +10,7 @@ import { getStudentSession } from "@/lib/student-auth";
 const gradients = [
   "from-[#172a69] via-[#274dbc] to-[#13a38b]",
   "from-[#0f9f78] via-[#23b889] to-[#f5c518]",
-  "from-[#243580] via-[#6d5dfc] to-[#e8a800]",
+  "from-[#0538A1] via-[#0957D3] to-[#e8a800]",
   "from-[#ba7517] via-[#f0a500] to-[#ffcf33]",
 ];
 

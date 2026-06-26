@@ -74,8 +74,8 @@ export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
             className="h-11 w-auto object-contain"
           />
           <div className="min-w-0">
-            <p className="text-sm font-extrabold leading-tight text-[#7c3aed]">KR Logics</p>
-            <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#7c3aed]/60">Student LMS</p>
+            <p className="text-sm font-extrabold leading-tight text-[#0957D3]">KR Logics</p>
+            <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#0957D3]/60">Student LMS</p>
           </div>
         </Link>
       </div>
