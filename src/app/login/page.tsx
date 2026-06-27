@@ -7,6 +7,7 @@ import { PublicPageShell } from "@/components/PublicPageShell";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { getStudentProfile, loginStudent, saveStudentProfile } from "@/lib/student-auth";
 import { checkStudentRegistration, syncStudentWithBackend } from "@/lib/student-registration";
+import { OTP_LENGTH, isValidOtp, sendStudentWhatsappOtp, verifyStudentWhatsappOtp } from "@/lib/student-otp";
 import type { GoogleStudent } from "@/lib/google-sign-in";
 import {
   ArrowLeft,
@@ -29,6 +30,8 @@ export default function LoginPage() {
   const [mobile, setMobile] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [error, setError] = useState("");
 
   const redirectAfterLogin = () => {
@@ -119,45 +122,76 @@ export default function LoginPage() {
       return;
     }
 
-    setPendingStudent({
-      name: registration.student.name,
-      email: registration.student.email,
-    });
-    setMobile(cleanedMobile);
-    setOtpSent(true);
+    setSendingOtp(true);
     setError("");
+    try {
+      await sendStudentWhatsappOtp(cleanedMobile);
+      setPendingStudent({
+        name: registration.student.name,
+        email: registration.student.email,
+      });
+      setMobile(cleanedMobile);
+      setOtp("");
+      setOtpSent(true);
+    } catch (sendError) {
+      setError(sendError instanceof Error ? sendError.message : "Unable to send OTP on WhatsApp.");
+    } finally {
+      setSendingOtp(false);
+    }
   };
 
-  const sendOtp = () => {
-    if (!/^[6-9]\d{9}$/.test(mobile.replace(/\D/g, "").slice(-10))) {
+  const sendOtp = async () => {
+    const cleanedMobile = mobile.replace(/\D/g, "").slice(-10);
+    if (!/^[6-9]\d{9}$/.test(cleanedMobile)) {
       setError("Please enter a valid 10 digit mobile number.");
       return;
     }
-    setOtpSent(true);
+
+    setSendingOtp(true);
     setError("");
+    try {
+      await sendStudentWhatsappOtp(cleanedMobile);
+      setMobile(cleanedMobile);
+      setOtp("");
+      setOtpSent(true);
+    } catch (sendError) {
+      setError(sendError instanceof Error ? sendError.message : "Unable to send OTP on WhatsApp.");
+    } finally {
+      setSendingOtp(false);
+    }
   };
 
-  const verifyOtp = () => {
+  const verifyOtp = async () => {
     if (!pendingStudent) return;
-    if (!/^\d{6}$/.test(otp)) {
-      setError("Please enter the 6 digit OTP.");
+    if (!isValidOtp(otp)) {
+      setError(`Please enter the ${OTP_LENGTH} digit OTP sent on WhatsApp.`);
       return;
     }
 
-    const profile = saveStudentProfile({
-      name: pendingStudent.name,
-      email: pendingStudent.email,
-      mobile,
-      provider: pendingStudent.email.includes("@krlogics.local") ? "otp" : "google",
-      mobileVerified: true,
-    });
+    setVerifyingOtp(true);
+    setError("");
+    try {
+      await verifyStudentWhatsappOtp(mobile, otp);
 
-    void finishLogin({
-      name: profile.name,
-      email: profile.email,
-      mobile: profile.mobile,
-      provider: profile.provider,
-    });
+      const profile = saveStudentProfile({
+        name: pendingStudent.name,
+        email: pendingStudent.email,
+        mobile,
+        provider: pendingStudent.email.includes("@krlogics.local") ? "otp" : "google",
+        mobileVerified: true,
+      });
+
+      await finishLogin({
+        name: profile.name,
+        email: profile.email,
+        mobile: profile.mobile,
+        provider: profile.provider,
+      });
+    } catch (verifyError) {
+      setError(verifyError instanceof Error ? verifyError.message : "OTP verification failed.");
+    } finally {
+      setVerifyingOtp(false);
+    }
   };
 
   return (
@@ -232,8 +266,8 @@ export default function LoginPage() {
                     </span>
                   </label>
 
-                  <button type="submit" className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#0957D3] text-sm font-extrabold text-white shadow-lg shadow-blue-100">
-                    Send OTP <ArrowRight size={17} />
+                  <button type="submit" disabled={sendingOtp} className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#0957D3] text-sm font-extrabold text-white shadow-lg shadow-blue-100 disabled:opacity-70">
+                    {sendingOtp ? "Sending OTP..." : "Send OTP on WhatsApp"} <ArrowRight size={17} />
                   </button>
                 </form>
               </>
@@ -263,13 +297,13 @@ export default function LoginPage() {
                       Enter OTP
                       <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#0957D3]">
                         <ShieldCheck size={18} className="text-[#7d8799]" />
-                        <input value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="6 digit OTP" />
+                        <input value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, OTP_LENGTH))} className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder={`${OTP_LENGTH} digit OTP`} />
                       </span>
                     </label>
                   )}
 
-                  <button type="button" onClick={otpSent ? verifyOtp : sendOtp} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#0957D3] text-sm font-extrabold text-white shadow-lg shadow-blue-100">
-                    {otpSent ? "Verify OTP & Login" : "Send OTP"} <ArrowRight size={17} />
+                  <button type="button" disabled={sendingOtp || verifyingOtp} onClick={() => void (otpSent ? verifyOtp() : sendOtp())} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#0957D3] text-sm font-extrabold text-white shadow-lg shadow-blue-100 disabled:opacity-70">
+                    {verifyingOtp ? "Verifying..." : sendingOtp ? "Sending OTP..." : otpSent ? "Verify OTP & Login" : "Resend OTP on WhatsApp"} <ArrowRight size={17} />
                   </button>
                 </div>
               </>

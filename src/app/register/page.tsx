@@ -7,6 +7,7 @@ import { PublicPageShell } from "@/components/PublicPageShell";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { loginStudent, saveStudentProfile } from "@/lib/student-auth";
 import { checkStudentRegistration, fetchStates, registerStudent, type StateOption } from "@/lib/student-registration";
+import { OTP_LENGTH, isValidOtp, sendStudentWhatsappOtp, verifyStudentWhatsappOtp } from "@/lib/student-otp";
 import { referralToSessionFields, validateReferralCode } from "@/lib/referral";
 import type { GoogleStudent } from "@/lib/google-sign-in";
 import {
@@ -32,6 +33,8 @@ export default function RegisterPage() {
   const [mobile, setMobile] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [error, setError] = useState("");
   const [states, setStates] = useState<StateOption[]>([]);
   const [stateId, setStateId] = useState("");
@@ -177,17 +180,37 @@ export default function RegisterPage() {
       return;
     }
 
-    setOtpSent(true);
+    setSendingOtp(true);
     setError("");
+    try {
+      await sendStudentWhatsappOtp(normalizedMobile);
+      setMobile(normalizedMobile);
+      setOtp("");
+      setOtpSent(true);
+    } catch (sendError) {
+      setError(sendError instanceof Error ? sendError.message : "Unable to send OTP on WhatsApp.");
+    } finally {
+      setSendingOtp(false);
+    }
   };
 
-  const verifyOtp = () => {
+  const verifyOtp = async () => {
     if (!pendingStudent) return;
-    if (!/^\d{6}$/.test(otp)) {
-      setError("Please enter the 6 digit OTP.");
+    if (!isValidOtp(otp)) {
+      setError(`Please enter the ${OTP_LENGTH} digit OTP sent on WhatsApp.`);
       return;
     }
-    void completeLogin(pendingStudent, mobile);
+
+    setVerifyingOtp(true);
+    setError("");
+    try {
+      await verifyStudentWhatsappOtp(mobile, otp);
+      await completeLogin(pendingStudent, mobile);
+    } catch (verifyError) {
+      setError(verifyError instanceof Error ? verifyError.message : "OTP verification failed.");
+    } finally {
+      setVerifyingOtp(false);
+    }
   };
 
   return (
@@ -279,13 +302,13 @@ export default function RegisterPage() {
                       Enter OTP
                       <span className="flex h-12 items-center gap-3 rounded-2xl border border-[#dfe5ef] bg-[#f8fafc] px-4 focus-within:border-[#0957D3]">
                         <ShieldCheck size={18} className="text-[#7d8799]" />
-                        <input value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder="6 digit OTP" />
+                        <input value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, OTP_LENGTH))} className="w-full bg-transparent text-sm font-semibold text-[#111827] outline-none placeholder:text-[#98a2b3]" placeholder={`${OTP_LENGTH} digit OTP`} />
                       </span>
                     </label>
                   )}
 
-                  <button type="button" onClick={otpSent ? verifyOtp : () => void sendOtp()} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#0957D3] text-sm font-extrabold text-white shadow-lg shadow-blue-100">
-                    {otpSent ? "Verify OTP & Register" : "Send OTP"} <ArrowRight size={17} />
+                  <button type="button" disabled={sendingOtp || verifyingOtp} onClick={() => void (otpSent ? verifyOtp() : sendOtp())} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#0957D3] text-sm font-extrabold text-white shadow-lg shadow-blue-100 disabled:opacity-70">
+                    {verifyingOtp ? "Verifying..." : sendingOtp ? "Sending OTP..." : otpSent ? "Verify OTP & Register" : "Send OTP on WhatsApp"} <ArrowRight size={17} />
                   </button>
                 </div>
               </>

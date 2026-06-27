@@ -6,6 +6,7 @@ import Link from "next/link";
 import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
 import { cmsPageHref, fetchCmsPages, type CmsPageSummary } from "@/lib/cms-pages";
 import { BRAND_LOGO_ALT, BRAND_LOGO_HEADER_SRC } from "@/lib/brand";
+import { HeaderSearch } from "@/components/HeaderSearch";
 import { getStudentSession, logoutStudent } from "@/lib/student-auth";
 
 const fallbackCategories: MockCategory[] = [
@@ -124,30 +125,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
             />
           </Link>
 
-          <form className="header-search" action="/courses" role="search">
-            <svg
-              className="header-search-ic"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="11" cy="11" r="7" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <input
-              type="search"
-              name="search"
-              placeholder="Search courses, mock tests & exams..."
-              aria-label="Search courses"
-            />
-            <button type="submit">Search</button>
-          </form>
+          <HeaderSearch />
 
           <nav>
             <div className="course-menu-wrap">

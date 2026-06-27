@@ -69,8 +69,8 @@ export function PublicFooter({ settings }: PublicFooterProps) {
               </div>
             </div>
             <p className="public-site-footer-about">
-              Empowering banking aspirants across India with quality education, expert mentorship and advanced test
-              technology.
+              {settings?.footer_about?.trim() ||
+                "Empowering banking aspirants across India with quality education, expert mentorship and advanced test technology."}
             </p>
             <div className="public-site-footer-socials">
               <SocialLink href={settings?.facebook_link} label="Facebook">
@@ -117,11 +117,19 @@ export function PublicFooter({ settings }: PublicFooterProps) {
             <h5>Get in touch</h5>
             <p className="flex items-start gap-2">
               <MapPin size={14} className="mt-0.5 shrink-0 text-[#0957D3]" />
-              <span>KR Logics Institute, Near City Mall, Jodhpur, Rajasthan — 342001</span>
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: settings?.contact_section?.address?.trim() || "KR Logics Institute, Near City Mall,<br>Jodhpur, Rajasthan — 342001",
+                }}
+              />
             </p>
             <p className="flex items-start gap-2">
               <Mail size={14} className="mt-0.5 shrink-0 text-[#0957D3]" />
-              <span>admissions@krlogics.com</span>
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: settings?.contact_section?.email?.trim() || "admissions@krlogics.com",
+                }}
+              />
             </p>
             <p className="flex items-start gap-2">
               <Phone size={14} className="mt-0.5 shrink-0 text-[#0957D3]" />

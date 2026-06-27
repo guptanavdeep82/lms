@@ -106,10 +106,10 @@ export default function MockSeriesDetailPage() {
 
   if (!category) {
     return (
-      <PublicPageShell active="mock-tests" className="grid min-h-screen place-items-center bg-[#f7f7f7] px-4 text-center">
+      <PublicPageShell active="mock-tests" className="grid min-h-screen place-items-center bg-[#f5f8fc] px-4 text-center">
         <div>
-          <h1 className="text-xl font-extrabold text-black">Series not found</h1>
-          <Link href="/mock-tests" className="mt-4 inline-flex h-11 items-center rounded-full bg-black px-5 text-sm font-extrabold text-white">Back to mock tests</Link>
+          <h1 className="text-xl font-extrabold text-[#0E318D]">Series not found</h1>
+          <Link href="/mock-tests" className="mt-4 inline-flex h-11 items-center rounded-full bg-[#0957D3] px-5 text-sm font-extrabold text-white">Back to mock tests</Link>
         </div>
       </PublicPageShell>
     );
@@ -119,7 +119,7 @@ export default function MockSeriesDetailPage() {
   const completedCount = category.tests.filter((test) => completed[test.slug]).length;
 
   return (
-    <PublicPageShell active="mock-tests" className="min-h-screen bg-[#f4f5f7] text-[#141414]">
+    <PublicPageShell active="mock-tests" className="min-h-screen bg-[#f5f8fc] text-[#0E318D]">
 
       <section className="border-b border-[#e2e4e8] bg-white px-4 py-3 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-1 text-[11px] font-semibold text-[#69707d]">
@@ -131,15 +131,15 @@ export default function MockSeriesDetailPage() {
         </div>
       </section>
 
-      <section className="bg-[#070707] px-4 py-8 text-white sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-br from-[#0E318D] via-[#0957D3] to-[#0538A1] px-4 py-8 text-white sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1fr_340px]">
           <div>
             <div className="flex flex-wrap items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-lg bg-[#0cb0e4] text-white">
+              <span className="grid h-10 w-10 place-items-center rounded-lg bg-white/15 text-white">
                 <FileText size={20} />
               </span>
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#ffd21f]">Online Mock Test Series</p>
+                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-white/75">Online Mock Test Series</p>
                 <h1 className="mt-1 text-[26px] font-extrabold tracking-[-0.04em] sm:text-[35px]">{category.name}</h1>
               </div>
             </div>
@@ -154,17 +154,17 @@ export default function MockSeriesDetailPage() {
             </div>
           </div>
 
-          <aside className="rounded-lg border border-white/12 bg-white/8 p-5">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#ffd21f]">Your Progress</p>
+          <aside className="rounded-lg border border-white/18 bg-white/10 p-5 backdrop-blur-sm">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-white/75">Your Progress</p>
             <div className="mt-4 flex items-end justify-between gap-4">
               <div>
                 <strong className="text-4xl font-extrabold">{completedCount}</strong>
-                <span className="ml-2 text-sm font-bold text-white/60">completed</span>
+                <span className="ml-2 text-sm font-bold text-white/70">completed</span>
               </div>
-              <span className="rounded-full bg-[#ffd21f] px-3 py-1 text-xs font-extrabold text-black">{summary.total ? Math.round((completedCount / summary.total) * 100) : 0}%</span>
+              <span className="rounded-full bg-white px-3 py-1 text-xs font-extrabold text-[#0957D3]">{summary.total ? Math.round((completedCount / summary.total) * 100) : 0}%</span>
             </div>
-            <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/14">
-              <div className="h-full rounded-full bg-[#ffd21f]" style={{ width: `${summary.total ? (completedCount / summary.total) * 100 : 0}%` }} />
+            <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/20">
+              <div className="h-full rounded-full bg-white" style={{ width: `${summary.total ? (completedCount / summary.total) * 100 : 0}%` }} />
             </div>
             <p className="mt-4 text-xs font-semibold leading-6 text-white/60">Complete tests to unlock result review and track attempt history.</p>
           </aside>
@@ -176,10 +176,10 @@ export default function MockSeriesDetailPage() {
           <div className="rounded-lg border border-[#e0e3e8] bg-white p-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-xl font-extrabold tracking-[-0.03em] text-black">Available Mock Tests</h2>
-                <p className="mt-1 text-xs font-bold text-[#777d89]">Choose test type and start available mock tests.</p>
+                <h2 className="text-xl font-extrabold tracking-[-0.03em] text-[#0E318D]">Available Mock Tests</h2>
+                <p className="mt-1 text-xs font-bold text-[#5a6f9a]">Choose test type and start available mock tests.</p>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#fff4bd] px-3 py-1.5 text-xs font-extrabold text-[#6b4d00]">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#eef3fb] px-3 py-1.5 text-xs font-extrabold text-[#0957D3]">
                 <Sparkles size={14} /> Latest Pattern
               </div>
             </div>
@@ -193,8 +193,8 @@ export default function MockSeriesDetailPage() {
                     onClick={() => setActiveTab(tab.key)}
                     className={`h-12 rounded-lg border px-4 text-left text-sm font-extrabold transition ${
                       activeTab === tab.key
-                        ? "border-black bg-black text-white"
-                        : "border-[#e1e4e9] bg-[#f8f9fb] text-black hover:border-[#c9ced7]"
+                        ? "border-[#0957D3] bg-[#0957D3] text-white"
+                        : "border-[#d9e3f5] bg-[#f5f8fc] text-[#0E318D] hover:border-[#0957D3]/40"
                     }`}
                   >
                     {tab.label} <span className={activeTab === tab.key ? "text-white/60" : "text-[#767b86]"}>({count})</span>
@@ -217,18 +217,18 @@ export default function MockSeriesDetailPage() {
         </section>
 
         <aside className="h-fit rounded-lg border border-[#e0e3e8] bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.08)] lg:sticky lg:top-5">
-            <h2 className="border-b border-[#ececec] pb-3 text-sm font-extrabold text-[#8a6500]">Highlight Features</h2>
-            <div className="mt-4 space-y-2 text-xs font-bold text-[#454b55]">
+            <h2 className="border-b border-[#dce6f7] pb-3 text-sm font-extrabold text-[#0957D3]">Highlight Features</h2>
+            <div className="mt-4 space-y-2 text-xs font-bold text-[#3d5280]">
               {["Free + paid full length tests", "Sectional and starter mocks", "Latest exam pattern", "Bilingual Hindi and English", "Instant result after submit"].map((feature) => (
-                <div key={feature} className="flex items-center gap-2 rounded-lg bg-[#fafafa] px-3 py-2">
-                  <Check size={14} className="shrink-0 text-[#c79a00]" />
+                <div key={feature} className="flex items-center gap-2 rounded-lg bg-[#f5f8fc] px-3 py-2">
+                  <Check size={14} className="shrink-0 text-[#0957D3]" />
                   <span>{feature}</span>
                 </div>
               ))}
             </div>
-            <div className="mt-5 rounded-lg bg-[#f7f7f8] p-4 text-center">
-              {price?.price ? <span className="mr-2 text-sm font-bold text-[#9ca3af] line-through">₹{price.price}</span> : null}
-              <span className="text-2xl font-extrabold text-black">₹{price?.sale_price ?? price?.price ?? 0}</span>
+            <div className="mt-5 rounded-lg bg-[#eef3fb] p-4 text-center">
+              {price?.price ? <span className="mr-2 text-sm font-bold text-[#7a8db0] line-through">₹{price.price}</span> : null}
+              <span className="text-2xl font-extrabold text-[#0E318D]">₹{price?.sale_price ?? price?.price ?? 0}</span>
               <p className="mt-1 text-xs font-bold text-[#16a34a]">You save ₹300</p>
             </div>
             <RazorpayCheckoutButton
@@ -246,12 +246,12 @@ export default function MockSeriesDetailPage() {
                   fetchStudentPurchases(session.email).then(setPurchases);
                 }
               }}
-              className="mt-4 h-11 w-full rounded-lg bg-[#d6a900] text-sm font-extrabold text-black shadow-[0_10px_22px_rgba(214,169,0,0.22)]"
+              className="mt-4 h-11 w-full rounded-lg bg-[#0957D3] text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(9,87,211,0.22)] hover:bg-[#0538A1]"
             />
             <div className="mt-4 grid gap-3 border-t border-[#ececec] pt-4 text-xs font-bold text-[#6a707c]">
-              <div className="flex items-center justify-between"><span>Total Tests</span><b className="text-black">{summary.total}</b></div>
-              <div className="flex items-center justify-between"><span>Available Now</span><b className="text-black">{summary.open}</b></div>
-              <div className="flex items-center justify-between"><span>Locked Tests</span><b className="text-black">{summary.locked}</b></div>
+              <div className="flex items-center justify-between"><span>Total Tests</span><b className="text-[#0E318D]">{summary.total}</b></div>
+              <div className="flex items-center justify-between"><span>Available Now</span><b className="text-[#0E318D]">{summary.open}</b></div>
+              <div className="flex items-center justify-between"><span>Locked Tests</span><b className="text-[#0E318D]">{summary.locked}</b></div>
             </div>
           </aside>
       </section>
@@ -265,11 +265,11 @@ function TestRow({ test, locked, completed, onStart }: { test: MockTest; locked:
       <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#fff4bd] text-[#6b4d00]">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#eef3fb] text-[#0957D3]">
               <FileText size={17} />
             </span>
             <div>
-              <h3 className="text-sm font-extrabold text-black sm:text-base">{test.title}</h3>
+              <h3 className="text-sm font-extrabold text-[#0E318D] sm:text-base">{test.title}</h3>
               <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold text-[#777d89]">
                 <span className="inline-flex items-center gap-1"><Languages size={12} /> Bilingual</span>
                 <span className="inline-flex items-center gap-1"><FileText size={12} /> {test.questions_count} Questions</span>
@@ -279,19 +279,19 @@ function TestRow({ test, locked, completed, onStart }: { test: MockTest; locked:
           </div>
         </div>
         {locked ? (
-          <span className="inline-flex h-9 items-center justify-center gap-1 rounded-lg bg-[#fff8dc] px-4 text-xs font-extrabold text-[#8a6500]">
+          <span className="inline-flex h-9 items-center justify-center gap-1 rounded-lg bg-[#eef3fb] px-4 text-xs font-extrabold text-[#0957D3]">
             <LockKeyhole size={13} /> Locked
           </span>
         ) : test.questions_count === 0 ? (
-          <span className="inline-flex h-9 items-center justify-center gap-1 rounded-lg bg-[#fff8dc] px-4 text-xs font-extrabold text-[#8a6500]">
+          <span className="inline-flex h-9 items-center justify-center gap-1 rounded-lg bg-[#eef3fb] px-4 text-xs font-extrabold text-[#0957D3]">
             <LockKeyhole size={13} /> Questions Pending
           </span>
         ) : completed ? (
-          <Link href={`/student/mock-tests/${test.slug}/result`} className="inline-flex h-10 items-center justify-center gap-1 rounded-lg bg-[#d6a900] px-4 text-xs font-extrabold text-black">
+          <Link href={`/student/mock-tests/${test.slug}/result`} className="inline-flex h-10 items-center justify-center gap-1 rounded-lg bg-[#0957D3] px-4 text-xs font-extrabold text-white hover:bg-[#0538A1]">
             <Trophy size={13} /> View Results
           </Link>
         ) : (
-          <button onClick={onStart} className="inline-flex h-10 items-center justify-center gap-1 rounded-lg bg-[#d6a900] px-4 text-xs font-extrabold text-black">
+          <button onClick={onStart} className="inline-flex h-10 items-center justify-center gap-1 rounded-lg bg-[#0957D3] px-4 text-xs font-extrabold text-white hover:bg-[#0538A1]">
             <PlayCircle size={13} /> Start Mock Test
           </button>
         )}
@@ -307,8 +307,8 @@ function TestRow({ test, locked, completed, onStart }: { test: MockTest; locked:
 
 function HeroStat({ icon: Icon, label, value }: { icon: typeof FileText; label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/8 p-3 sm:p-4">
-      <Icon size={18} className="text-[#ffd21f]" />
+    <div className="rounded-lg border border-white/18 bg-white/10 p-3 sm:p-4">
+      <Icon size={18} className="text-white" />
       <strong className="mt-2 block text-2xl font-extrabold">{value}</strong>
       <span className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-white/50">{label}</span>
     </div>
