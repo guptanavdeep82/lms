@@ -15,12 +15,19 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
-export function buildHeroStatsMarkup(settings: HomePageSettings): string {
-  const mockTests = formatStatNumber(settings.mock_tests) || "1000+";
-  const liveClasses = formatStatNumber(settings.selections) || "500+";
-  const videoLectures = formatStatNumber(settings.active_students) || "3000+";
+export function stripHeroLeftStats(markup: string): string {
+  return markup.replace(
+    /<div class="hero-stats">(?:\s*<div class="hstat">[\s\S]*?<\/div>){4}\s*<\/div>\s*(?=<\/div>\s*<div class="hero-right">)/,
+    "",
+  );
+}
 
-  return `<div class="hero-stats">
+export function buildHeroStatsMarkup(settings?: HomePageSettings | null): string {
+  const mockTests = settings ? formatStatNumber(settings.mock_tests) || "200+" : "200+";
+  const liveClasses = settings ? formatStatNumber(settings.selections) || "850+" : "850+";
+  const videoLectures = settings ? formatStatNumber(settings.active_students) || "12,501+" : "12,501+";
+
+  return `<div class="hero-stats hero-ref-stats">
         <div class="hstat"><span class="hstat-ic ic1"><i class="fa fa-file-lines"></i></span><div class="hstat-meta"><strong>${mockTests}</strong><small>Mock Tests</small></div></div>
         <div class="hstat"><span class="hstat-ic ic2"><i class="fa fa-video"></i></span><div class="hstat-meta"><strong>${liveClasses}</strong><small>Live Classes</small></div></div>
         <div class="hstat"><span class="hstat-ic ic3"><i class="fa fa-circle-play"></i></span><div class="hstat-meta"><strong>${videoLectures}</strong><small>Video Lectures</small></div></div>
@@ -110,10 +117,7 @@ export function buildContactPhoneMarkup(whatsappNumber: string | null): string {
 export function applyHomePageData(markup: string, settings: HomePageSettings): string {
   let nextMarkup = markup;
 
-  nextMarkup = nextMarkup.replace(
-    /<div class="hero-stats">(?:\s*<div class="hstat">[\s\S]*?<\/div>){4}\s*<\/div>\s*(?=<\/div>\s*<div class="hero-right">)/,
-    buildHeroStatsMarkup(settings),
-  );
+  nextMarkup = stripHeroLeftStats(nextMarkup);
   nextMarkup = nextMarkup.replace(
     /<div class="about-stat-row">(?:\s*<div class="about-stat-box">[\s\S]*?<\/div>){3}\s*<\/div>/,
     buildAboutStatsMarkup(settings),
@@ -166,7 +170,7 @@ export function applyTopCoursesMarkup(markup: string, courses: HomeTopCourse[]):
   return markup.replace(/<div class="courses-grid">[\s\S]*?<\/div>(?=\s*<\/section>)/, `<div class="courses-grid">${cards}</div>`);
 }
 
-export function buildHeroShowcaseMarkup(bannerImages: string[]): string {
+export function buildHeroShowcaseMarkup(bannerImages: string[], settings?: HomePageSettings | null): string {
   const defaultBanners = ["/hero-banner.png", "/hero-banner-2.png"];
   const images = bannerImages.length > 0 ? bannerImages : defaultBanners;
   const slides = images
@@ -187,13 +191,6 @@ export function buildHeroShowcaseMarkup(bannerImages: string[]): string {
       <button type="button" class="hero-ref-arrow left" aria-label="Previous banner"><i class="fa fa-chevron-left"></i></button>
       <button type="button" class="hero-ref-arrow right" aria-label="Next banner"><i class="fa fa-chevron-right"></i></button>
     </div>
-    <div class="hero-ref-trust">
-      <div class="hrt-head"><i class="fa fa-circle-check"></i> Trusted by aspirants across India</div>
-      <div class="hrt-row">
-        <div class="hrt-item"><span class="hrt-ic ic1"><i class="fa fa-star"></i></span><div class="hrt-meta"><strong>4.9/5</strong><small>Student Rating</small></div></div>
-        <div class="hrt-item"><span class="hrt-ic ic2"><i class="fa fa-user-graduate"></i></span><div class="hrt-meta"><strong>50,000+</strong><small>Enrolled</small></div></div>
-        <div class="hrt-item"><span class="hrt-ic ic3"><i class="fa fa-trophy"></i></span><div class="hrt-meta"><strong>5,000+</strong><small>Selections</small></div></div>
-      </div>
-    </div>
+    ${buildHeroStatsMarkup(settings)}
   </div>`;
 }

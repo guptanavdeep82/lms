@@ -36,6 +36,7 @@ type CourseMeta = {
   name: string;
   status: "Active" | "Draft";
   courses: number;
+  image?: string;
 };
 
 type Course = {
@@ -82,9 +83,9 @@ const initialExamTypes: ExamType[] = [
 ];
 
 const initialCategories: CourseMeta[] = [
-  { id: 1, name: "Banking", status: "Active", courses: 9 },
-  { id: 2, name: "Insurance", status: "Active", courses: 3 },
-  { id: 3, name: "Aptitude", status: "Active", courses: 5 },
+  { id: 1, name: "Banking", status: "Active", courses: 9, image: "/hero-students.png" },
+  { id: 2, name: "Insurance", status: "Active", courses: 3, image: "/building-professionals.png" },
+  { id: 3, name: "Aptitude", status: "Active", courses: 5, image: "/hero-banner.png" },
 ];
 
 const initialSubjects: CourseMeta[] = [
@@ -236,6 +237,7 @@ export default function AdminCoursesPage() {
   const [search, setSearch] = useState("");
   const [newExamType, setNewExamType] = useState({ name: "", code: "" });
   const [newMeta, setNewMeta] = useState("");
+  const [newCategoryImage, setNewCategoryImage] = useState("");
 
   const filteredCourses = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -371,6 +373,23 @@ export default function AdminCoursesPage() {
     setNewExamType({ name: "", code: "" });
   };
 
+  const handleCategoryImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setNewCategoryImage(URL.createObjectURL(file));
+  };
+
+  const addCategory = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!newMeta.trim()) return;
+    setCategories((current) => [
+      ...current,
+      { id: Date.now(), name: newMeta.trim(), status: "Active", courses: 0, image: newCategoryImage },
+    ]);
+    setNewMeta("");
+    setNewCategoryImage("");
+  };
+
   const addMeta = (
     event: FormEvent<HTMLFormElement>,
     setter: React.Dispatch<React.SetStateAction<CourseMeta[]>>,
@@ -380,6 +399,104 @@ export default function AdminCoursesPage() {
     setter((current) => [...current, { id: Date.now(), name: newMeta.trim(), status: "Active", courses: 0 }]);
     setNewMeta("");
   };
+
+  const categoriesPanel = (
+    <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.06)] lg:p-7">
+      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#b99000]">Dynamic Module</p>
+          <h2 className="mt-2 text-xl font-black tracking-[-0.04em] text-[#050808]">Categories</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+            Course categories dynamic hain. Har category ke saath image upload kar sakte ho. Course create form me ye dropdown se select hoti hain.
+          </p>
+        </div>
+        <form onSubmit={addCategory} className="grid min-w-full gap-2 sm:min-w-[520px] sm:grid-cols-[1fr_auto_auto]">
+          <input
+            value={newMeta}
+            onChange={(event) => setNewMeta(event.target.value)}
+            placeholder="Add category"
+            className="h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold outline-none transition focus:border-[#ffd21f] focus:bg-white"
+          />
+          <label className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-700">
+            <ImagePlus size={16} />
+            Image
+            <input type="file" accept="image/*" className="hidden" onChange={handleCategoryImageUpload} />
+          </label>
+          <button className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#050808] px-4 text-sm font-black text-[#ffd21f]">
+            <Plus size={16} /> Add
+          </button>
+        </form>
+      </div>
+
+      {newCategoryImage ? (
+        <div className="mt-4 inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={newCategoryImage} alt="New category preview" className="h-14 w-14 rounded-xl object-cover" />
+          <p className="text-sm font-semibold text-slate-600">New category image selected</p>
+        </div>
+      ) : null}
+
+      <div className="mt-6 grid gap-3">
+        {categories.map((item) => (
+          <div key={item.id} className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.image || "/building-professionals.png"}
+                alt={item.name}
+                className="h-16 w-16 rounded-2xl border border-slate-200 object-cover"
+              />
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-black text-[#050808]">{item.name}</p>
+                  <StatusPill status={item.status} />
+                </div>
+                <p className="mt-1 text-xs font-semibold text-slate-500">{item.courses} linked records</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700">
+                <Upload size={14} />
+                Change
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    const image = URL.createObjectURL(file);
+                    setCategories((current) =>
+                      current.map((row) => (row.id === item.id ? { ...row, image } : row)),
+                    );
+                  }}
+                />
+              </label>
+              <button
+                onClick={() =>
+                  setCategories((current) =>
+                    current.map((row) =>
+                      row.id === item.id ? { ...row, status: row.status === "Active" ? "Draft" : "Active" } : row,
+                    ),
+                  )
+                }
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700"
+              >
+                Toggle
+              </button>
+              <button
+                onClick={() => setCategories((current) => current.filter((row) => row.id !== item.id))}
+                className="grid h-9 w-9 place-items-center rounded-xl bg-red-50 text-red-600"
+                aria-label={`Delete ${item.name}`}
+              >
+                <Trash2 size={15} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 
   const metaPanel = (
     title: string,
@@ -1055,9 +1172,7 @@ export default function AdminCoursesPage() {
               </section>
             ) : null}
 
-            {activeTab === "categories"
-              ? metaPanel("Categories", "Course categories dynamic hain. Course create form me ye dropdown se select hoti hain.", categories, setCategories)
-              : null}
+            {activeTab === "categories" ? categoriesPanel : null}
             {activeTab === "subjects"
               ? metaPanel("Subjects", "Subjects dynamic hain. Admin subject add/delete karega aur course form me list auto update hogi.", subjects, setSubjects)
               : null}
