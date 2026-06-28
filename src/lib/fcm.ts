@@ -93,6 +93,31 @@ export async function removeDeviceToken(token: string) {
   });
 }
 
+export function showForegroundNotification(payload: unknown) {
+  if (typeof window === "undefined" || Notification.permission !== "granted") return;
+
+  const message = payload as {
+    notification?: { title?: string; body?: string };
+    data?: { title?: string; message?: string; click_url?: string };
+  };
+
+  const title = message.notification?.title || message.data?.title;
+  const body = message.notification?.body || message.data?.message;
+  const clickUrl = message.data?.click_url;
+
+  if (!title) return;
+
+  const notification = new Notification(title, {
+    body,
+    icon: "/kr-logics-logo.png",
+  });
+
+  notification.onclick = () => {
+    window.focus();
+    if (clickUrl) window.location.href = clickUrl;
+  };
+}
+
 export async function initializeFcm(onForegroundMessage?: (payload: unknown) => void) {
   const config = await fetchFirebaseConfig();
   if (!config) return null;
@@ -103,8 +128,9 @@ export async function initializeFcm(onForegroundMessage?: (payload: unknown) => 
   await registerDeviceToken(token);
 
   const messaging = await getMessagingInstance(config);
-  if (messaging && onForegroundMessage) {
-    onMessage(messaging, (payload) => onForegroundMessage(payload));
+  if (messaging) {
+    const handler = onForegroundMessage ?? showForegroundNotification;
+    onMessage(messaging, (payload) => handler(payload));
   }
 
   return token;

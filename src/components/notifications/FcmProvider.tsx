@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Bell, X } from "lucide-react";
 import { fetchFirebaseConfig } from "@/lib/firebase-config";
-import { initializeFcm, listenForTokenRefresh, registerDeviceToken } from "@/lib/fcm";
+import { initializeFcm, listenForTokenRefresh, registerDeviceToken, showForegroundNotification } from "@/lib/fcm";
 
 const DISMISS_KEY = "kr_fcm_prompt_dismissed";
 
@@ -16,23 +16,14 @@ export function NotificationPermissionPrompt() {
     fetchFirebaseConfig().then((config) => {
       if (!config) return;
       if (typeof window === "undefined") return;
-      if (window.localStorage.getItem(DISMISS_KEY) === "1") return;
       if (!("Notification" in window)) return;
+
       if (Notification.permission === "granted") {
-        initializeFcm((payload) => {
-          const data = (payload as { notification?: { title?: string; body?: string }; data?: { click_url?: string } }).notification;
-          const clickUrl = (payload as { data?: { click_url?: string } }).data?.click_url;
-          if (data?.title) {
-            new Notification(data.title, {
-              body: data.body,
-              icon: "/kr-logics-logo.png",
-            }).onclick = () => {
-              if (clickUrl) window.location.href = clickUrl;
-            };
-          }
-        });
+        void initializeFcm(showForegroundNotification);
         return;
       }
+
+      if (window.localStorage.getItem(DISMISS_KEY) === "1") return;
       if (Notification.permission !== "denied") {
         setVisible(true);
       }
@@ -71,7 +62,11 @@ export function NotificationPermissionPrompt() {
                 setLoading(true);
                 setError("");
                 try {
-                  await initializeFcm();
+                  const token = await initializeFcm(showForegroundNotification);
+                  if (!token) {
+                    setError("Permission denied or browser does not support notifications.");
+                    return;
+                  }
                   setVisible(false);
                 } catch {
                   setError("Unable to enable notifications.");
