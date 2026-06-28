@@ -6,7 +6,7 @@ import { CoursePromoCard } from "@/components/courses/CoursePromoCard";
 import { fetchCourses, mapApiCourseToListingCourse, type ListingCourse } from "@/lib/courses";
 
 type Filters = {
-  type: "all" | "video" | "pdf";
+  type: "all" | "video" | "pdf" | "live";
   cat: string;
   exam: string;
   level: string;
@@ -38,8 +38,9 @@ export function CoursesCatalog() {
 
   useEffect(() => {
     const type = searchParams.get("type");
-    const apiType = type === "pdf" ? "pdf" : type === "video" || type === "live" ? "video" : undefined;
+    const apiType = type === "video" || type === "pdf" || type === "live" ? type : undefined;
 
+    setLoading(true);
     fetchCourses(apiType)
       .then((items) => setCourses(items.map(mapApiCourseToListingCourse)))
       .finally(() => setLoading(false));
@@ -47,22 +48,22 @@ export function CoursesCatalog() {
 
   useEffect(() => {
     const type = searchParams.get("type");
-    if (type === "live") {
-      router.replace("/courses?type=video");
-      return;
-    }
-    if (type === "video" || type === "pdf") {
+    if (type === "video" || type === "pdf" || type === "live") {
       setFilters((current) => ({ ...current, type }));
+    } else {
+      setFilters((current) => ({ ...current, type: "all" }));
     }
-  }, [router, searchParams]);
+  }, [searchParams]);
 
   const filtered = useMemo(() => {
     let list = [...courses];
 
     if (filters.type === "video") {
-      list = list.filter((course) => course.type === "video" || course.type === "live");
+      list = list.filter((course) => course.type === "video");
     } else if (filters.type === "pdf") {
       list = list.filter((course) => course.type === "pdf");
+    } else if (filters.type === "live") {
+      list = list.filter((course) => course.type === "live");
     }
     if (filters.cat !== "all") list = list.filter((course) => course.category === filters.cat);
     if (filters.exam !== "all") list = list.filter((course) => course.exam === filters.exam || course.exam === "all");
@@ -148,6 +149,7 @@ export function CoursesCatalog() {
                 ["all", "All Types"],
                 ["video", "Video Courses"],
                 ["pdf", "PDF Courses"],
+                ["live", "Live Courses"],
               ]}
               value={filters.type}
               onChange={(value) => setType(value as Filters["type"])}

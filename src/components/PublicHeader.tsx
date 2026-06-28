@@ -133,6 +133,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
               <div className={`course-dropdown ${openMenu === "courses" ? "open" : ""}`}>
                 <Link href="/courses?type=video"><span>▶</span> Video Courses</Link>
                 <Link href="/courses?type=pdf"><span>PDF</span> PDF Courses</Link>
+                <Link href="/courses?type=live"><span>📡</span> Live Courses</Link>
               </div>
             </div>
             {navLink("/packages", "Packages", "packages")}
