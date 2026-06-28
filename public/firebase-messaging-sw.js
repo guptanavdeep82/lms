@@ -8,16 +8,16 @@ if (self.firebaseConfig && self.firebaseConfig.projectId) {
 
   messaging.onBackgroundMessage(function (payload) {
     const title = payload.notification?.title || payload.data?.title || "KR Logics";
+    const body = payload.notification?.body || payload.data?.message || "";
+    const clickUrl = payload.data?.click_url || payload.fcmOptions?.link || self.location.origin + "/";
     const options = {
-      body: payload.notification?.body || payload.data?.message || "",
+      body,
       icon: payload.notification?.icon || "/kr-logics-logo.png",
       image: payload.notification?.image || payload.data?.image_url,
-      data: {
-        click_url: payload.data?.click_url || payload.fcmOptions?.link || "/",
-      },
+      data: { click_url: clickUrl },
     };
 
-    self.registration.showNotification(title, options);
+    return self.registration.showNotification(title, options);
   });
 }
 
