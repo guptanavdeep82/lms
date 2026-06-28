@@ -34,7 +34,27 @@ async function getMessagingInstance(config: FirebaseWebConfig) {
 
 export async function registerServiceWorker() {
   if (typeof window === "undefined" || !("serviceWorker" in navigator)) return null;
-  return navigator.serviceWorker.register("/firebase-messaging-sw.js");
+
+  const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js", {
+    scope: "/",
+    updateViaCache: "none",
+  });
+
+  const config = await fetchFirebaseConfig();
+  const postConfig = (worker: ServiceWorker | null) => {
+    if (worker && config) {
+      worker.postMessage({ type: "FCM_INIT", config });
+    }
+  };
+
+  postConfig(registration.installing);
+  postConfig(registration.waiting);
+  postConfig(registration.active);
+
+  await navigator.serviceWorker.ready;
+  postConfig(navigator.serviceWorker.controller);
+
+  return registration;
 }
 
 export async function requestNotificationPermission() {

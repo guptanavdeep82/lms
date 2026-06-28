@@ -7,10 +7,30 @@ import { initializeFcm, listenForTokenRefresh, registerDeviceToken, showForegrou
 
 const DISMISS_KEY = "kr_fcm_prompt_dismissed";
 
+function handleIncomingNotification(payload: unknown) {
+  showForegroundNotification(payload);
+
+  const message = payload as {
+    notification?: { title?: string; body?: string };
+    data?: { title?: string; message?: string };
+  };
+
+  const title = message.notification?.title || message.data?.title;
+  const body = message.notification?.body || message.data?.message;
+  if (!title) return;
+
+  window.dispatchEvent(
+    new CustomEvent("kr-push-received", {
+      detail: { title, body: body || "" },
+    }),
+  );
+}
+
 export function NotificationPermissionPrompt() {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [liveAlert, setLiveAlert] = useState<{ title: string; body: string } | null>(null);
 
   useEffect(() => {
     fetchFirebaseConfig().then((config) => {
@@ -19,7 +39,7 @@ export function NotificationPermissionPrompt() {
       if (!("Notification" in window)) return;
 
       if (Notification.permission === "granted") {
-        void initializeFcm(showForegroundNotification);
+        void initializeFcm(handleIncomingNotification);
         return;
       }
 
@@ -28,6 +48,18 @@ export function NotificationPermissionPrompt() {
         setVisible(true);
       }
     });
+  }, []);
+
+  useEffect(() => {
+    const onPush = (event: Event) => {
+      const detail = (event as CustomEvent<{ title: string; body: string }>).detail;
+      if (!detail?.title) return;
+      setLiveAlert(detail);
+      window.setTimeout(() => setLiveAlert(null), 8000);
+    };
+
+    window.addEventListener("kr-push-received", onPush);
+    return () => window.removeEventListener("kr-push-received", onPush);
   }, []);
 
   useEffect(() => {
@@ -40,9 +72,17 @@ export function NotificationPermissionPrompt() {
     });
   }, []);
 
-  if (!visible) return null;
-
   return (
+    <>
+      {liveAlert ? (
+        <div className="fixed top-5 right-5 z-[130] max-w-sm rounded-2xl border border-[#0957D3]/20 bg-white p-4 shadow-[0_20px_50px_rgba(9,87,211,0.18)]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#0957D3]">New Notification</p>
+          <p className="mt-1 text-sm font-extrabold text-[#172a69]">{liveAlert.title}</p>
+          {liveAlert.body ? <p className="mt-1 text-xs font-semibold text-[#667085]">{liveAlert.body}</p> : null}
+        </div>
+      ) : null}
+
+      {!visible ? null : (
     <div className="fixed bottom-5 right-5 z-[120] max-w-sm overflow-hidden rounded-2xl border border-[#dfe5ef] bg-white shadow-[0_20px_50px_rgba(15,23,42,0.18)]">
       <div className="flex items-start gap-3 p-4">
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#eef2ff] text-[#172a69]">
@@ -62,7 +102,7 @@ export function NotificationPermissionPrompt() {
                 setLoading(true);
                 setError("");
                 try {
-                  const token = await initializeFcm(showForegroundNotification);
+                  const token = await initializeFcm(handleIncomingNotification);
                   if (!token) {
                     setError("Permission denied or browser does not support notifications.");
                     return;
@@ -103,6 +143,8 @@ export function NotificationPermissionPrompt() {
         </button>
       </div>
     </div>
+      )}
+    </>
   );
 }
 
