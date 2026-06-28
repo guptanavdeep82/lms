@@ -65,11 +65,17 @@ export async function checkStudentRegistration(params: {
   mobile?: string;
 }): Promise<StudentRegistrationCheck> {
   const response = await fetch(checkUrl(params), { cache: "no-store" });
+  const payload = (await response.json().catch(() => ({}))) as StudentRegistrationCheck & {
+    message?: string;
+  };
+
   if (!response.ok) {
-    return { email_exists: false, mobile_exists: false };
+    throw new Error(
+      payload.message || `Unable to verify student account (server ${response.status}). Please check backend connection.`,
+    );
   }
 
-  return (await response.json()) as StudentRegistrationCheck;
+  return payload;
 }
 
 export async function fetchStates(): Promise<StateOption[]> {

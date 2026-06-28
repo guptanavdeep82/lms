@@ -78,10 +78,15 @@ export default function LoginPage() {
   const finishGoogleLogin = useCallback(async (student: GoogleStudent) => {
     setError("");
 
-    const registration = await checkStudentRegistration({ email: student.email });
-    if (!registration.email_exists) {
-      setError("No account found with this email. Please register first.");
-      window.setTimeout(() => router.push("/register"), 1800);
+    try {
+      const registration = await checkStudentRegistration({ email: student.email });
+      if (!registration.email_exists) {
+        setError("No account found with this email. Please register first.");
+        window.setTimeout(() => router.push("/register"), 1800);
+        return;
+      }
+    } catch (checkError) {
+      setError(checkError instanceof Error ? checkError.message : "Unable to verify account.");
       return;
     }
 
@@ -116,15 +121,15 @@ export default function LoginPage() {
       return;
     }
 
-    const registration = await checkStudentRegistration({ mobile: cleanedMobile });
-    if (!registration.mobile_exists || !registration.student) {
-      setError("No account found with this mobile number. Please register first.");
-      return;
-    }
-
     setSendingOtp(true);
     setError("");
     try {
+      const registration = await checkStudentRegistration({ mobile: cleanedMobile });
+      if (!registration.mobile_exists || !registration.student) {
+        setError("No account found with this mobile number. Please register first.");
+        return;
+      }
+
       await sendStudentWhatsappOtp(cleanedMobile);
       setPendingStudent({
         name: registration.student.name,
