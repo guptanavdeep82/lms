@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, CheckCircle2, Loader2, Megaphone, PlayCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, Loader2, Megaphone, PlayCircle, Radio } from "lucide-react";
 import { getStudentSession } from "@/lib/student-auth";
+import { StudentPurchasedLiveClasses } from "@/components/student/StudentPurchasedLiveClasses";
 import { fetchStudentLibraryData, fetchStudentProfile, fetchTestAttempts } from "@/lib/student-dashboard";
 
 const tickerMessages = [
@@ -91,6 +92,9 @@ export function StudentDashboardOverview() {
               <Link href="/student/courses" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-[#f5c518] px-4 text-xs font-extrabold text-[#172a69] shadow-lg shadow-black/10 transition hover:bg-[#ffd844] sm:text-sm">
                 Continue Learning <ArrowRight size={16} />
               </Link>
+              <Link href="/student/live-classes" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-[#0957D3] px-4 text-xs font-bold text-white ring-1 ring-white/20 transition hover:brightness-110 sm:text-sm">
+                Join Live Class <Radio size={16} />
+              </Link>
               <Link href="/student/mock-tests" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-white/10 px-4 text-xs font-bold text-white ring-1 ring-white/20 transition hover:bg-white/15 sm:text-sm">
                 Start Mock Test <PlayCircle size={16} />
               </Link>
@@ -110,6 +114,19 @@ export function StudentDashboardOverview() {
             </Link>
           ))}
         </div>
+      </section>
+
+      <section>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#7d8799]">Live Classes</p>
+            <h2 className="text-lg font-extrabold text-[#172a69]">Join your scheduled sessions</h2>
+          </div>
+          <Link href="/student/live-classes" className="text-sm font-bold text-[#0957D3] hover:underline">
+            View all
+          </Link>
+        </div>
+        <StudentPurchasedLiveClasses compact />
       </section>
     </div>
   );

@@ -3,6 +3,7 @@
 import { type MouseEvent, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
 import { cmsPageHref, fetchCmsPages, type CmsPageSummary } from "@/lib/cms-pages";
 import { BRAND_LOGO_ALT, BRAND_LOGO_HEADER_SRC } from "@/lib/brand";
@@ -29,11 +30,14 @@ type PublicHeaderProps = {
   active?: "home" | "courses" | "packages" | "mock-tests" | "faculty" | "contact" | "live-classes";
 };
 
+type MenuKey = "courses" | "exams" | "latest-exam";
+
 export function PublicHeader({ active }: PublicHeaderProps) {
   const [mockCategories, setMockCategories] = useState<MockCategory[]>(fallbackCategories);
   const [activeCategorySlug, setActiveCategorySlug] = useState(fallbackCategories[0].slug);
   const [isLoggedIn, setIsLoggedIn] = useState(() => (typeof window === "undefined" ? false : Boolean(getStudentSession())));
-  const [openMenu, setOpenMenu] = useState<"courses" | "exams" | "latest-exam" | null>(null);
+  const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [cmsPages, setCmsPages] = useState<CmsPageSummary[]>([]);
 
   useEffect(() => {
@@ -87,6 +91,13 @@ export function PublicHeader({ active }: PublicHeaderProps) {
     };
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = mobileNavOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileNavOpen]);
+
   const activeCategory = useMemo(() => {
     return mockCategories.find((category) => category.slug === activeCategorySlug) ?? mockCategories[0] ?? null;
   }, [activeCategorySlug, mockCategories]);
@@ -97,108 +108,155 @@ export function PublicHeader({ active }: PublicHeaderProps) {
   const handleLogout = () => {
     logoutStudent();
     setIsLoggedIn(false);
+    setMobileNavOpen(false);
   };
 
-  const handleMobileMenuClick = (event: MouseEvent<HTMLAnchorElement>, menu: "courses" | "exams" | "latest-exam") => {
-    if (typeof window === "undefined" || window.innerWidth > 900) return;
+  const closeMobileNav = () => {
+    setMobileNavOpen(false);
+    setOpenMenu(null);
+  };
+
+  const toggleSubmenu = (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>, menu: MenuKey) => {
+    if (typeof window !== "undefined" && window.innerWidth > 900) return;
     event.preventDefault();
     setOpenMenu((current) => (current === menu ? null : menu));
   };
 
   const navLink = (href: string, label: string, key?: PublicHeaderProps["active"]) => (
-    <Link href={href} className={key && active === key ? "active" : ""}>
+    <Link href={href} className={key && active === key ? "active" : ""} onClick={closeMobileNav}>
       {label}
     </Link>
   );
 
   return (
-      <header className="public-home-header">
-        <div className="header-inner">
-          <Link href="/" className="logo-wrap">
-            <Image
-              src={BRAND_LOGO_HEADER_SRC}
-              alt={BRAND_LOGO_ALT}
-              width={1024}
-              height={378}
-              priority
-              className="w-auto object-contain"
-            />
-          </Link>
+    <header className={`public-home-header${mobileNavOpen ? " mobile-nav-open" : ""}`}>
+      <div className="header-inner">
+        <Link href="/" className="logo-wrap" onClick={closeMobileNav}>
+          <Image
+            src={BRAND_LOGO_HEADER_SRC}
+            alt={BRAND_LOGO_ALT}
+            width={1024}
+            height={378}
+            priority
+            className="w-auto object-contain"
+          />
+        </Link>
 
-          <HeaderSearch />
+        <button
+          type="button"
+          className="mobile-menu-btn"
+          aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileNavOpen}
+          onClick={() => {
+            setMobileNavOpen((open) => !open);
+            if (mobileNavOpen) setOpenMenu(null);
+          }}
+        >
+          {mobileNavOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
 
-          <nav>
-            <div className="course-menu-wrap">
-              <Link href="/courses" onClick={(event) => handleMobileMenuClick(event, "courses")} className={`exam-menu-trigger ${active === "courses" ? "active" : ""}`}>Courses <span className="chev">⌄</span></Link>
-              <div className={`course-dropdown ${openMenu === "courses" ? "open" : ""}`}>
-                <Link href="/courses?type=video"><span>▶</span> Video Courses</Link>
-                <Link href="/courses?type=pdf"><span>PDF</span> PDF Courses</Link>
-                <Link href="/courses?type=live"><span>📡</span> Live Courses</Link>
-              </div>
-            </div>
-            {navLink("/packages", "Packages", "packages")}
-            <div className="exam-menu-wrap latest-exam-wrap">
-              <Link href={cmsPages[0] ? cmsPageHref(cmsPages[0].slug) : "#"} onClick={(event) => handleMobileMenuClick(event, "latest-exam")} className="exam-menu-trigger">Latest Exam <span className="chev">⌄</span></Link>
-              <div className={`exam-mega latest-exam-mega ${openMenu === "latest-exam" ? "open" : ""}`}>
-                <div className="exam-grid">
-                  {cmsPages.map((page, index) => (
-                    <Link key={page.id} href={cmsPageHref(page.slug)} className="exam-link">
-                      <span className={`exam-icon ${examTone(index)}`}>{initials(page.title)}</span>
-                      <span className="exam-link-label">{page.title}</span>
-                    </Link>
-                  ))}
-                  {!cmsPages.length && <div className="exam-empty">No exam pages available yet.</div>}
-                </div>
-              </div>
-            </div>
-            <div className="exam-menu-wrap">
-              <Link href="/mock-tests" onClick={(event) => handleMobileMenuClick(event, "exams")} className="exam-menu-trigger">Exams <span className="chev">⌄</span></Link>
-              <div className={`exam-mega ${openMenu === "exams" ? "open" : ""}`}>
-                <div className="exam-cats">
-                  {mockCategories.map((category) => (
-                    <Link
-                      key={category.slug}
-                      href={`/mock-tests/${category.slug}`}
-                      className={`exam-cat ${category.slug === activeCategory?.slug ? "active" : ""}`}
-                      onMouseEnter={() => setActiveCategorySlug(category.slug)}
-                      onFocus={() => setActiveCategorySlug(category.slug)}
-                    >
-                      {category.name} <span>›</span>
-                    </Link>
-                  ))}
-                </div>
-                <div className="exam-grid">
-                  {displayTests(activeTests).map(({ test, title }, index) => (
-                    <Link key={test.slug} href={`/mock-tests/${test.category_slug ?? activeCategory?.slug ?? ""}`} className="exam-link">
-                      <span className={`exam-icon ${examTone(index)}`}>{initials(test.title)}</span>
-                      <span className="exam-link-label">{title}</span>
-                    </Link>
-                  ))}
-                  {!activeTests.length && <div className="exam-empty">No mock tests available in this category.</div>}
-                </div>
-              </div>
-            </div>
-            {navLink("/mock-tests", "Mock Tests", "mock-tests")}
-            {navLink("/faculty", "Faculty", "faculty")}
-            <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer">Blog</a>
-            {navLink("/contact", "Contact", "contact")}
-          </nav>
+        <HeaderSearch />
 
-          <div className="hdr-btns">
-            {isLoggedIn ? (
-              <>
-                <Link href="/student/dashboard" className="btn-primary">Dashboard</Link>
-                <button type="button" onClick={handleLogout} className="btn-ghost">Logout</button>
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="btn-ghost">Login</Link>
-                <Link href={registerHref} className="btn-primary">Enroll Free →</Link>
-              </>
-            )}
+        <nav>
+          <div className="course-menu-wrap">
+            <Link
+              href="/courses"
+              onClick={(event) => toggleSubmenu(event, "courses")}
+              className={`exam-menu-trigger ${active === "courses" ? "active" : ""}`}
+            >
+              Courses <span className="chev">⌄</span>
+            </Link>
+            <div className={`course-dropdown ${openMenu === "courses" ? "open" : ""}`}>
+              <Link href="/courses?type=video" onClick={closeMobileNav}><span>▶</span> Video Courses</Link>
+              <Link href="/courses?type=pdf" onClick={closeMobileNav}><span>PDF</span> PDF Courses</Link>
+              <Link href="/courses?type=live" onClick={closeMobileNav}><span>📡</span> Live Courses</Link>
+              <Link href="/live-classes" onClick={closeMobileNav}><span>🎥</span> Live Class Schedule</Link>
+            </div>
           </div>
+          {navLink("/packages", "Packages", "packages")}
+          <div className="exam-menu-wrap latest-exam-wrap">
+            <Link
+              href={cmsPages[0] ? cmsPageHref(cmsPages[0].slug) : "#"}
+              onClick={(event) => toggleSubmenu(event, "latest-exam")}
+              className="exam-menu-trigger"
+            >
+              Latest Exam <span className="chev">⌄</span>
+            </Link>
+            <div className={`exam-mega latest-exam-mega ${openMenu === "latest-exam" ? "open" : ""}`}>
+              <div className="exam-grid">
+                {cmsPages.map((page, index) => (
+                  <Link key={page.id} href={cmsPageHref(page.slug)} className="exam-link" onClick={closeMobileNav}>
+                    <span className={`exam-icon ${examTone(index)}`}>{initials(page.title)}</span>
+                    <span className="exam-link-label">{page.title}</span>
+                  </Link>
+                ))}
+                {!cmsPages.length && <div className="exam-empty">No exam pages available yet.</div>}
+              </div>
+            </div>
+          </div>
+          <div className="exam-menu-wrap">
+            <Link
+              href="/mock-tests"
+              onClick={(event) => toggleSubmenu(event, "exams")}
+              className="exam-menu-trigger"
+            >
+              Exams <span className="chev">⌄</span>
+            </Link>
+            <div className={`exam-mega ${openMenu === "exams" ? "open" : ""}`}>
+              <div className="exam-cats">
+                {mockCategories.map((category) => (
+                  <button
+                    key={category.slug}
+                    type="button"
+                    className={`exam-cat ${category.slug === activeCategory?.slug ? "active" : ""}`}
+                    onMouseEnter={() => setActiveCategorySlug(category.slug)}
+                    onFocus={() => setActiveCategorySlug(category.slug)}
+                    onClick={() => setActiveCategorySlug(category.slug)}
+                  >
+                    {category.name} <span>›</span>
+                  </button>
+                ))}
+              </div>
+              <div className="exam-grid">
+                {displayTests(activeTests).map(({ test, title }, index) => (
+                  <Link
+                    key={test.slug}
+                    href={`/mock-tests/${test.category_slug ?? activeCategory?.slug ?? ""}`}
+                    className="exam-link"
+                    onClick={closeMobileNav}
+                  >
+                    <span className={`exam-icon ${examTone(index)}`}>{initials(test.title)}</span>
+                    <span className="exam-link-label">{title}</span>
+                  </Link>
+                ))}
+                {!activeTests.length && <div className="exam-empty">No mock tests available in this category.</div>}
+              </div>
+            </div>
+          </div>
+          {navLink("/mock-tests", "Mock Tests", "mock-tests")}
+          {navLink("/live-classes", "Live Classes", "live-classes")}
+          {navLink("/faculty", "Faculty", "faculty")}
+          <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer" onClick={closeMobileNav}>Blog</a>
+          {navLink("/contact", "Contact", "contact")}
+        </nav>
+
+        <div className="hdr-btns">
+          {isLoggedIn ? (
+            <>
+              <Link href="/student/dashboard" className="btn-primary" onClick={closeMobileNav}>Dashboard</Link>
+              <button type="button" onClick={handleLogout} className="btn-ghost">Logout</button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="btn-ghost" onClick={closeMobileNav}>Login</Link>
+              <Link href={registerHref} className="btn-primary" onClick={closeMobileNav}>Enroll Free →</Link>
+            </>
+          )}
         </div>
-      </header>
+      </div>
+
+      {mobileNavOpen ? <button type="button" className="mobile-nav-backdrop" aria-label="Close menu" onClick={closeMobileNav} /> : null}
+    </header>
   );
 }
 

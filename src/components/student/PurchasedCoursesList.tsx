@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Award, BookOpen, PlayCircle } from "lucide-react";
+import { Award, BookOpen, PlayCircle, Radio, Video } from "lucide-react";
 import { fetchStudentLibrary, type StudentLibraryCourse } from "@/lib/packages";
 import { getStudentSession } from "@/lib/student-auth";
 
@@ -13,12 +13,26 @@ const gradients = [
   "from-[#ba7517] via-[#f0a500] to-[#ffcf33]",
 ];
 
+function courseHasLiveAccess(course: StudentLibraryCourse) {
+  return course.course_type === "live" || Boolean(course.has_live_classes);
+}
+
 function courseLearnHref(course: StudentLibraryCourse) {
   if (course.course_type === "pdf") {
     return `/courses/${course.slug}`;
   }
 
+  if (courseHasLiveAccess(course)) {
+    return `/student/live-classes`;
+  }
+
   return `/student/courses/${course.slug}/learn`;
+}
+
+function courseTypeLabel(course: StudentLibraryCourse) {
+  if (course.course_type === "live" || course.has_live_classes) return "Live Class";
+  if (course.course_type === "pdf") return "PDF Course";
+  return "Video Course";
 }
 
 function CourseCardImage({
@@ -90,48 +104,86 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
   if (compact) {
     return (
       <div className="grid gap-5 lg:grid-cols-3">
-        {visibleCourses.map((course, index) => (
-          <article key={course.id} className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#e5eaf2] bg-white shadow-[0_14px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
-            <CourseCardImage course={course} index={index} badge="Purchased" />
-            <div className="flex flex-1 flex-col p-5">
-              <h3 className="min-h-[44px] text-[15px] font-extrabold leading-snug text-[#111827]">{course.title}</h3>
-              <p className="mt-1 text-xs font-semibold text-[#7d8799]">{course.lessons_count} lessons • {course.duration_hours}+ hrs</p>
-              <Link href={courseLearnHref(course)} className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#172a69] text-xs font-extrabold text-white">
-                Continue <PlayCircle size={16} />
-              </Link>
-            </div>
-          </article>
-        ))}
+        {visibleCourses.map((course, index) => {
+          const isLive = courseHasLiveAccess(course);
+          return (
+            <article key={course.id} className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#e5eaf2] bg-white shadow-[0_14px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+              <CourseCardImage course={course} index={index} badge={isLive ? "Live" : "Purchased"} />
+              <div className="flex flex-1 flex-col p-5">
+                <h3 className="min-h-[44px] text-[15px] font-extrabold leading-snug text-[#111827]">{course.title}</h3>
+                <p className="mt-1 text-xs font-semibold text-[#7d8799]">
+                  {isLive
+                    ? `${course.live_sessions_count || 0} live sessions`
+                    : `${course.lessons_count} lessons • ${course.duration_hours}+ hrs`}
+                </p>
+                <Link
+                  href={courseLearnHref(course)}
+                  className={`mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl text-xs font-extrabold text-white ${isLive ? "bg-[#0957D3]" : "bg-[#172a69]"}`}
+                >
+                  {isLive ? (
+                    <>
+                      Join Live <Radio size={16} />
+                    </>
+                  ) : (
+                    <>
+                      Continue <PlayCircle size={16} />
+                    </>
+                  )}
+                </Link>
+              </div>
+            </article>
+          );
+        })}
       </div>
     );
   }
 
   return (
     <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-      {visibleCourses.map((course, index) => (
-        <article key={course.id} className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white shadow-[0_12px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
-          <CourseCardImage course={course} index={index} badge="Active" />
-          <div className="flex flex-1 flex-col p-4">
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7d8799]">{course.course_type}</p>
-                <h2 className="mt-1 text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{course.title}</h2>
-                <p className="mt-1 text-sm font-semibold text-[#7d8799]">{course.short_description || "Purchased course access"}</p>
+      {visibleCourses.map((course, index) => {
+        const isLive = courseHasLiveAccess(course);
+        return (
+          <article key={course.id} className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white shadow-[0_12px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+            <CourseCardImage course={course} index={index} badge={isLive ? "Live Class" : "Active"} />
+            <div className="flex flex-1 flex-col p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7d8799]">{courseTypeLabel(course)}</p>
+                  <h2 className="mt-1 text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{course.title}</h2>
+                  <p className="mt-1 text-sm font-semibold text-[#7d8799]">{course.short_description || "Purchased course access"}</p>
+                </div>
+                <span className="rounded-full bg-[#e9f9f3] px-3 py-1 text-[11px] font-extrabold text-[#0f9f78]">{course.duration_hours}+ hrs</span>
               </div>
-              <span className="rounded-full bg-[#e9f9f3] px-3 py-1 text-[11px] font-extrabold text-[#0f9f78]">{course.duration_hours}+ hrs</span>
+              <p className="mt-3 text-xs font-semibold text-[#7d8799]">
+                {isLive
+                  ? `${course.live_sessions_count || 0} scheduled live session${(course.live_sessions_count || 0) === 1 ? "" : "s"}`
+                  : `${course.lessons_count} lessons included`}
+              </p>
+              <div className="mt-auto flex gap-2 pt-4">
+                {isLive ? (
+                  <>
+                    <Link href="/student/live-classes" className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#0957D3] px-3 text-xs font-extrabold text-white">
+                      Join Live <Radio size={16} />
+                    </Link>
+                    <Link href={`/live-classes/course/${course.slug}`} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#eef2ff] px-3 text-xs font-extrabold text-[#172a69]">
+                      Schedule <Video size={16} />
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href={courseLearnHref(course)} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#172a69] px-3 text-xs font-extrabold text-white">
+                      Continue <PlayCircle size={16} />
+                    </Link>
+                    <button type="button" className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#fff8dc] px-3 text-xs font-extrabold text-[#8a6100]">
+                      Certificate <Award size={16} />
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-            <p className="mt-3 text-xs font-semibold text-[#7d8799]">{course.lessons_count} lessons included</p>
-            <div className="mt-auto flex gap-2 pt-4">
-              <Link href={courseLearnHref(course)} className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#172a69] px-3 text-xs font-extrabold text-white">
-                Continue <PlayCircle size={16} />
-              </Link>
-              <button type="button" className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#fff8dc] px-3 text-xs font-extrabold text-[#8a6100]">
-                Certificate <Award size={16} />
-              </button>
-            </div>
-          </div>
-        </article>
-      ))}
+          </article>
+        );
+      })}
     </div>
   );
 }

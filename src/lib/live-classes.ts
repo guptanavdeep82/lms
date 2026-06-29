@@ -50,7 +50,10 @@ export async function fetchLiveSessions(email?: string): Promise<LiveClassSessio
 }
 
 export async function joinLiveSession(sessionId: number, email: string) {
-  const response = await fetch(`${publicBackendBaseUrl}/api/live-sessions/${sessionId}/join`, {
+  const url = typeof window !== "undefined"
+    ? `/api/live-sessions/${sessionId}/join`
+    : `${publicBackendBaseUrl}/api/live-sessions/${sessionId}/join`;
+  const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -73,7 +76,10 @@ export async function joinLiveSession(sessionId: number, email: string) {
 }
 
 export async function fetchLiveSessionRecording(sessionId: number, email: string) {
-  const response = await fetch(`${publicBackendBaseUrl}/api/live-sessions/${sessionId}/recording`, {
+  const url = typeof window !== "undefined"
+    ? `/api/live-sessions/${sessionId}/recording`
+    : `${publicBackendBaseUrl}/api/live-sessions/${sessionId}/recording`;
+  const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),

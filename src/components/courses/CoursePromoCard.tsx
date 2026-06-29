@@ -15,7 +15,8 @@ type CoursePromoCardProps = {
 };
 
 export function CoursePromoCard({ course, href, actionLabel, onAction }: CoursePromoCardProps) {
-  const theme = getCoursePromoTheme(course.type);
+  const promoType = course.offersLive && course.type !== "pdf" ? "live" : course.type;
+  const theme = getCoursePromoTheme(promoType);
   const features = buildCoursePromoFeatures(course);
   const priceLabel = coursePromoPriceLabel(course.price, course.original);
   const targetHref = href || `/courses/${course.slug}`;

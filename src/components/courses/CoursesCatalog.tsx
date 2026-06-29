@@ -63,7 +63,7 @@ export function CoursesCatalog() {
     } else if (filters.type === "pdf") {
       list = list.filter((course) => course.type === "pdf");
     } else if (filters.type === "live") {
-      list = list.filter((course) => course.type === "live");
+      list = list.filter((course) => course.offersLive);
     }
     if (filters.cat !== "all") list = list.filter((course) => course.category === filters.cat);
     if (filters.exam !== "all") list = list.filter((course) => course.exam === filters.exam || course.exam === "all");
@@ -246,7 +246,11 @@ export function CoursesCatalog() {
           ) : filtered.length ? (
             <div className="courses-promo-grid">
               {filtered.map((course) => (
-                <CoursePromoCard key={course.id} course={course} />
+                <CoursePromoCard
+                  key={course.id}
+                  course={course}
+                  href={course.offersLive ? `/live-classes/course/${course.slug}` : undefined}
+                />
               ))}
             </div>
           ) : (

@@ -28,6 +28,8 @@ export type ApiCourse = {
   exam_type_slug: string | null;
   subjects: CourseSubject[];
   lessons_count: number;
+  has_live_classes?: boolean;
+  live_sessions_count?: number;
 };
 
 export type ApiCourseLesson = {
@@ -76,6 +78,7 @@ export type ListingCourse = {
   tags: string[];
   isNew: boolean;
   type: "video" | "pdf" | "live";
+  offersLive: boolean;
   image_url: string | null;
 };
 
@@ -172,14 +175,16 @@ function courseVisuals(course: ApiCourse) {
 }
 
 function courseBadge(course: ApiCourse): { badge: string; badgeStyle: string } {
+  const offersLive = Boolean(course.has_live_classes) || course.course_type === "live";
+
   if (course.price === 0) {
-    return { badge: "FREE", badgeStyle: "background:#DCFCE7;color:#15803D" };
+    return { badge: offersLive ? "LIVE · FREE" : "FREE", badgeStyle: "background:#DCFCE7;color:#15803D" };
+  }
+  if (offersLive) {
+    return { badge: "LIVE", badgeStyle: "background:#FAECE7;color:#993C1D" };
   }
   if (course.is_featured) {
     return { badge: "POPULAR", badgeStyle: "background:#EEF6FF;color:#0957D3" };
-  }
-  if (course.course_type === "live") {
-    return { badge: "LIVE", badgeStyle: "background:#FAECE7;color:#993C1D" };
   }
   if (course.course_type === "pdf") {
     return { badge: "PDF", badgeStyle: "background:#FFF9E0;color:#854F0B" };
@@ -190,6 +195,7 @@ function courseBadge(course: ApiCourse): { badge: string; badgeStyle: string } {
 export function mapApiCourseToListingCourse(course: ApiCourse): ListingCourse {
   const visuals = courseVisuals(course);
   const badge = courseBadge(course);
+  const offersLive = Boolean(course.has_live_classes) || course.course_type === "live";
   const effectivePrice = course.sale_price ?? course.price;
   const original = course.sale_price !== null && course.sale_price < course.price ? course.price : 0;
 
@@ -216,6 +222,7 @@ export function mapApiCourseToListingCourse(course: ApiCourse): ListingCourse {
     tags: course.subjects.length > 0 ? course.subjects.map((subject) => subject.name) : [course.category || "Banking"].filter(Boolean) as string[],
     isNew: false,
     type: (course.course_type === "pdf" || course.course_type === "live" ? course.course_type : "video") as ListingCourse["type"],
+    offersLive,
     image_url: course.image_url,
   };
 }

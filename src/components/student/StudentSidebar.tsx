@@ -10,6 +10,7 @@ import {
   Headphones,
   History,
   LogOut,
+  Radio,
   ShoppingBag,
   StickyNote,
   Target,
@@ -25,6 +26,7 @@ const navGroups = [
     items: [
       { label: "Dashboard", icon: Grid2X2, href: "/student/dashboard" },
       { label: "My Courses", icon: BookOpen, href: "/student/courses" },
+      { label: "Live Classes", icon: Radio, href: "/student/live-classes" },
       { label: "Mock Tests", icon: WalletCards, href: "/student/mock-tests" },
       { label: "My Notes", icon: StickyNote, href: "/student/notes" },
       { label: "Test Results", icon: Target, href: "/student/test-results" },
@@ -123,5 +125,5 @@ export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
 }
 
 export function studentMobileNavItems() {
-  return navGroups.flatMap((group) => group.items).slice(0, 6);
+  return navGroups.flatMap((group) => group.items).slice(0, 7);
 }
