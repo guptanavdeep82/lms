@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { ChevronRight, Clock3, Expand, HelpCircle, Loader2, Pause, Play, UserRound, X } from "lucide-react";
+import type { MockAttemptAnswerInput } from "@/lib/mock-attempt-analysis";
 import { saveMockResult } from "@/lib/mock-results";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 import { mockTestsApiUrl, type MockQuestion, type MockTestDetailResponse } from "@/lib/mock-tests";
@@ -15,9 +16,16 @@ export default function DynamicMockExamPage() {
   const [data, setData] = useState<MockTestDetailResponse | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [questionTimes, setQuestionTimes] = useState<Record<number, number>>({});
+  const [visited, setVisited] = useState<Record<number, boolean>>({});
+  const [visitOrder, setVisitOrder] = useState<Record<number, number>>({});
+  const [reviewMarked, setReviewMarked] = useState<Record<number, boolean>>({});
   const [validationMessage, setValidationMessage] = useState("");
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const visitCounterRef = useRef(0);
+  const questionStartedAtRef = useRef(Date.now());
   const student = getStudentSession();
 
   useEffect(() => {
@@ -50,9 +58,39 @@ export default function DynamicMockExamPage() {
   const question = questions[currentIndex];
   const answeredCount = useMemo(() => Object.keys(answers).length, [answers]);
   const test = data?.test;
+  const durationSeconds = (test?.duration_minutes ?? 0) * 60;
 
-  const submitTest = useCallback(() => {
-    if (!data) return;
+  const accumulateQuestionTime = useCallback((questionId: number) => {
+    const elapsed = Math.max(1, Math.floor((Date.now() - questionStartedAtRef.current) / 1000));
+    setQuestionTimes((previous) => ({
+      ...previous,
+      [questionId]: (previous[questionId] || 0) + elapsed,
+    }));
+    questionStartedAtRef.current = Date.now();
+  }, []);
+
+  useEffect(() => {
+    if (!question) return;
+
+    questionStartedAtRef.current = Date.now();
+    setVisited((previous) => ({ ...previous, [question.id]: true }));
+    setVisitOrder((previous) => {
+      if (previous[question.id]) return previous;
+      visitCounterRef.current += 1;
+      return { ...previous, [question.id]: visitCounterRef.current };
+    });
+  }, [question]);
+
+  const submitTest = useCallback(async () => {
+    if (!data || submitting) return;
+
+    setSubmitting(true);
+
+    const finalTimes = { ...questionTimes };
+    if (question) {
+      const elapsed = Math.max(1, Math.floor((Date.now() - questionStartedAtRef.current) / 1000));
+      finalTimes[question.id] = (finalTimes[question.id] || 0) + elapsed;
+    }
 
     const correct = questions.reduce((sum, item) => sum + (answers[item.id] === item.correct_answer ? 1 : 0), 0);
     const score = questions.reduce((sum, item) => {
@@ -62,19 +100,55 @@ export default function DynamicMockExamPage() {
       return sum - item.negative_marks;
     }, 0);
 
-    saveMockResult({
-      slug,
-      testTitle: data.test.title,
-      testType: data.test.test_type,
-      total: questions.length,
-      answered: answeredCount,
-      correct,
-      score,
-      submittedAt: new Date().toISOString(),
-    });
+    const timeUtilizedSeconds = Math.max(
+      durationSeconds - remainingSeconds,
+      Object.values(finalTimes).reduce((sum, value) => sum + value, 0)
+    );
+
+    const answerPayload: MockAttemptAnswerInput[] = questions.map((item, index) => ({
+      question_id: item.id,
+      question_number: index + 1,
+      selected_answer: answers[item.id] ?? null,
+      time_spent_seconds: finalTimes[item.id] ?? 0,
+      marked_for_review: reviewMarked[item.id] ?? false,
+      visited: visited[item.id] ?? false,
+      visit_order: visitOrder[item.id] ?? null,
+    }));
+
+    await saveMockResult(
+      {
+        slug,
+        testTitle: data.test.title,
+        testType: data.test.test_type,
+        total: questions.length,
+        answered: answeredCount,
+        correct,
+        score,
+        submittedAt: new Date().toISOString(),
+        timeUtilizedSeconds,
+        durationSeconds,
+      },
+      answerPayload
+    );
 
     router.push(`/student/mock-tests/${slug}/result`);
-  }, [answeredCount, answers, data, questions, router, slug]);
+  }, [
+    accumulateQuestionTime,
+    answeredCount,
+    answers,
+    data,
+    durationSeconds,
+    question,
+    questionTimes,
+    questions,
+    remainingSeconds,
+    reviewMarked,
+    router,
+    slug,
+    submitting,
+    visitOrder,
+    visited,
+  ]);
 
   useEffect(() => {
     if (!data || isPaused || remainingSeconds <= 0) return;
@@ -87,10 +161,10 @@ export default function DynamicMockExamPage() {
   }, [data, isPaused, remainingSeconds]);
 
   useEffect(() => {
-    if (data && remainingSeconds === 0) {
-      submitTest();
+    if (data && remainingSeconds === 0 && !submitting) {
+      void submitTest();
     }
-  }, [data, remainingSeconds, submitTest]);
+  }, [data, remainingSeconds, submitTest, submitting]);
 
   const enterFullscreen = () => {
     document.documentElement.requestFullscreen?.().catch(() => undefined);
@@ -100,17 +174,23 @@ export default function DynamicMockExamPage() {
     return <main className="grid min-h-screen place-items-center bg-white"><Loader2 className="animate-spin text-[#3378b9]" size={34} /></main>;
   }
 
-  const goToNext = (allowSkip = false) => {
+  const goToNext = (allowSkip = false, markReview = false) => {
     if (!allowSkip && !answers[question.id]) {
       setValidationMessage("Please select an answer before moving next. Use Skip if you want to leave this question.");
       return;
     }
 
+    if (markReview) {
+      setReviewMarked((previous) => ({ ...previous, [question.id]: true }));
+    }
+
+    accumulateQuestionTime(question.id);
     setValidationMessage("");
     setCurrentIndex((index) => Math.min(index + 1, questions.length - 1));
   };
 
   const saveAndNext = () => goToNext(false);
+  const markReviewAndNext = () => goToNext(false, true);
   const skipAndNext = () => goToNext(true);
 
   const jumpToQuestion = (index: number) => {
@@ -119,6 +199,7 @@ export default function DynamicMockExamPage() {
       return;
     }
 
+    accumulateQuestionTime(question.id);
     setValidationMessage("");
     setCurrentIndex(index);
   };
@@ -172,7 +253,6 @@ export default function DynamicMockExamPage() {
             <div className="grid overflow-auto lg:grid-cols-2 lg:overflow-hidden">
               <div className="border-b border-[#cfd7df] p-3 text-[15px] leading-7 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:text-[18px] lg:leading-8">
                 <p className="mb-4 font-bold">{question.question_text}</p>
-                {question.explanation && <p className="rounded-xl bg-[#f8fbff] p-4 text-sm text-[#667085]">Hint after submission: {question.explanation}</p>}
               </div>
 
               <div className="p-4 text-[15px] leading-7 lg:overflow-y-auto lg:text-[18px] lg:leading-8">
@@ -208,7 +288,7 @@ export default function DynamicMockExamPage() {
                 </div>
               )}
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-5">
-                <button onClick={saveAndNext} className="rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm">Mark for review &amp; next</button>
+                <button onClick={markReviewAndNext} className="rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm">Mark for review &amp; next</button>
                 <button onClick={clearResponse} className="rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm">Clear Response</button>
                 <button onClick={skipAndNext} className="rounded-lg border border-[#b9bec8] bg-white px-4 py-2 text-sm font-bold text-[#344054]">Skip</button>
               </div>
@@ -230,8 +310,8 @@ export default function DynamicMockExamPage() {
             <div className="grid grid-cols-1 gap-x-5 gap-y-2 text-xs sm:grid-cols-2">
               <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded bg-[#6bbd21] text-white">{answeredCount}</b> Answered</span>
               <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded bg-[#d83a0c] text-white">{questions.length - answeredCount}</b> Not Answered</span>
-              <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded bg-[#e8e8e8] text-[#111]">0</b> Not Visited</span>
-              <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded-full bg-[#7b4ea3] text-white">0</b> Review</span>
+              <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded bg-[#e8e8e8] text-[#111]">{questions.length - Object.keys(visited).length}</b> Not Visited</span>
+              <span className="flex items-center gap-2"><b className="grid h-6 w-7 place-items-center rounded-full bg-[#7b4ea3] text-white">{Object.values(reviewMarked).filter(Boolean).length}</b> Review</span>
             </div>
           </div>
 
@@ -260,7 +340,9 @@ export default function DynamicMockExamPage() {
           </div>
 
           <div className="flex items-center justify-center border-t border-[#cfd7df] bg-[#efefef] px-4">
-            <button onClick={submitTest} className="h-10 w-full rounded bg-[#2f78bf] text-sm font-bold text-white shadow">Submit section</button>
+            <button onClick={() => void submitTest()} disabled={submitting} className="h-10 w-full rounded bg-[#2f78bf] text-sm font-bold text-white shadow disabled:opacity-60">
+              {submitting ? "Submitting..." : "Submit Test"}
+            </button>
           </div>
         </aside>
       </div>

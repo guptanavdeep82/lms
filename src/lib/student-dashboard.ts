@@ -113,6 +113,17 @@ export async function saveTestAttempt(input: {
   correct_count: number;
   score: number;
   submitted_at?: string;
+  time_utilized_seconds?: number;
+  duration_seconds?: number;
+  answers?: Array<{
+    question_id: number;
+    question_number?: number;
+    selected_answer?: string | null;
+    time_spent_seconds?: number;
+    marked_for_review?: boolean;
+    visited?: boolean;
+    visit_order?: number | null;
+  }>;
 }) {
   const response = await fetch(apiUrl("/test-results"), {
     method: "POST",
@@ -120,7 +131,7 @@ export async function saveTestAttempt(input: {
     body: JSON.stringify(input),
   });
   if (!response.ok) return null;
-  return response.json();
+  return response.json() as Promise<{ attempt?: { id: number; attempt_type: string; score: number } } | null>;
 }
 
 export async function fetchReferEarn(email: string): Promise<ReferEarnData | null> {

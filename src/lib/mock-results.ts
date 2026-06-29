@@ -2,6 +2,7 @@
 
 import { saveTestAttempt } from "@/lib/student-dashboard";
 import { getStudentSession } from "@/lib/student-auth";
+import type { MockAttemptAnswerInput } from "@/lib/mock-attempt-analysis";
 
 const resultKey = (slug: string) => `kr_mock_result_${slug}`;
 
@@ -9,11 +10,14 @@ export type MockResult = {
   slug: string;
   testTitle: string;
   testType?: string;
+  attemptId?: number;
   total: number;
   answered: number;
   correct: number;
   score: number;
   submittedAt: string;
+  timeUtilizedSeconds?: number;
+  durationSeconds?: number;
 };
 
 export function getMockResult(slug: string): MockResult | null {
@@ -27,13 +31,16 @@ export function getMockResult(slug: string): MockResult | null {
   }
 }
 
-export function saveMockResult(result: MockResult) {
+export async function saveMockResult(
+  result: MockResult,
+  answers: MockAttemptAnswerInput[] = []
+): Promise<number | null> {
   window.localStorage.setItem(resultKey(result.slug), JSON.stringify(result));
 
   const session = getStudentSession();
-  if (!session?.email) return;
+  if (!session?.email) return null;
 
-  void saveTestAttempt({
+  const payload = await saveTestAttempt({
     email: session.email,
     slug: result.slug,
     test_title: result.testTitle,
@@ -43,7 +50,20 @@ export function saveMockResult(result: MockResult) {
     correct_count: result.correct,
     score: result.score,
     submitted_at: result.submittedAt,
+    time_utilized_seconds: result.timeUtilizedSeconds,
+    duration_seconds: result.durationSeconds,
+    answers,
   });
+
+  const attemptId = payload?.attempt?.id ?? null;
+  if (attemptId) {
+    window.localStorage.setItem(
+      resultKey(result.slug),
+      JSON.stringify({ ...result, attemptId })
+    );
+  }
+
+  return attemptId;
 }
 
 export function hasCompletedMock(slug: string) {
