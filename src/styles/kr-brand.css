@@ -110,6 +110,17 @@ body {
   color: var(--kr-white) !important;
 }
 
+/* Mock exam flow — gold CTA must stay visible on dark blue panels */
+.mock-exam-start-btn {
+  background-color: var(--kr-gold) !important;
+  color: var(--kr-ink) !important;
+}
+
+.mock-exam-start-btn:hover {
+  background-color: var(--kr-gold-dark) !important;
+  color: var(--kr-ink) !important;
+}
+
 [class*="text-white"],
 .text-white {
   color: var(--kr-white) !important;

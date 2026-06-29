@@ -57,7 +57,7 @@ export default function DynamicMockSetupPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#eef3f8] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
+    <main className="min-h-screen bg-[#eef3f8] pb-28 text-[#111827] lg:pb-8" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
       <header className="bg-[#3378b9] text-white shadow-sm">
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
@@ -72,7 +72,7 @@ export default function DynamicMockSetupPage() {
         </div>
       </header>
 
-      <section className="mx-auto grid min-h-[calc(100vh-56px)] max-w-6xl items-center gap-6 px-4 py-8 lg:grid-cols-[1fr_420px]">
+      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[1fr_420px] lg:items-start">
         <div className="rounded-[24px] bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.09)] ring-1 ring-[#d9e2ee] sm:rounded-[28px] sm:p-7">
           <span className="inline-flex items-center gap-2 rounded-full bg-[#eaf3ff] px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.16em] text-[#2268aa]">
             <MonitorCheck size={15} /> Test Setup
@@ -120,16 +120,27 @@ export default function DynamicMockSetupPage() {
               ))}
             </div>
           </div>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-7 hidden flex-col gap-3 lg:flex lg:flex-row">
             <Link href={`/student/mock-tests/${slug}/instructions`} className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-white/10 text-sm font-bold ring-1 ring-white/16">
               <ArrowLeft size={16} /> Back
             </Link>
-            <button type="button" onClick={openExamWindow} className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[#f5c518] text-sm font-extrabold text-[#172a69]">
-              Next <ArrowRight size={16} />
+            <button type="button" onClick={openExamWindow} className="mock-exam-start-btn inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-extrabold shadow-lg shadow-black/15">
+              Start Exam <ArrowRight size={16} />
             </button>
           </div>
         </aside>
       </section>
+
+      <footer className="fixed inset-x-0 bottom-0 z-40 border-t border-[#d8dee8] bg-white/95 px-4 py-3 shadow-[0_-12px_30px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row">
+          <Link href={`/student/mock-tests/${slug}/instructions`} className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-[#cdd6e2] bg-white text-sm font-bold text-[#172a69]">
+            <ArrowLeft size={16} /> Back
+          </Link>
+          <button type="button" onClick={openExamWindow} className="mock-exam-start-btn inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-extrabold shadow-lg shadow-amber-200/60">
+            Start Exam <ArrowRight size={16} />
+          </button>
+        </div>
+      </footer>
     </main>
   );
 }
