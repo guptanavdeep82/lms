@@ -32,6 +32,7 @@ export type LiveClassSessionItem = {
   status: string;
   display_status: "live" | "scheduled" | "replay";
   has_recording: boolean;
+  can_join?: boolean;
   course: LiveSessionCourse;
   access: LiveSessionAccess;
 };
@@ -117,6 +118,22 @@ export function liveSessionStatusLabel(status: LiveClassSessionItem["display_sta
   if (status === "live") return "Live";
   if (status === "replay") return "Replay";
   return "Upcoming";
+}
+
+export function openMeetingUrl(url: string, password?: string | null) {
+  let target = url.trim();
+  if (!target) return false;
+
+  if (password && !target.includes("pwd=")) {
+    target += `${target.includes("?") ? "&" : "?"}pwd=${encodeURIComponent(password)}`;
+  }
+
+  const opened = window.open(target, "_blank", "noopener,noreferrer");
+  if (!opened) {
+    window.location.assign(target);
+  }
+
+  return true;
 }
 
 export function formatLiveSessionSchedule(value: string | null) {

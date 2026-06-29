@@ -169,8 +169,6 @@ export function PublicHeader({ active }: PublicHeaderProps) {
             <div className={`course-dropdown ${openMenu === "courses" ? "open" : ""}`}>
               <Link href="/courses?type=video" onClick={closeMobileNav}><span>▶</span> Video Courses</Link>
               <Link href="/courses?type=pdf" onClick={closeMobileNav}><span>PDF</span> PDF Courses</Link>
-              <Link href="/courses?type=live" onClick={closeMobileNav}><span>📡</span> Live Courses</Link>
-              <Link href="/live-classes" onClick={closeMobileNav}><span>🎥</span> Live Class Schedule</Link>
             </div>
           </div>
           {navLink("/packages", "Packages", "packages")}

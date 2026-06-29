@@ -21,6 +21,22 @@ body {
   font-family: var(--font-poppins), "Poppins", ui-sans-serif, system-ui, sans-serif;
 }
 
+button {
+  color: inherit;
+}
+
+.kr-outline-button {
+  background: #ffffff !important;
+  color: #0957D3 !important;
+  border: 2px solid #0957D3 !important;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.kr-outline-button:hover {
+  background: #0957D3 !important;
+  color: #ffffff !important;
+}
+
 ::selection {
   background: #0957D3;
   color: #ffffff;

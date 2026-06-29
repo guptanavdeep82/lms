@@ -191,7 +191,7 @@ export default function LiveClassesPage() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="mt-5 h-11 w-full rounded-xl border-2 border-[#0957D3] bg-white text-sm font-bold text-[#0957D3] transition hover:bg-[#0957D3] hover:text-white"
+                className="kr-outline-button mt-5 h-11 w-full rounded-xl text-sm font-bold"
               >
                 Clear Filters
               </button>

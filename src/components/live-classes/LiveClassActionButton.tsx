@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Loader2, PlayCircle, ShoppingBag } from "lucide-react";
 import { startRazorpayCheckout } from "@/lib/checkout";
-import { fetchLiveSessionRecording, joinLiveSession, type LiveClassSessionItem } from "@/lib/live-classes";
+import {
+  fetchLiveSessionRecording,
+  joinLiveSession,
+  openMeetingUrl,
+  type LiveClassSessionItem,
+} from "@/lib/live-classes";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 
 type LiveClassActionButtonProps = {
@@ -15,7 +20,7 @@ type LiveClassActionButtonProps = {
 };
 
 const defaultBtnClass =
-  "inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#1b2e6b] text-sm font-bold text-[#f5c518] shadow-sm transition hover:bg-[#0f1e4a] disabled:opacity-70";
+  "inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#0957D3] text-sm font-bold text-white shadow-sm transition hover:bg-[#0538A1] disabled:opacity-70";
 
 export function LiveClassActionButton({ session, className, style, onAccessChange }: LiveClassActionButtonProps) {
   const [loading, setLoading] = useState(false);
@@ -26,8 +31,9 @@ export function LiveClassActionButton({ session, className, style, onAccessChang
     setLoginHref(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
   }, []);
 
-  const isReplay = session.display_status === "replay" || session.has_recording;
-  const label = isReplay ? "Watch Replay" : "Join Class";
+  const isReplay = Boolean(session.has_recording);
+  const canJoin = Boolean(session.can_join) || (!isReplay && session.display_status !== "replay");
+  const label = isReplay ? "Watch Replay" : canJoin ? "Join Class" : "Class Not Available";
 
   if (session.source === "course") {
     return (
@@ -40,7 +46,7 @@ export function LiveClassActionButton({ session, className, style, onAccessChang
   if (!isStudentLoggedIn()) {
     return (
       <Link href={loginHref} className={className || defaultBtnClass} style={style}>
-        Login to {label}
+        Login to {isReplay ? "Watch Replay" : "Join Class"}
       </Link>
     );
   }
@@ -84,7 +90,10 @@ export function LiveClassActionButton({ session, className, style, onAccessChang
 
   const handleAction = async () => {
     const student = getStudentSession();
-    if (!student?.email) return;
+    if (!student?.email) {
+      setError("Please login again to continue.");
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -92,18 +101,25 @@ export function LiveClassActionButton({ session, className, style, onAccessChang
     try {
       if (isReplay) {
         const recording = await fetchLiveSessionRecording(session.id, student.email);
-        if (recording.recording_url) {
-          window.open(recording.recording_url, "_blank", "noopener,noreferrer");
+        if (!recording.recording_url) {
+          throw new Error("Recording link is not available yet.");
         }
+        openMeetingUrl(recording.recording_url, recording.password);
         return;
       }
 
-      const join = await joinLiveSession(session.id, student.email);
-      if (join.join_url) {
-        window.open(join.join_url, "_blank", "noopener,noreferrer");
+      if (!canJoin) {
+        throw new Error("This class is not open for joining right now.");
       }
+
+      const join = await joinLiveSession(session.id, student.email);
+      if (!join.join_url) {
+        throw new Error(join.message || "Zoom join link is not available yet.");
+      }
+
+      openMeetingUrl(join.join_url, join.password);
     } catch (actionError) {
-      setError(actionError instanceof Error ? actionError.message : "Action failed.");
+      setError(actionError instanceof Error ? actionError.message : "Unable to open live class.");
     } finally {
       setLoading(false);
     }
@@ -111,11 +127,17 @@ export function LiveClassActionButton({ session, className, style, onAccessChang
 
   return (
     <div className="grid gap-2">
-      <button type="button" className={className || defaultBtnClass} style={style} disabled={loading} onClick={handleAction}>
+      <button
+        type="button"
+        className={className || defaultBtnClass}
+        style={style}
+        disabled={loading || (!isReplay && !canJoin)}
+        onClick={handleAction}
+      >
         {loading ? <Loader2 className="inline size-4 animate-spin" /> : <PlayCircle className="inline size-4" />}
-        {loading ? "Please wait..." : label}
+        {loading ? "Opening Zoom..." : label}
       </button>
-      {error ? <p className="text-xs font-bold text-red-600">{error}</p> : null}
+      {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-700">{error}</p> : null}
     </div>
   );
 }

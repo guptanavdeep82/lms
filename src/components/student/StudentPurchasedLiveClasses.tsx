@@ -12,10 +12,6 @@ type StudentPurchasedLiveClassesProps = {
   compact?: boolean;
 };
 
-function isPurchasedSession(session: LiveClassSessionItem, purchasedCourseIds: Set<number>) {
-  return purchasedCourseIds.has(session.course.id);
-}
-
 export function StudentPurchasedLiveClasses({ compact = false }: StudentPurchasedLiveClassesProps) {
   const [sessions, setSessions] = useState<LiveClassSessionItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,22 +28,14 @@ export function StudentPurchasedLiveClasses({ compact = false }: StudentPurchase
     Promise.all([fetchLiveSessions(student.email), fetchStudentLibrary(student.email)])
       .then(([allSessions, library]) => {
         const purchasedIds = new Set((library?.courses || []).map((course) => course.id));
-        const liveCourses = (library?.courses || []).filter(
-          (course) => course.course_type === "live" || course.has_live_classes,
-        );
 
-        const ownedSessions = allSessions.filter(
-          (session) => session.source === "session" && isPurchasedSession(session, purchasedIds),
-        );
+        const ownedSessions = allSessions.filter((session) => {
+          if (session.source !== "session") return false;
+          if (purchasedIds.has(session.course.id)) return true;
+          return session.access.allowed;
+        });
 
-        const courseFallbacks = allSessions.filter(
-          (session) =>
-            session.source === "course"
-            && purchasedIds.has(session.course.id)
-            && liveCourses.some((course) => course.id === session.course.id),
-        );
-
-        setSessions([...ownedSessions, ...courseFallbacks]);
+        setSessions(ownedSessions);
       })
       .finally(() => setLoading(false));
   }, []);
