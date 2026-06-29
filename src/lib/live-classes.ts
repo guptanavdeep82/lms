@@ -32,6 +32,7 @@ export type LiveClassSessionItem = {
   status: string;
   display_status: "live" | "scheduled" | "replay";
   has_recording: boolean;
+  recording_ready?: boolean;
   can_join?: boolean;
   course: LiveSessionCourse;
   access: LiveSessionAccess;
@@ -89,8 +90,9 @@ export async function fetchLiveSessionRecording(sessionId: number, email: string
   const data = (await response.json().catch(() => ({}))) as {
     recording_url?: string;
     password?: string | null;
+    passcode?: string | null;
     title?: string;
-    message?: string;
+    message?: string | null;
     errors?: Record<string, string[]>;
   };
 
@@ -124,7 +126,8 @@ export function openMeetingUrl(url: string, password?: string | null) {
   let target = url.trim();
   if (!target) return false;
 
-  if (password && !target.includes("pwd=")) {
+  const isRecordingUrl = /\/rec\/|recording|zoom\.us\/rec/i.test(target);
+  if (!isRecordingUrl && password && !target.includes("pwd=")) {
     target += `${target.includes("?") ? "&" : "?"}pwd=${encodeURIComponent(password)}`;
   }
 
