@@ -20,7 +20,7 @@ export type StudentReferralPayload = {
 };
 
 export async function validateReferralCode(code: string): Promise<{ valid: true; referral: ReferralInfo } | { valid: false; message: string }> {
-  const url = typeof window !== "undefined" ? "/api/referral/validate" : `${publicBackendBaseUrl}/api/referral/validate`;
+  const url = `${publicBackendBaseUrl}/api/referral/validate`;
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

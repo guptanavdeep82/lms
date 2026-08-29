@@ -64,7 +64,7 @@ function setupFirebase(config) {
 }
 
 function loadConfigFromApi() {
-  return fetch(self.location.origin + "/api/firebase/config", { cache: "no-store" })
+  return fetch("https://api.hostingwala.tech/api/firebase/config", { cache: "no-store" })
     .then(function (response) {
       if (!response.ok) {
         throw new Error("Config request failed");
@@ -77,14 +77,7 @@ function loadConfigFromApi() {
     });
 }
 
-try {
-  importScripts(self.location.origin + "/api/firebase/sw-config");
-  if (self.firebaseConfig) {
-    setupFirebase(self.firebaseConfig);
-  }
-} catch (error) {
-  console.error("[FCM SW] importScripts config failed", error);
-}
+loadConfigFromApi();
 
 self.addEventListener("message", function (event) {
   if (event.data && event.data.type === "FCM_INIT" && event.data.config) {

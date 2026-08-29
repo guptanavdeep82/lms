@@ -1,5 +1,4 @@
 import { PurchasedCoursesList } from "@/components/student/PurchasedCoursesList";
-import { StudentPurchasedLiveClasses } from "@/components/student/StudentPurchasedLiveClasses";
 import { StudentDashboardShell } from "@/components/student/StudentDashboardShell";
 import { StudentPageHeader } from "@/components/student/StudentPageHeader";
 import { StudentSectionCard } from "@/components/student/StudentSectionCard";
@@ -13,9 +12,6 @@ export default function StudentCoursesPage() {
         description="Access your purchased courses from one place."
       />
       <div className="space-y-6">
-        <StudentSectionCard eyebrow="Live" title="Your Live Classes">
-          <StudentPurchasedLiveClasses compact />
-        </StudentSectionCard>
         <StudentSectionCard eyebrow="Courses" title="Purchased Courses">
           <PurchasedCoursesList />
         </StudentSectionCard>

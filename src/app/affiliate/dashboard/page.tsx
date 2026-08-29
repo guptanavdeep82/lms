@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { staticPush, staticReplace } from "@/lib/static-nav";
 import { PublicHeader } from "@/components/PublicHeader";
 import {
   AffiliateDashboardResponse,
@@ -13,7 +13,6 @@ import { publicBackendBaseUrl } from "@/lib/mock-tests";
 import { Gift, LogOut, Users } from "lucide-react";
 
 export default function AffiliateDashboardPage() {
-  const router = useRouter();
   const [session, setSession] = useState(getAffiliateSession());
   const [dashboard, setDashboard] = useState<AffiliateDashboardResponse | null>(null);
   const [error, setError] = useState("");
@@ -22,7 +21,7 @@ export default function AffiliateDashboardPage() {
   useEffect(() => {
     const affiliateSession = getAffiliateSession();
     if (!affiliateSession) {
-      router.replace("/affiliate/login");
+      staticReplace("/affiliate/login");
       return;
     }
 
@@ -44,11 +43,11 @@ export default function AffiliateDashboardPage() {
         setError(dashboardError instanceof Error ? dashboardError.message : "Dashboard load failed.");
       })
       .finally(() => setLoading(false));
-  }, [router]);
+  }, []);
 
   const handleLogout = () => {
     logoutAffiliate();
-    router.push("/affiliate/login");
+    staticPush("/affiliate/login");
   };
 
   if (!session) {

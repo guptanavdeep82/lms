@@ -1,4 +1,4 @@
-import { publicBackendBaseUrl } from "@/lib/mock-tests";
+import { publicBackendBaseUrl, type MockTestProgressResponse } from "@/lib/mock-tests";
 import type { StudentLibraryResponse } from "@/lib/packages";
 
 export type StudentProfileResponse = {
@@ -63,9 +63,7 @@ export type StudentNoteRecord = {
 };
 
 function apiUrl(path: string) {
-  return typeof window !== "undefined"
-    ? `/api/student-dashboard${path}`
-    : `${publicBackendBaseUrl}${path}`;
+  return `${publicBackendBaseUrl}/api/student${path}`;
 }
 
 export async function fetchStudentProfile(email: string): Promise<StudentProfileResponse | null> {
@@ -81,7 +79,7 @@ export async function updateStudentProfile(input: {
   mobile?: string;
   state_id?: number;
 }) {
-  const response = await fetch(typeof window !== "undefined" ? "/api/student/sync" : `${publicBackendBaseUrl}/api/student/sync`, {
+  const response = await fetch(`${publicBackendBaseUrl}/api/student/sync`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify(input),
@@ -115,6 +113,11 @@ export async function saveTestAttempt(input: {
   submitted_at?: string;
   time_utilized_seconds?: number;
   duration_seconds?: number;
+  section_id?: number;
+  section_name?: string;
+  passed?: boolean;
+  percentage?: number;
+  passing_percentage?: number;
   answers?: Array<{
     question_id: number;
     question_number?: number;
@@ -131,7 +134,22 @@ export async function saveTestAttempt(input: {
     body: JSON.stringify(input),
   });
   if (!response.ok) return null;
-  return response.json() as Promise<{ attempt?: { id: number; attempt_type: string; score: number } } | null>;
+  return response.json() as Promise<{
+    attempt?: {
+      id: number;
+      attempt_type: string;
+      score: number;
+      passed?: boolean;
+      percentage?: number;
+      passing_percentage?: number;
+      max_marks?: number;
+      time_utilized_seconds?: number;
+      duration_seconds?: number;
+      section_slug?: string;
+      section_name?: string;
+    };
+    progress?: MockTestProgressResponse;
+  } | null>;
 }
 
 export async function fetchReferEarn(email: string): Promise<ReferEarnData | null> {

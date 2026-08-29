@@ -163,10 +163,6 @@ export type HomeVideoItem = {
 };
 
 export function homePageApiUrl() {
-  if (typeof window !== "undefined") {
-    return "/api/home-page";
-  }
-
   return `${publicBackendBaseUrl}/api/home-page`;
 }
 
@@ -433,7 +429,7 @@ export function normalizeHomePageSettings(settings?: Partial<HomePageSettings> |
 
 export async function fetchHomePageData(): Promise<HomePageResponse | null> {
   try {
-    const response = await fetch(homePageApiUrl(), { cache: "no-store" });
+    const response = await fetch(homePageApiUrl(), { cache: typeof window === "undefined" ? "force-cache" : "no-store" });
     if (!response.ok) return null;
 
     const payload = (await response.json()) as Partial<HomePageResponse>;

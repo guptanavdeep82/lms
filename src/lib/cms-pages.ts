@@ -16,14 +16,14 @@ export type CmsPageDetail = CmsPageSummary & {
 };
 
 export async function fetchCmsPages(): Promise<CmsPageSummary[]> {
-  const response = await fetch(`${publicBackendBaseUrl}/api/pages`, { cache: "no-store" });
+  const response = await fetch(`${publicBackendBaseUrl}/api/pages`, { cache: typeof window === "undefined" ? "force-cache" : "no-store" });
   if (!response.ok) return [];
   const data = await response.json() as { pages?: CmsPageSummary[] };
   return data.pages || [];
 }
 
 export async function fetchCmsPageBySlug(slug: string): Promise<CmsPageDetail | null> {
-  const response = await fetch(`${publicBackendBaseUrl}/api/pages/${encodeURIComponent(slug)}`, { cache: "no-store" });
+  const response = await fetch(`${publicBackendBaseUrl}/api/pages/${encodeURIComponent(slug)}`, { cache: typeof window === "undefined" ? "force-cache" : "no-store" });
   if (!response.ok) return null;
   const data = await response.json() as { page?: CmsPageDetail };
   return data.page || null;

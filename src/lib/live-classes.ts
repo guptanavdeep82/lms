@@ -39,7 +39,7 @@ export type LiveClassSessionItem = {
 };
 
 export function liveSessionsUrl(email?: string) {
-  const base = typeof window !== "undefined" ? "/api/live-sessions" : `${publicBackendBaseUrl}/api/live-sessions`;
+  const base = `${publicBackendBaseUrl}/api/live-sessions`;
   if (!email) return base;
   return `${base}?email=${encodeURIComponent(email)}`;
 }
@@ -52,9 +52,7 @@ export async function fetchLiveSessions(email?: string): Promise<LiveClassSessio
 }
 
 export async function joinLiveSession(sessionId: number, email: string) {
-  const url = typeof window !== "undefined"
-    ? `/api/live-sessions/${sessionId}/join`
-    : `${publicBackendBaseUrl}/api/live-sessions/${sessionId}/join`;
+  const url = `${publicBackendBaseUrl}/api/live-sessions/${sessionId}/join`;
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -78,9 +76,7 @@ export async function joinLiveSession(sessionId: number, email: string) {
 }
 
 export async function fetchLiveSessionRecording(sessionId: number, email: string) {
-  const url = typeof window !== "undefined"
-    ? `/api/live-sessions/${sessionId}/recording`
-    : `${publicBackendBaseUrl}/api/live-sessions/${sessionId}/recording`;
+  const url = `${publicBackendBaseUrl}/api/live-sessions/${sessionId}/recording`;
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -192,9 +188,7 @@ export type LiveCourseDetail = {
 };
 
 export function liveCourseDetailUrl(slug: string, email?: string) {
-  const base = typeof window !== "undefined"
-    ? `/api/live-courses/${encodeURIComponent(slug)}`
-    : `${publicBackendBaseUrl}/api/live-courses/${encodeURIComponent(slug)}`;
+  const base = `${publicBackendBaseUrl}/api/live-courses/${encodeURIComponent(slug)}`;
   if (!email) return base;
   return `${base}?email=${encodeURIComponent(email)}`;
 }

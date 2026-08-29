@@ -2,7 +2,7 @@
 
 import { Bell, Menu, Search } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { staticReplace } from "@/lib/static-nav";
 import { StudentMobileNav } from "@/components/student/StudentMobileNav";
 import { StudentSidebar } from "@/components/student/StudentSidebar";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
@@ -13,19 +13,18 @@ type StudentDashboardShellProps = {
 };
 
 export function StudentDashboardShell({ children }: StudentDashboardShellProps) {
-  const router = useRouter();
   const [initials, setInitials] = useState("ST");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!isStudentLoggedIn()) {
       const redirect = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
-      router.replace(`/login?redirect=${redirect}`);
+      staticReplace(`/login?redirect=${redirect}`);
       return;
     }
     const session = getStudentSession();
     if (session?.name) setInitials(studentInitials(session.name));
-  }, [router]);
+  }, []);
 
   return (
     <main className="min-h-screen bg-[#f6f8fc] text-[13px] text-[#111827] sm:text-sm" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>

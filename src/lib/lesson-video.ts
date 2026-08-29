@@ -22,7 +22,12 @@ export function extractYouTubeId(url: string): string | null {
 }
 
 export function isDirectVideoUrl(url: string): boolean {
-  return /\.(mp4|webm|ogg|m3u8)(\?|$)/i.test(url);
+  if (/\.(mp4|webm|ogg|m3u8)(\?|$)/i.test(url)) {
+    return true;
+  }
+
+  // Private object-storage signed URLs often omit a file extension.
+  return /[?&]X-Amz-Signature=/i.test(url) || /wasabisys\.com/i.test(url);
 }
 
 export function youtubeEmbedUrl(url: string): string | null {

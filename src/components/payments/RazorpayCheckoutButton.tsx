@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { staticPush } from "@/lib/static-nav";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { CheckoutItemType, startRazorpayCheckout } from "@/lib/checkout";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
@@ -32,7 +32,6 @@ export function RazorpayCheckoutButton({
   alreadyPurchased = false,
   onPurchased,
 }: RazorpayCheckoutButtonProps) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [purchased, setPurchased] = useState(alreadyPurchased);
@@ -64,7 +63,7 @@ export function RazorpayCheckoutButton({
   const handlePurchase = async () => {
     const session = getStudentSession();
     if (!session?.email) {
-      router.push("/login");
+      staticPush("/login");
       return;
     }
 
@@ -81,7 +80,7 @@ export function RazorpayCheckoutButton({
           setPurchased(true);
           onPurchased?.();
           if (successRedirect) {
-            router.push(successRedirect);
+            staticPush(successRedirect);
           }
         },
       });

@@ -33,6 +33,58 @@ export type StudentLibraryCourse = {
   short_description: string | null;
   duration_hours: number;
   lessons_count: number;
+  has_access?: boolean;
+  locked?: boolean;
+  price?: number;
+  sale_price?: number | null;
+  course_folder_id?: number | null;
+  folder_video_count?: number;
+  mock_test_count?: number;
+};
+
+export type StudentLibraryFolder = {
+  id: number;
+  name: string;
+  parent_id: number | null;
+  subfolder_count: number;
+  course_count: number;
+  purchased_count: number;
+  video_count?: number;
+  pdf_count?: number;
+  has_access?: boolean;
+};
+
+export type StudentLibraryBreadcrumb = {
+  id: number;
+  name: string;
+  parent_id: number | null;
+};
+
+export type StudentLibraryFolderVideo = {
+  id: number;
+  title: string;
+  filename: string;
+  video_url: string | null;
+  size_label?: string;
+  mime_type?: string | null;
+};
+
+export type StudentLibraryFolderPdf = {
+  id: number;
+  title: string;
+  filename: string;
+  url: string | null;
+  size_label?: string;
+  mime_type?: string | null;
+};
+
+export type StudentLibraryFolderMockTest = {
+  id: number;
+  title: string;
+  slug: string;
+  duration_minutes: number;
+  questions_count: number;
+  image_url: string | null;
 };
 
 export type StudentLibraryPackage = {
@@ -65,6 +117,13 @@ export type StudentLibraryResponse = {
     created_at: string | null;
   }>;
   courses: StudentLibraryCourse[];
+  folders?: StudentLibraryFolder[];
+  breadcrumb?: StudentLibraryBreadcrumb[];
+  folder_courses?: StudentLibraryCourse[];
+  folder_videos?: StudentLibraryFolderVideo[];
+  folder_pdfs?: StudentLibraryFolderPdf[];
+  folder_mock_tests?: StudentLibraryFolderMockTest[];
+  current_folder_id?: number | null;
   packages: StudentLibraryPackage[];
   mock_categories: StudentLibraryMockCategory[];
   orders: Array<{
@@ -113,8 +172,15 @@ export async function fetchPackages(): Promise<PackageItem[]> {
   return data.packages || [];
 }
 
-export async function fetchStudentLibrary(email: string): Promise<StudentLibraryResponse | null> {
-  const response = await fetch(`${publicBackendBaseUrl}/api/student/library?email=${encodeURIComponent(email)}`, {
+export async function fetchStudentLibrary(
+  email: string,
+  folderId?: number | null,
+): Promise<StudentLibraryResponse | null> {
+  const params = new URLSearchParams({ email });
+  if (folderId != null) {
+    params.set("folder", String(folderId));
+  }
+  const response = await fetch(`${publicBackendBaseUrl}/api/student/library?${params.toString()}`, {
     cache: "no-store",
   });
   if (!response.ok) return null;

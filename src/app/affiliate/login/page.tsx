@@ -2,14 +2,13 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { staticPush, staticReplace } from "@/lib/static-nav";
 import { PublicHeader } from "@/components/PublicHeader";
 import { getAffiliateSession, saveAffiliateSession } from "@/lib/affiliate";
 import { publicBackendBaseUrl } from "@/lib/mock-tests";
 import { ArrowRight, ShieldCheck, Users } from "lucide-react";
 
 export default function AffiliateLoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,9 +16,9 @@ export default function AffiliateLoginPage() {
 
   useEffect(() => {
     if (getAffiliateSession()) {
-      router.replace("/affiliate/dashboard");
+      staticReplace("/affiliate/dashboard");
     }
-  }, [router]);
+  }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,7 +42,7 @@ export default function AffiliateLoginPage() {
       }
 
       saveAffiliateSession(data.affiliate);
-      router.push("/affiliate/dashboard");
+      staticPush("/affiliate/dashboard");
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : "Login failed.");
     } finally {

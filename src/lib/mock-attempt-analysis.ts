@@ -17,7 +17,7 @@ export type MockAttemptQuestion = {
   topic: string;
   question_type: string;
   question_text: string;
-  options: { A: string | null; B: string | null; C: string | null; D: string | null };
+  options: { A?: string | null; B?: string | null; C?: string | null; D?: string | null; E?: string | null };
   selected_answer: string | null;
   correct_answer: string;
   explanation: string | null;
@@ -81,6 +81,9 @@ export type MockAttemptDetail = {
     time_utilized_seconds: number;
     duration_seconds: number;
     wasted_time_seconds: number;
+    rank?: number;
+    total_participants?: number;
+    percentile?: number;
   };
   sections: MockAttemptSectionSummary[];
   topics: MockAttemptTopicSummary[];
@@ -112,9 +115,7 @@ export type MockAttemptDetail = {
 };
 
 function apiUrl(path: string) {
-  return typeof window !== "undefined"
-    ? `/api/student-dashboard${path}`
-    : `${publicBackendBaseUrl}${path}`;
+  return `${publicBackendBaseUrl}/api/student${path}`;
 }
 
 export async function fetchMockAttemptDetail(email: string, attemptId: number) {
@@ -159,5 +160,22 @@ export function formatMockClock(totalSeconds: number) {
 
 export function optionLabel(key: string, options: MockAttemptQuestion["options"]) {
   const text = options[key as keyof typeof options];
-  return text ? `${key}. ${text}` : key;
+  if (!text) return key;
+
+  const decoded = String(text)
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_m, num) => {
+      const n = parseInt(String(num), 10);
+      return Number.isNaN(n) ? String(_m) : String.fromCharCode(n);
+    })
+    .replace(/&#x([0-9a-fA-F]+);/g, (_m, hex) => {
+      const n = parseInt(String(hex), 16);
+      return Number.isNaN(n) ? String(_m) : String.fromCharCode(n);
+    });
+
+  return decoded ? `${key}. ${decoded}` : key;
 }

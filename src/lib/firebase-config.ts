@@ -1,5 +1,7 @@
 "use client";
 
+import { publicBackendBaseUrl } from "@/lib/mock-tests";
+
 export type FirebaseWebConfig = {
   apiKey: string;
   authDomain: string;
@@ -37,7 +39,7 @@ export async function fetchFirebaseConfig(): Promise<FirebaseWebConfig | null> {
   if (fromEnv) return fromEnv;
 
   try {
-    const response = await fetch("/api/firebase/config", { cache: "no-store" });
+    const response = await fetch(`${publicBackendBaseUrl}/api/firebase/config`, { cache: "no-store" });
     if (!response.ok) return null;
     const data = await response.json() as FirebaseWebConfig;
     if (!data.apiKey || !data.projectId || !data.vapidKey) return null;

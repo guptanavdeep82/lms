@@ -1,13 +1,13 @@
-import { backendBaseUrl } from "@/lib/mock-tests";
+import { publicBackendBaseUrl } from "@/lib/mock-tests";
 
 export const OTP_LENGTH = 4;
 
 function sendOtpUrl() {
-  return typeof window !== "undefined" ? "/api/student/otp/send" : `${backendBaseUrl}/api/student/otp/send`;
+  return `${publicBackendBaseUrl}/api/student/otp/send`;
 }
 
 function verifyOtpUrl() {
-  return typeof window !== "undefined" ? "/api/student/otp/verify" : `${backendBaseUrl}/api/student/otp/verify`;
+  return `${publicBackendBaseUrl}/api/student/otp/verify`;
 }
 
 export async function sendStudentWhatsappOtp(mobile: string) {

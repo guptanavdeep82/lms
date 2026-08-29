@@ -2,8 +2,6 @@ import { BookOpen, CheckCircle2, Clock, Star, Trophy, Users } from "lucide-react
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { fetchHomePageData, type HomePageFaculty } from "@/lib/home-page";
 
-export const dynamic = "force-dynamic";
-
 const strengths = [
   "Live doubt classes every week",
   "Exam-pattern teaching plans",

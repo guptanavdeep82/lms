@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { staticReplace } from "@/lib/static-nav";
 import { CoursePromoCard } from "@/components/courses/CoursePromoCard";
 import { fetchCourses, mapApiCourseToListingCourse, type ListingCourse } from "@/lib/courses";
 
@@ -30,7 +31,6 @@ const defaultFilters: Filters = {
 };
 
 export function CoursesCatalog() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [courses, setCourses] = useState<ListingCourse[]>([]);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
@@ -92,13 +92,13 @@ export function CoursesCatalog() {
 
   const setType = (type: Filters["type"]) => {
     setFilters((current) => ({ ...current, type }));
-    if (type === "all") router.replace("/courses");
-    else router.replace(`/courses?type=${type}`);
+    if (type === "all") staticReplace("/courses");
+    else staticReplace(`/courses?type=${type}`);
   };
 
   const clearFilters = () => {
     setFilters(defaultFilters);
-    router.replace("/courses");
+    staticReplace("/courses");
   };
 
   return (

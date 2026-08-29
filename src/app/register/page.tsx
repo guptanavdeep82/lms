@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { staticPush } from "@/lib/static-nav";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { loginStudent, saveStudentProfile } from "@/lib/student-auth";
@@ -27,7 +27,6 @@ const steps = [
 ];
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [inviteCode, setInviteCode] = useState("");
   const [pendingStudent, setPendingStudent] = useState<GoogleStudent | null>(null);
   const [mobile, setMobile] = useState("");
@@ -89,13 +88,13 @@ export default function RegisterPage() {
       });
 
       const params = new URLSearchParams(window.location.search);
-      router.push(params.get("redirect") || "/student/dashboard");
+      staticPush(params.get("redirect") || "/student/dashboard");
     } catch (registerError) {
       const message = registerError instanceof Error ? registerError.message : "Registration failed. Please try again.";
       setError(message);
 
       if (message.toLowerCase().includes("email is already registered")) {
-        window.setTimeout(() => router.push("/login"), 1800);
+        window.setTimeout(() => staticPush("/login"), 1800);
       }
     }
   };
@@ -106,12 +105,12 @@ export default function RegisterPage() {
     const registration = await checkStudentRegistration({ email: student.email });
     if (registration.email_exists) {
       setError("Email is already registered. Please login.");
-      window.setTimeout(() => router.push("/login"), 1800);
+      window.setTimeout(() => staticPush("/login"), 1800);
       return;
     }
 
     setPendingStudent(student);
-  }, [router]);
+  }, []);
 
   const checkReferralCode = async () => {
     const code = referralCode.trim();

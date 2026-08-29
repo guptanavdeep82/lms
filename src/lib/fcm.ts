@@ -2,6 +2,7 @@
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getMessaging, getToken, isSupported, onMessage, type Messaging } from "firebase/messaging";
+import { publicBackendBaseUrl } from "@/lib/mock-tests";
 import { fetchFirebaseConfig, type FirebaseWebConfig } from "@/lib/firebase-config";
 import { getStudentSession } from "@/lib/student-auth";
 
@@ -88,7 +89,7 @@ export async function obtainFcmToken(): Promise<string | null> {
 export async function registerDeviceToken(token: string) {
   const session = getStudentSession();
 
-  const response = await fetch("/api/device/register", {
+  const response = await fetch(`${publicBackendBaseUrl}/api/device/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -106,7 +107,7 @@ export async function registerDeviceToken(token: string) {
 }
 
 export async function removeDeviceToken(token: string) {
-  await fetch("/api/device/remove", {
+  await fetch(`${publicBackendBaseUrl}/api/device/remove`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ fcm_token: token }),

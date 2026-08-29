@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { staticPush } from "@/lib/static-nav";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { getStudentProfile, loginStudent, saveStudentProfile } from "@/lib/student-auth";
@@ -24,7 +24,6 @@ const benefits = [
 ];
 
 export default function LoginPage() {
-  const router = useRouter();
   const [registerHref, setRegisterHref] = useState("/register");
   const [pendingStudent, setPendingStudent] = useState<GoogleStudent | null>(null);
   const [mobile, setMobile] = useState("");
@@ -36,7 +35,7 @@ export default function LoginPage() {
 
   const redirectAfterLogin = () => {
     const params = new URLSearchParams(window.location.search);
-    router.push(params.get("redirect") || "/student/dashboard");
+    staticPush(params.get("redirect") || "/student/dashboard");
   };
 
   const finishLogin = async (student: {
@@ -82,7 +81,7 @@ export default function LoginPage() {
       const registration = await checkStudentRegistration({ email: student.email });
       if (!registration.email_exists) {
         setError("No account found with this email. Please register first.");
-        window.setTimeout(() => router.push("/register"), 1800);
+        window.setTimeout(() => staticPush("/register"), 1800);
         return;
       }
     } catch (checkError) {
@@ -106,7 +105,7 @@ export default function LoginPage() {
     setPendingStudent(student);
     setMobile(profile?.mobile || "");
     setError("Mobile verification is pending for this Gmail account. Please verify OTP to complete login.");
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

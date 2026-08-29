@@ -1,5 +1,13 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect } from "react";
+import { staticReplace } from "@/lib/static-nav";
 
 export default function AdminPage() {
-  redirect("/admin/courses");
+
+  useEffect(() => {
+    staticReplace("/admin/courses");
+  }, []);
+
+  return null;
 }

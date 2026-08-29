@@ -34,7 +34,7 @@ async function loadConfig(): Promise<FirebaseSwConfig> {
   const backendBaseUrl =
     process.env.LMS_BACKEND_URL ||
     process.env.NEXT_PUBLIC_LMS_BACKEND_URL ||
-    "https://lms.eventsbyan.com";
+    "https://api.hostingwala.tech";
 
   try {
     const response = await fetch(`${backendBaseUrl}/api/firebase/config`, { cache: "no-store" });

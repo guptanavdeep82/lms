@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const backendBase = process.env.NEXT_PUBLIC_LMS_BACKEND_URL || "https://lms.eventsbyan.com";
+const backendBase = process.env.NEXT_PUBLIC_LMS_BACKEND_URL || "https://api.hostingwala.tech";
 
 async function proxy(request: NextRequest, path: string) {
   const url = new URL(`${backendBase}${path}`);

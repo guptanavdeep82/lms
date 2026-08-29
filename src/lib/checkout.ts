@@ -70,9 +70,7 @@ function loadRazorpayScript(): Promise<void> {
 }
 
 function checkoutUrl(path: "create-order" | "verify") {
-  return typeof window !== "undefined"
-    ? `/api/checkout/${path}`
-    : `${publicBackendBaseUrl}/api/checkout/${path}`;
+  return `${publicBackendBaseUrl}/api/checkout/${path}`;
 }
 
 export async function createCheckoutOrder(input: {

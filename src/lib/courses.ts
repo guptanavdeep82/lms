@@ -38,6 +38,8 @@ export type ApiCourseLesson = {
   slug: string;
   description: string | null;
   video_url: string | null;
+  has_video?: boolean;
+  video_delivery?: "signed" | "external" | null;
   resource_url: string | null;
   duration_minutes: number;
   is_preview: boolean;
@@ -96,20 +98,18 @@ export type LiveClassSession = {
 };
 
 export function coursesApiUrl(type?: string) {
-  const base = typeof window !== "undefined" ? "/api/courses" : `${publicBackendBaseUrl}/api/courses`;
+  const base = `${publicBackendBaseUrl}/api/courses`;
   if (!type) return base;
   return `${base}?type=${encodeURIComponent(type)}`;
 }
 
 export function courseDetailApiUrl(slug: string) {
-  return typeof window !== "undefined"
-    ? `/api/courses/${encodeURIComponent(slug)}`
-    : `${publicBackendBaseUrl}/api/courses/${encodeURIComponent(slug)}`;
+  return `${publicBackendBaseUrl}/api/courses/${encodeURIComponent(slug)}`;
 }
 
 export async function fetchCourses(type?: string): Promise<ApiCourse[]> {
   try {
-    const response = await fetch(coursesApiUrl(type), { cache: "no-store" });
+    const response = await fetch(coursesApiUrl(type), { cache: typeof window === "undefined" ? "force-cache" : "no-store" });
     if (!response.ok) return [];
     const payload = (await response.json()) as CoursesResponse;
     return payload.courses ?? [];
@@ -120,9 +120,25 @@ export async function fetchCourses(type?: string): Promise<ApiCourse[]> {
 
 export async function fetchCourseBySlug(slug: string): Promise<CourseDetailResponse | null> {
   try {
-    const response = await fetch(courseDetailApiUrl(slug), { cache: "no-store" });
+    const response = await fetch(courseDetailApiUrl(slug), { cache: typeof window === "undefined" ? "force-cache" : "no-store" });
     if (!response.ok) return null;
     return (await response.json()) as CourseDetailResponse;
+  } catch {
+    return null;
+  }
+}
+
+export function lessonVideoApiUrl(lessonId: number, email: string) {
+  const query = `email=${encodeURIComponent(email)}`;
+  return `${publicBackendBaseUrl}/api/lesson/${lessonId}/video?${query}`;
+}
+
+export async function fetchLessonVideoUrl(lessonId: number, email: string): Promise<string | null> {
+  try {
+    const response = await fetch(lessonVideoApiUrl(lessonId, email), { cache: "no-store" });
+    if (!response.ok) return null;
+    const payload = (await response.json()) as { video_url?: string | null };
+    return payload.video_url ?? null;
   } catch {
     return null;
   }

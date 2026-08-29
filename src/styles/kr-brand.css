@@ -1189,3 +1189,50 @@ body {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ════════════════════════════════════════════════
+   FIX: invisible "blue on blue" text
+   ════════════════════════════════════════════════
+   The legacy remapping rules above solve two separate problems:
+   1) old solid backgrounds (dark navy/black or gold/cream) → solid
+      brand blue, paired with white text on the SAME rule.
+   2) old dark/gold TEXT colors (used all over the site on light
+      surfaces) → brand blue text, as a completely separate rule.
+   Whenever one element happened to carry classes from BOTH groups
+   (e.g. a cream button using bg-[#fff8dc] + text-[#050808], or a
+   navy button using bg-[#172a69] + text-[#f5c518]), rule (2) was
+   winning the cascade and repainting the text the same blue as the
+   background — making buttons/badges look completely empty.
+   These compound selectors are more specific than either rule above,
+   so they always win and keep such buttons readable (white text on
+   their solid brand-blue background), regardless of source order. */
+[class*="bg-[#1b2e6b]"][class*="text-["],
+[class*="bg-[#0f1e4a]"][class*="text-["],
+[class*="bg-[#0538A1]"][class*="text-["],
+[class*="bg-[#172a69]"][class*="text-["],
+[class*="bg-[#10215a]"][class*="text-["],
+[class*="bg-[#3378b9]"][class*="text-["],
+[class*="bg-[#2f78bf]"][class*="text-["],
+[class*="bg-[#2768a5]"][class*="text-["],
+[class*="bg-[#2268aa]"][class*="text-["],
+[class*="bg-[#174b82]"][class*="text-["],
+[class*="bg-[#050808]"][class*="text-["],
+[class*="bg-[#000000]"][class*="text-["],
+[class*="bg-[#f5c518]"][class*="text-["],
+[class*="bg-[#e8a800]"][class*="text-["],
+[class*="bg-[#f7c843]"][class*="text-["],
+[class*="bg-yellow-400"][class*="text-["],
+[class*="bg-[#ffd21f]"][class*="text-["],
+[class*="bg-[#fff8dc]"][class*="text-["],
+[class*="bg-[#fff9e0]"][class*="text-["] {
+  color: var(--kr-white) !important;
+}
+
+[class*="hover:bg-[#1b2e6b]"]:hover[class*="text-["],
+[class*="hover:bg-[#0f1e4a]"]:hover[class*="text-["],
+[class*="hover:bg-[#10215a]"]:hover[class*="text-["],
+[class*="hover:bg-[#3378b9]"]:hover[class*="text-["],
+[class*="hover:bg-[#2f78bf]"]:hover[class*="text-["],
+[class*="hover:bg-[#050808]"]:hover[class*="text-["] {
+  color: var(--kr-white) !important;
+}

@@ -25,6 +25,12 @@ const usefulLinks = [
   { label: "Blog", href: "/blog" },
 ];
 
+const legalLinks = [
+  { label: "Privacy Policy", href: "/pages/privacy-policy" },
+  { label: "Terms & Conditions", href: "/pages/terms-and-conditions" },
+  { label: "Delete Account", href: "/pages/delete-account" },
+];
+
 function SocialLink({
   href,
   label,
@@ -113,6 +119,17 @@ export function PublicFooter({ settings }: PublicFooterProps) {
             </div>
           </div>
 
+          <div className="public-site-footer-col">
+            <h5>Legal</h5>
+            <div className="public-site-footer-links">
+              {legalLinks.map((link) => (
+                <Link key={link.href} href={link.href}>
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
           <div className="public-site-footer-col public-site-footer-contact">
             <h5>Get in touch</h5>
             <p className="flex items-start gap-2">
@@ -142,6 +159,13 @@ export function PublicFooter({ settings }: PublicFooterProps) {
           <p>
             © {new Date().getFullYear()} <span>KR Logics</span> | All rights reserved.
           </p>
+          <div className="public-site-footer-bottom-links">
+            {legalLinks.map((link) => (
+              <Link key={`bottom-${link.href}`} href={link.href}>
+                {link.label}
+              </Link>
+            ))}
+          </div>
           <p>Made in India with care for banking aspirants.</p>
         </div>
       </div>

@@ -27,7 +27,7 @@ const fallbackCategories: MockCategory[] = [
 ];
 
 type PublicHeaderProps = {
-  active?: "home" | "courses" | "packages" | "mock-tests" | "faculty" | "contact" | "live-classes";
+  active?: "home" | "courses" | "packages" | "mock-tests" | "faculty" | "contact" | "live-classes" | "current-affairs";
 };
 
 type MenuKey = "courses" | "exams" | "latest-exam";
@@ -35,7 +35,7 @@ type MenuKey = "courses" | "exams" | "latest-exam";
 export function PublicHeader({ active }: PublicHeaderProps) {
   const [mockCategories, setMockCategories] = useState<MockCategory[]>(fallbackCategories);
   const [activeCategorySlug, setActiveCategorySlug] = useState(fallbackCategories[0].slug);
-  const [isLoggedIn, setIsLoggedIn] = useState(() => (typeof window === "undefined" ? false : Boolean(getStudentSession())));
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [cmsPages, setCmsPages] = useState<CmsPageSummary[]>([]);
@@ -82,6 +82,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
 
   useEffect(() => {
     const syncSession = () => setIsLoggedIn(Boolean(getStudentSession()));
+    syncSession();
     window.addEventListener("storage", syncSession);
     window.addEventListener("focus", syncSession);
 
@@ -232,6 +233,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
             </div>
           </div>
           {navLink("/mock-tests", "Mock Tests", "mock-tests")}
+          {navLink("/current-affairs", "Current Affairs", "current-affairs")}
           {navLink("/live-classes", "Live Classes", "live-classes")}
           {navLink("/faculty", "Faculty", "faculty")}
           <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer" onClick={closeMobileNav}>Blog</a>
@@ -279,12 +281,7 @@ function fallbackTest(title: string, slug: string): MockTest {
 }
 
 function getRegisterHref() {
-  if (typeof window === "undefined") {
-    return "/register";
-  }
-
-  const redirect = new URLSearchParams(window.location.search).get("redirect");
-  return redirect ? `/register?redirect=${encodeURIComponent(redirect)}` : "/register";
+  return "/register";
 }
 
 function cleanTestTitle(title: string) {

@@ -1,4 +1,4 @@
-import { backendBaseUrl } from "@/lib/mock-tests";
+import { publicBackendBaseUrl } from "@/lib/mock-tests";
 import { getStudentProfile, getStudentSession } from "@/lib/student-auth";
 
 export type StateOption = {
@@ -28,15 +28,15 @@ export type StudentCheckoutProfile = {
 };
 
 function statesUrl() {
-  return typeof window !== "undefined" ? "/api/states" : `${backendBaseUrl}/api/states`;
+  return `${publicBackendBaseUrl}/api/states`;
 }
 
 function registerUrl() {
-  return typeof window !== "undefined" ? "/api/student/register" : `${backendBaseUrl}/api/student/register`;
+  return `${publicBackendBaseUrl}/api/student/register`;
 }
 
 function syncUrl() {
-  return typeof window !== "undefined" ? "/api/student/sync" : `${backendBaseUrl}/api/student/sync`;
+  return `${publicBackendBaseUrl}/api/student/sync`;
 }
 
 function checkUrl(params: { email?: string; mobile?: string }) {
@@ -45,9 +45,7 @@ function checkUrl(params: { email?: string; mobile?: string }) {
   if (params.mobile) query.set("mobile", params.mobile);
 
   const suffix = query.toString();
-  return typeof window !== "undefined"
-    ? `/api/student/check?${suffix}`
-    : `${backendBaseUrl}/api/student/check?${suffix}`;
+  return `${publicBackendBaseUrl}/api/student/check?${suffix}`;
 }
 
 export type StudentRegistrationCheck = {

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { staticReplace } from "@/lib/static-nav";
+import { useLiveParam } from "@/lib/use-live-param";
 import { ArrowLeft, FileText, Loader2, Lock, PlayCircle } from "lucide-react";
 import { StudentDashboardShell } from "@/components/student/StudentDashboardShell";
 import { fetchStudentAccess } from "@/lib/checkout";
-import { fetchCourseBySlug, type ApiCourseLesson } from "@/lib/courses";
+import { fetchCourseBySlug, fetchLessonVideoUrl, type ApiCourseLesson } from "@/lib/courses";
 import { isDirectVideoUrl, youtubeEmbedUrl } from "@/lib/lesson-video";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 
@@ -60,9 +61,7 @@ const gradients = [
 ];
 
 export function CourseLearnViewer() {
-  const router = useRouter();
-  const params = useParams<{ slug: string }>();
-  const slug = params.slug;
+  const slug = useLiveParam("slug", 2);
 
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -70,10 +69,13 @@ export function CourseLearnViewer() {
   const [courseImage, setCourseImage] = useState<string | null>(null);
   const [lessons, setLessons] = useState<ApiCourseLesson[]>([]);
   const [activeLessonId, setActiveLessonId] = useState<number | null>(null);
+  const [playbackUrl, setPlaybackUrl] = useState<string | null>(null);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isStudentLoggedIn()) {
-      router.replace(`/login?redirect=${encodeURIComponent(`/student/courses/${slug}/learn`)}`);
+      staticReplace(`/login?redirect=${encodeURIComponent(`/student/courses/${slug}/learn`)}`);
       return;
     }
 
@@ -86,7 +88,7 @@ export function CourseLearnViewer() {
     fetchCourseBySlug(slug)
       .then(async (payload) => {
         if (!payload?.course) {
-          router.replace("/student/courses");
+          staticReplace("/student/courses");
           return;
         }
 
@@ -100,7 +102,7 @@ export function CourseLearnViewer() {
         setActiveLessonId(firstPlayable?.id ?? payload.lessons[0]?.id ?? null);
       })
       .finally(() => setLoading(false));
-  }, [router, slug]);
+  }, [slug]);
 
   const activeLesson = useMemo(
     () => lessons.find((lesson) => lesson.id === activeLessonId) ?? null,
@@ -108,6 +110,63 @@ export function CourseLearnViewer() {
   );
 
   const canWatchLesson = (lesson: ApiCourseLesson) => hasAccess || lesson.is_preview;
+
+  useEffect(() => {
+    if (!activeLesson || !canWatchLesson(activeLesson)) {
+      setPlaybackUrl(null);
+      setVideoError(null);
+      setVideoLoading(false);
+      return;
+    }
+
+    const session = getStudentSession();
+    if (!session?.email) {
+      setPlaybackUrl(null);
+      return;
+    }
+
+    // External URLs (YouTube, etc.) come from the course payload.
+    if (activeLesson.video_delivery === "external" && activeLesson.video_url) {
+      setPlaybackUrl(activeLesson.video_url);
+      setVideoError(null);
+      setVideoLoading(false);
+      return;
+    }
+
+    const needsSignedUrl =
+      activeLesson.video_delivery === "signed" ||
+      (!!activeLesson.has_video && !activeLesson.video_url);
+
+    if (!needsSignedUrl) {
+      setPlaybackUrl(activeLesson.video_url);
+      setVideoError(null);
+      setVideoLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setVideoLoading(true);
+    setVideoError(null);
+    setPlaybackUrl(null);
+
+    fetchLessonVideoUrl(activeLesson.id, session.email)
+      .then((url) => {
+        if (cancelled) return;
+        if (!url) {
+          setVideoError("Unable to load this lesson video. Please try again.");
+          setPlaybackUrl(null);
+          return;
+        }
+        setPlaybackUrl(url);
+      })
+      .finally(() => {
+        if (!cancelled) setVideoLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeLesson, hasAccess]);
 
   if (loading) {
     return (
@@ -133,8 +192,21 @@ export function CourseLearnViewer() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <section className="overflow-hidden rounded-[24px] border border-[#dfe5ef] bg-white shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
           <div className="relative aspect-video bg-[#050808]">
-            {activeLesson?.video_url && canWatchLesson(activeLesson) ? (
-              <LessonVideoPlayer url={activeLesson.video_url} />
+            {activeLesson && canWatchLesson(activeLesson) ? (
+              videoLoading ? (
+                <div className="grid h-full place-items-center">
+                  <Loader2 className="size-8 animate-spin text-white/80" />
+                </div>
+              ) : playbackUrl ? (
+                <LessonVideoPlayer url={playbackUrl} />
+              ) : (
+                <div className="grid h-full place-items-center p-8 text-center">
+                  <PlayCircle className="mb-3 size-10 text-[#94a3b8]" />
+                  <p className="text-sm font-bold text-[#667085]">
+                    {videoError || "No video uploaded for this lesson yet."}
+                  </p>
+                </div>
+              )
             ) : (
               <div className="grid h-full place-items-center p-8 text-center">
                 {activeLesson && !canWatchLesson(activeLesson) ? (
