@@ -1,6 +1,7 @@
 RewriteEngine On
 RewriteBase /
 Options -MultiViews
+DirectoryIndex index.html
 
 <IfModule mod_dir.c>
   DirectorySlash Off
@@ -24,20 +25,25 @@ RewriteRule ^live-classes/course/(?!__/)([^/]+)/(__next\..+)$ /live-classes/cour
 RewriteRule ^student/courses/(?!__/)([^/]+)/learn/(__next\..+)$ /student/courses/__/learn/$2 [L]
 RewriteRule ^student/mock-tests/(?!__/)([^/]+)/(instructions|exam|setup|result|analysis|solution)/(__next\..+)$ /student/mock-tests/__/$2/$3 [L]
 
+# Existing files
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
+
+# DirectorySlash Off does not auto-serve index.html — map folders to it explicitly
 RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.*)/$ /$1/index.html [L]
 
 RewriteCond %{REQUEST_URI} !/$
 RewriteCond %{REQUEST_URI} !\.[a-zA-Z0-9]{1,8}$
 RewriteRule ^(.*)$ $1/ [R=301,L]
 
-RewriteRule ^courses/(?!__/)([^/]+)/$ /courses/__/ [L]
-RewriteRule ^pages/(?!__/)([^/]+)/$ /pages/__/ [L]
-RewriteRule ^mock-tests/(?!__/)([^/]+)/$ /mock-tests/__/ [L]
-RewriteRule ^live-classes/course/(?!__/)([^/]+)/$ /live-classes/course/__/ [L]
-RewriteRule ^student/courses/(?!__/)([^/]+)/learn/$ /student/courses/__/learn/ [L]
-RewriteRule ^student/mock-tests/(?!__/)([^/]+)/(instructions|exam|setup|result|analysis|solution)/$ /student/mock-tests/__/$2/ [L]
+# Unknown dynamic slugs -> fallback index.html (never rewrite to a bare folder)
+RewriteRule ^courses/(?!__/)([^/]+)/?$ /courses/__/index.html [L]
+RewriteRule ^pages/(?!__/)([^/]+)/?$ /pages/__/index.html [L]
+RewriteRule ^mock-tests/(?!__/)([^/]+)/?$ /mock-tests/__/index.html [L]
+RewriteRule ^live-classes/course/(?!__/)([^/]+)/?$ /live-classes/course/__/index.html [L]
+RewriteRule ^student/courses/(?!__/)([^/]+)/learn/?$ /student/courses/__/learn/index.html [L]
+RewriteRule ^student/mock-tests/(?!__/)([^/]+)/(instructions|exam|setup|result|analysis|solution)/?$ /student/mock-tests/__/$2/index.html [L]
 
 ErrorDocument 404 /404.html

@@ -21,7 +21,8 @@ export function StaticRuntime({ children }: { children: ReactNode }) {
 
       try {
         const controller = new AbortController();
-        const timeout = window.setTimeout(() => controller.abort(), 12000);
+        const timeoutMs = /\/api\/student\/(library|otp)/i.test(url) ? 60000 : 12000;
+        const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
         const parentSignal = init?.signal;
         if (parentSignal) {
           if (parentSignal.aborted) controller.abort();

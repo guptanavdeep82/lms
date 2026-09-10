@@ -24,7 +24,11 @@ export async function courseSlugs() {
 
 export async function mockCategorySlugs() {
   const data = await fetchJson<{ categories?: Array<{ slug?: string; tests?: Array<{ slug?: string }> }> }>("/api/mock-tests");
-  return withFallback((data?.categories ?? []).map((item) => item.slug).filter((slug): slug is string => Boolean(slug)));
+  return withFallback([
+    "banking-exams",
+    "banking-exam",
+    ...((data?.categories ?? []).map((item) => item.slug).filter((slug): slug is string => Boolean(slug))),
+  ]);
 }
 
 export async function mockTestSlugs() {

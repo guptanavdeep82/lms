@@ -182,6 +182,7 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
   const [activeVideo, setActiveVideo] = useState<StudentLibraryFolderVideo | null>(null);
   const [loading, setLoading] = useState(true);
   const [browsing, setBrowsing] = useState(false);
+  const [browseError, setBrowseError] = useState(false);
 
   const loadLibrary = useCallback(async (nextFolderId: number | null, options?: { silent?: boolean }) => {
     const session = getStudentSession();
@@ -196,11 +197,25 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
       setLoading(true);
     }
     setActiveVideo(null);
+    setBrowseError(false);
     const library = await fetchStudentLibrary(session.email, nextFolderId);
-    setCourses(library?.courses || []);
-    setFolderVideos(library?.folder_videos || []);
-    setFolderPdfs(library?.folder_pdfs || []);
-    setFolderMockTests(library?.folder_mock_tests || []);
+    if (!library) {
+      if (nextFolderId != null) {
+        setBrowseError(true);
+      }
+      setLoading(false);
+      setBrowsing(false);
+      return;
+    }
+
+    if (nextFolderId == null) {
+      setCourses(library.courses || []);
+    } else if ((library.courses || []).length > 0) {
+      setCourses(library.courses);
+    }
+    setFolderVideos(library.folder_videos || []);
+    setFolderPdfs(library.folder_pdfs || []);
+    setFolderMockTests(library.folder_mock_tests || []);
     setLoading(false);
     setBrowsing(false);
   }, []);
@@ -235,7 +250,7 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
     return <p className="text-sm font-semibold text-[#667085]">Loading purchased courses...</p>;
   }
 
-  if (!courses.length) {
+  if (!scopedCourse && !courses.length) {
     return (
       <div className="rounded-[20px] border border-dashed border-[#dfe5ef] bg-[#f8fafc] p-8 text-center">
         <p className="text-sm font-bold text-[#667085]">No purchased courses yet.</p>
@@ -347,6 +362,17 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
 
       {browsing ? (
         <p className="text-sm font-semibold text-[#667085]">Loading...</p>
+      ) : browseError ? (
+        <div className="rounded-[20px] border border-dashed border-[#dfe5ef] bg-[#f8fafc] p-8 text-center">
+          <p className="text-sm font-bold text-[#667085]">Could not load this course. Please try again.</p>
+          <button
+            type="button"
+            onClick={() => scopedCourse?.course_folder_id != null && void loadLibrary(scopedCourse.course_folder_id, { silent: true })}
+            className="mt-4 inline-flex h-11 items-center rounded-2xl bg-[#172a69] px-5 text-sm font-extrabold text-white"
+          >
+            Retry
+          </button>
+        </div>
       ) : !contentBucket ? (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {([
