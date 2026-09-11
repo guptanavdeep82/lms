@@ -5,6 +5,19 @@ export type HomeTrendingLink = {
   url: string;
 };
 
+export type HomeCategoryChip = {
+  title: string;
+  subtitle: string;
+  url: string;
+  icon: string;
+};
+
+export type HomePlayStore = {
+  enabled: boolean;
+  url: string;
+  package_id: string | null;
+};
+
 export type HomeAchievementStat = {
   value: string;
   label: string;
@@ -88,6 +101,8 @@ export type HomePageSettings = {
   hero_secondary_btn_text: string;
   hero_secondary_btn_url: string;
   hero_secondary_btn_note: string;
+  category_chips: HomeCategoryChip[];
+  play_store: HomePlayStore;
   trending_links: HomeTrendingLink[];
   achievement_stats: HomeAchievementStat[];
   offer_bar: HomeOfferBar;
@@ -107,12 +122,13 @@ export type HomePageCategory = {
 };
 
 export type HomePageReview = {
-  id: number;
+  id: number | string;
   name: string;
   exam_name: string | null;
   description: string;
   rating: number;
   image_url: string | null;
+  source?: "cms" | "play_store";
 };
 
 export type HomePageFaculty = {
@@ -246,6 +262,19 @@ export const defaultHomePageSettings: HomePageSettings = {
   hero_secondary_btn_text: "Mock Test",
   hero_secondary_btn_url: "/mock-tests",
   hero_secondary_btn_note: "See how it works",
+  category_chips: [
+    { title: "Banking Exams", subtitle: "220+ Courses", url: "/courses", icon: "fa-building-columns" },
+    { title: "SSC Exams", subtitle: "180+ Courses", url: "/courses", icon: "fa-pen-ruler" },
+    { title: "Railway Exams", subtitle: "150+ Courses", url: "/courses", icon: "fa-train" },
+    { title: "Teaching Exams", subtitle: "120+ Courses", url: "/courses", icon: "fa-chalkboard-user" },
+    { title: "UPSC Exams", subtitle: "100+ Courses", url: "/courses", icon: "fa-landmark-dome" },
+    { title: "State Exams", subtitle: "90+ Courses", url: "/courses", icon: "fa-map-location-dot" },
+  ],
+  play_store: {
+    enabled: true,
+    url: "https://play.google.com/store/apps/details?id=co.lily.bqhlu",
+    package_id: "co.lily.bqhlu",
+  },
   trending_links: [
     { label: "RBI Assistant Notification", url: "/mock-tests" },
     { label: "SBI CBO Notification", url: "/mock-tests" },
@@ -417,6 +446,11 @@ export function normalizeHomePageSettings(settings?: Partial<HomePageSettings> |
         : defaultHomePageSettings.mock_section.demo_options,
     },
     contact_section: { ...defaultHomePageSettings.contact_section, ...(source.contact_section ?? {}) },
+    category_chips: source.category_chips?.length ? source.category_chips : defaultHomePageSettings.category_chips,
+    play_store: {
+      ...defaultHomePageSettings.play_store,
+      ...(source.play_store ?? {}),
+    },
     trending_links: source.trending_links?.length ? source.trending_links : defaultHomePageSettings.trending_links,
     achievement_stats: source.achievement_stats?.length
       ? source.achievement_stats

@@ -71,8 +71,16 @@ export function HomeFacultySection({ faculties }: { faculties: HomePageFaculty[]
   );
 }
 
-export function HomeReviewsSection({ reviews }: { reviews: HomePageReview[] }) {
+export function HomeReviewsSection({
+  reviews,
+  playStoreUrl,
+}: {
+  reviews: HomePageReview[];
+  playStoreUrl?: string | null;
+}) {
   if (reviews.length === 0) return null;
+
+  const fromPlayStore = reviews.some((review) => review.source === "play_store");
 
   return (
     <>
@@ -85,7 +93,9 @@ export function HomeReviewsSection({ reviews }: { reviews: HomePageReview[] }) {
             What Our Students Say
           </h2>
           <p className="sec-sub" style={{ color: "rgba(255,255,255,.55)" }}>
-            Real success stories from students who cracked their banking exams with KR Logics.
+            {fromPlayStore
+              ? "Real Google Play reviews from students who use the KR Logics app."
+              : "Real success stories from students who cracked their banking exams with KR Logics."}
           </p>
         </div>
         <div className="testi-grid">
@@ -93,7 +103,7 @@ export function HomeReviewsSection({ reviews }: { reviews: HomePageReview[] }) {
             const color = facultyColors[index % facultyColors.length];
 
             return (
-              <div className="testi-card" key={review.id}>
+              <div className="testi-card" key={String(review.id)}>
                 <div className="testi-stars">
                   {buildStars(review.rating).map((state, starIndex) => (
                     <i
@@ -121,6 +131,14 @@ export function HomeReviewsSection({ reviews }: { reviews: HomePageReview[] }) {
             );
           })}
         </div>
+        {playStoreUrl ? (
+          <div className="play-store-cta">
+            <a href={playStoreUrl} target="_blank" rel="noopener noreferrer">
+              <i className="fab fa-google-play" />
+              See all reviews on Google Play
+            </a>
+          </div>
+        ) : null}
       </section>
     </>
   );

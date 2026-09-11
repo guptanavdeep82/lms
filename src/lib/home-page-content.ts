@@ -2,6 +2,7 @@ import {
   formatCompactStat,
   formatStatNumber,
   extractYouTubeId,
+  type HomeCategoryChip,
   type HomePageCategory,
   type HomePageSettings,
   type HomeTopCourse,
@@ -120,6 +121,25 @@ export function buildContactPhoneMarkup(whatsappNumber: string | null): string {
   }
 
   return `<p>${escapeHtml(whatsappNumber)}</p>`;
+}
+
+export function buildCategoryChipsMarkup(chips: HomeCategoryChip[]): string {
+  if (!chips.length) return "";
+
+  const items = chips
+    .map((chip, index) => {
+      const visual = `<span class="cat-ic c${(index % 6) + 1}"><i class="${faIconClass(chip.icon)}"></i></span>`;
+
+      return `<a href="${escapeHtml(chip.url || "/courses")}" class="cat-chip">
+    ${visual}
+    <span class="cat-chip-meta"><b>${escapeHtml(chip.title)}</b><small>${escapeHtml(chip.subtitle || "Explore Courses")}</small></span>
+  </a>`;
+    })
+    .join("\n  ");
+
+  return `<section class="cat-strip" id="categories" aria-label="Explore exam categories">
+  ${items}
+</section>`;
 }
 
 export function buildCategoryStripMarkup(categories: HomePageCategory[]): string {
