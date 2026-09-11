@@ -11,12 +11,23 @@ export type MockQuestion = {
   explanation: string | null;
 };
 
+export type MockTestSectionSummary = {
+  answered: number;
+  answered_review: number;
+  not_answered: number;
+  marked_review: number;
+  not_visited: number;
+  time_taken_seconds: number;
+};
+
 export type MockTestSection = {
   id: number;
   name: string;
   slug: string;
   sort_order: number;
   duration_minutes: number;
+  total_marks?: number;
+  default_marks?: number;
   passing_percentage: number;
   instructions: string | null;
   questions_count: number;
@@ -25,6 +36,7 @@ export type MockTestSection = {
   best_percentage: number;
   attempts_count: number;
   passed_at: string | null;
+  summary?: MockTestSectionSummary | null;
   latest_attempt?: {
     id: number;
     score: number;
@@ -85,6 +97,7 @@ export type MockTestSectionExamResponse = {
     name: string;
     slug: string;
     duration_minutes: number;
+    total_marks?: number;
     passing_percentage: number;
     instructions: string | null;
   };
@@ -132,7 +145,62 @@ export function mockTestProgressUrl(slug: string, email: string) {
   return `${publicBackendBaseUrl}/api/mock-tests/${encodeURIComponent(slug)}/progress?email=${encodeURIComponent(email)}`;
 }
 
+export const MOCK_EXAM_MESSAGE_SOURCE = "kr-mock-exam";
+
+export function notifyMockExamOpener(payload: {
+  slug: string;
+  sections: MockTestSection[];
+}) {
+  if (typeof window === "undefined" || !window.opener) return;
+  try {
+    window.opener.postMessage(
+      { source: MOCK_EXAM_MESSAGE_SOURCE, type: "section-progress", ...payload },
+      window.location.origin,
+    );
+  } catch {
+    // Popup opener may already be closed.
+  }
+}
+
 export type MockTestProgressResponse = {
   sequential_sections: boolean;
   sections: MockTestSection[];
 };
+
+export function sectionTotalMarks(section: MockTestSection, questions: MockQuestion[] = []): number {
+  if (typeof section.total_marks === "number" && Number.isFinite(section.total_marks)) {
+    return section.total_marks;
+  }
+
+  const sectionQuestions = questions.filter((question) => question.section_name === section.name);
+  if (sectionQuestions.length > 0) {
+    return sectionQuestions.reduce((sum, question) => sum + (question.marks || 0), 0);
+  }
+
+  if (typeof section.default_marks === "number" && section.default_marks > 0) {
+    return section.default_marks * (section.questions_count || 0);
+  }
+
+  return section.questions_count || 0;
+}
+
+export function examTotalsFromDetail(data: MockTestDetailResponse) {
+  const sections = [...(data.sections ?? [])].sort((a, b) => a.sort_order - b.sort_order);
+  if (data.sequential_sections && sections.length > 0) {
+    const questionsCount = sections.reduce((sum, section) => sum + (section.questions_count || 0), 0);
+    const durationMinutes = sections.reduce((sum, section) => sum + (section.duration_minutes || 0), 0);
+    const totalMarks = sections.reduce((sum, section) => sum + sectionTotalMarks(section, data.questions), 0);
+
+    return {
+      questions_count: questionsCount || data.test.questions_count,
+      duration_minutes: durationMinutes || data.test.duration_minutes,
+      total_marks: totalMarks || data.test.total_marks,
+    };
+  }
+
+  return {
+    questions_count: data.test.questions_count,
+    duration_minutes: data.test.duration_minutes,
+    total_marks: data.test.total_marks,
+  };
+}

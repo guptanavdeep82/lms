@@ -9,7 +9,7 @@ import { PaletteIcon, formatExamClock, formatMmSs } from "@/components/student/m
 import type { MockAttemptAnswerInput } from "@/lib/mock-attempt-analysis";
 import { saveMockResult } from "@/lib/mock-results";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
-import { mockTestsApiUrl, mockTestSectionExamUrl, nextUnlockedSection, type MockQuestion, type MockTestDetailResponse, type MockTestSectionExamResponse } from "@/lib/mock-tests";
+import { mockTestsApiUrl, mockTestSectionExamUrl, nextUnlockedSection, notifyMockExamOpener, type MockQuestion, type MockTestDetailResponse, type MockTestSection, type MockTestSectionExamResponse } from "@/lib/mock-tests";
 import { decodeHtmlEntities } from "@/lib/html-entities";
 
 export default function DynamicMockExamPage() {
@@ -29,6 +29,7 @@ export default function DynamicMockExamPage() {
   const [isPaused, setIsPaused] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showSubmitSummary, setShowSubmitSummary] = useState(false);
+  const [pendingNextSection, setPendingNextSection] = useState<MockTestSection | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const visitCounterRef = useRef(0);
@@ -140,23 +141,41 @@ export default function DynamicMockExamPage() {
   const timerWarning = sectionMeta && remainingSeconds <= 300;
 
   const submitSummary = useMemo(() => {
-    const rows = new Map<
-      string,
-      {
-        name: string;
-        total: number;
-        answered: number;
-        answeredReview: number;
-        notAnswered: number;
-        markedReview: number;
-        notVisited: number;
-        timeTaken: number;
-      }
-    >();
+    type SummaryRow = {
+      name: string;
+      total: number;
+      answered: number;
+      answeredReview: number;
+      notAnswered: number;
+      markedReview: number;
+      notVisited: number;
+      timeTaken: number;
+    };
 
+    const currentSort = data?.sections?.find((item) => item.id === sectionMeta?.id)?.sort_order;
+    const previousRows: SummaryRow[] = [...(data?.sections ?? [])]
+      .filter((section) => {
+        if (!section.summary) return false;
+        if (sectionMeta && section.id === sectionMeta.id) return false;
+        if (currentSort != null && section.sort_order > currentSort) return false;
+        return true;
+      })
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((section) => ({
+        name: section.name,
+        total: section.questions_count,
+        answered: section.summary?.answered ?? 0,
+        answeredReview: section.summary?.answered_review ?? 0,
+        notAnswered: section.summary?.not_answered ?? 0,
+        markedReview: section.summary?.marked_review ?? 0,
+        notVisited: section.summary?.not_visited ?? 0,
+        timeTaken: section.summary?.time_taken_seconds ?? section.latest_attempt?.time_utilized_seconds ?? 0,
+      }));
+
+    const currentRows = new Map<string, SummaryRow>();
     for (const item of questions) {
-      const name = item.section_name || "General";
-      const row = rows.get(name) ?? {
+      const name = item.section_name || sectionMeta?.name || "General";
+      const row = currentRows.get(name) ?? {
         name,
         total: 0,
         answered: 0,
@@ -176,10 +195,10 @@ export default function DynamicMockExamPage() {
       else if (isReview) row.markedReview += 1;
       else if (isVisited) row.notAnswered += 1;
       else row.notVisited += 1;
-      rows.set(name, row);
+      currentRows.set(name, row);
     }
 
-    const sections = Array.from(rows.values());
+    const sections = [...previousRows, ...Array.from(currentRows.values())];
     const totals = sections.reduce(
       (sum, row) => ({
         total: sum.total + row.total,
@@ -194,7 +213,7 @@ export default function DynamicMockExamPage() {
     );
 
     return { sections, totals };
-  }, [answers, questionTimes, questions, reviewMarked, visited]);
+  }, [answers, data?.sections, questionTimes, questions, reviewMarked, sectionMeta, visited]);
 
   const accumulateQuestionTime = useCallback((questionId: number) => {
     const elapsed = Math.max(1, Math.floor((Date.now() - questionStartedAtRef.current) / 1000));
@@ -271,9 +290,14 @@ export default function DynamicMockExamPage() {
     );
 
     if (sectionMeta) {
-      const next = nextUnlockedSection(saved?.progress?.sections ?? data.sections ?? [], sectionMeta.slug);
+      const progressSections = saved?.progress?.sections ?? data.sections ?? [];
+      notifyMockExamOpener({ slug, sections: progressSections });
+      setData((previous) => previous ? { ...previous, sections: progressSections } : previous);
+      const next = nextUnlockedSection(progressSections, sectionMeta.slug);
       if (next) {
-        staticReplace(`/student/mock-tests/${slug}/exam?examWindow=1&section=${encodeURIComponent(next.slug)}`);
+        setIsPaused(true);
+        setPendingNextSection(next);
+        setSubmitting(false);
         return;
       }
 
@@ -302,20 +326,20 @@ export default function DynamicMockExamPage() {
   ]);
 
   useEffect(() => {
-    if (!data || !questions.length || isPaused || remainingSeconds <= 0) return;
+    if (!data || !questions.length || isPaused || remainingSeconds <= 0 || pendingNextSection) return;
 
     const timer = window.setInterval(() => {
       setRemainingSeconds((seconds) => Math.max(seconds - 1, 0));
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [data, isPaused, remainingSeconds]);
+  }, [data, isPaused, pendingNextSection, remainingSeconds]);
 
   useEffect(() => {
-    if (data && questions.length > 0 && remainingSeconds === 0 && !submitting) {
+    if (data && questions.length > 0 && remainingSeconds === 0 && !submitting && !pendingNextSection) {
       void submitTest();
     }
-  }, [data, questions.length, remainingSeconds, submitTest, submitting]);
+  }, [data, pendingNextSection, questions.length, remainingSeconds, submitTest, submitting]);
 
   const enterFullscreen = () => {
     document.documentElement.requestFullscreen?.().catch(() => undefined);
@@ -398,7 +422,7 @@ export default function DynamicMockExamPage() {
               <h1 className="text-[13px] font-medium sm:text-[14px]">{sectionMeta ? `${test.title} · ${sectionMeta.name}` : test.title}</h1>
               {sectionMeta && (
                 <p className="text-[11px] font-semibold text-[#d8ebff]">
-                  Pass mark: {sectionMeta.passing_percentage}% · Section timer active
+                  Section time: {sectionMeta.duration_minutes} min · Marks: {sectionMeta.total_marks ?? questions.reduce((sum, item) => sum + (item.marks || 0), 0)} · Pass {sectionMeta.passing_percentage}%
                 </p>
               )}
             </div>
@@ -435,10 +459,9 @@ export default function DynamicMockExamPage() {
         <section className="grid min-h-[calc(100vh-50px)] grid-rows-[auto_1fr_auto] overflow-hidden lg:min-h-0">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] bg-[#f6f6f6] px-2 py-2 text-sm">
             <span className="font-bold text-[#0f60b5] underline">{decodeHtmlEntities(question.section_name)}</span>
-            <select className="rounded border border-[#111827] bg-white px-2 py-1 text-base">
-              <option>English</option>
-              <option>Hindi</option>
-            </select>
+            <span className="inline-flex items-center rounded border border-[#111827] bg-white px-3 py-1 text-base">
+              English
+            </span>
           </div>
 
           <div className="grid grid-rows-[auto_1fr] overflow-hidden">
@@ -642,6 +665,31 @@ export default function DynamicMockExamPage() {
                 {submitting ? "Submitting..." : "Submit"}
               </button>
             </div>
+          </div>
+        </div>
+      ) : null}
+
+      {pendingNextSection ? (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[rgba(15,23,42,0.62)] p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 text-center shadow-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#3378b9]">Section submitted</p>
+            <h2 className="mt-2 text-2xl font-extrabold text-[#172a69]">Next section is ready</h2>
+            <p className="mt-3 text-sm font-semibold leading-6 text-[#667085]">
+              <b className="text-[#172a69]">{pendingNextSection.name}</b> is about to start. Click Start when you are ready.
+            </p>
+            <p className="mt-4 text-sm font-bold text-[#344054]">
+              {pendingNextSection.questions_count} questions · {pendingNextSection.duration_minutes} min
+              {pendingNextSection.total_marks ? ` · ${pendingNextSection.total_marks} marks` : ""} · Pass {pendingNextSection.passing_percentage}%
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                staticReplace(`/student/mock-tests/${slug}/exam?examWindow=1&section=${encodeURIComponent(pendingNextSection.slug)}`);
+              }}
+              className="mt-6 inline-flex h-11 min-w-[160px] items-center justify-center rounded-xl bg-[#3378b9] px-6 text-sm font-extrabold text-white"
+            >
+              Start
+            </button>
           </div>
         </div>
       ) : null}

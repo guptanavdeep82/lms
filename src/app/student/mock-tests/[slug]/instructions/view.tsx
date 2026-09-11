@@ -7,7 +7,7 @@ import { useLiveParam } from "@/lib/use-live-param";
 import { Globe2, Loader2 } from "lucide-react";
 import { PALETTE_LEGEND, PaletteIcon } from "@/components/student/mock-exam-status";
 import { isStudentLoggedIn, getStudentSession } from "@/lib/student-auth";
-import { mockTestsApiUrl, type MockTestDetailResponse } from "@/lib/mock-tests";
+import { examTotalsFromDetail, mockTestsApiUrl, sectionTotalMarks, type MockTestDetailResponse } from "@/lib/mock-tests";
 import { decodeHtmlEntities } from "@/lib/html-entities";
 
 type SectionRow = {
@@ -50,8 +50,9 @@ export default function DynamicMockInstructionsPage() {
   }, [slug, student?.email]);
 
   const sectionRows = useMemo(() => (data ? buildSectionRows(data) : []), [data]);
+  const totals = useMemo(() => (data ? examTotalsFromDetail(data) : null), [data]);
 
-  if (loading || !data) {
+  if (loading || !data || !totals) {
     return <LoadingScreen />;
   }
 
@@ -78,11 +79,11 @@ export default function DynamicMockInstructionsPage() {
           <ol className="space-y-4 text-[14px] leading-7 text-[#222] sm:text-[15px]">
             <li>
               <span className="mr-2 font-bold">1.</span>
-              Total duration of this test is <b>{test.duration_minutes} minutes</b>. The countdown timer at the top of the screen will display the remaining time. When the timer reaches zero, the test will be submitted automatically.
+              Total duration of this test is <b>{totals.duration_minutes} minutes</b>. The countdown timer at the top of the screen will display the remaining time. When the timer reaches zero, the test will be submitted automatically.
             </li>
             <li>
               <span className="mr-2 font-bold">2.</span>
-              This test has <b>{test.questions_count} questions</b> for a total of <b>{test.total_marks} marks</b>.
+              This test has <b>{totals.questions_count} questions</b> for a total of <b>{totals.total_marks} marks</b>.
               {data.sequential_sections
                 ? " Sections are sequential. Submit a section to unlock the next one, even if you skip questions."
                 : " You can move between questions using the question palette on the right."}
@@ -113,9 +114,9 @@ export default function DynamicMockInstructionsPage() {
                     ))}
                     <tr className="bg-[#eef3f8] font-bold">
                       <td className="border border-[#cfcfcf] px-3 py-2" colSpan={2}>Total</td>
-                      <td className="border border-[#cfcfcf] px-3 py-2">{sectionRows.reduce((sum, row) => sum + row.questions, 0)}</td>
-                      <td className="border border-[#cfcfcf] px-3 py-2">{sectionRows.reduce((sum, row) => sum + row.marks, 0)}</td>
-                      <td className="border border-[#cfcfcf] px-3 py-2">{test.duration_minutes}</td>
+                      <td className="border border-[#cfcfcf] px-3 py-2">{totals.questions_count}</td>
+                      <td className="border border-[#cfcfcf] px-3 py-2">{totals.total_marks}</td>
+                      <td className="border border-[#cfcfcf] px-3 py-2">{totals.duration_minutes}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -158,10 +159,7 @@ export default function DynamicMockInstructionsPage() {
               Choose your default language:
               <span className="inline-flex h-9 items-center gap-2 rounded border border-[#b9b9b9] bg-white px-3">
                 <Globe2 size={15} className="text-[#1e4b8c]" />
-                <select className="bg-transparent text-sm outline-none">
-                  <option>English</option>
-                  <option>Hindi</option>
-                </select>
+                <span className="text-sm">English</span>
               </span>
             </label>
             <label className="mt-5 flex items-start gap-3 text-sm leading-6 text-[#222]">
@@ -194,19 +192,13 @@ function buildSectionRows(data: MockTestDetailResponse): SectionRow[] {
   if (data.sections && data.sections.length > 0) {
     return [...data.sections]
       .sort((a, b) => a.sort_order - b.sort_order)
-      .map((section, index) => {
-        const sectionQuestions = data.questions.filter((question) => question.section_name === section.name);
-        const marks = sectionQuestions.length
-          ? sectionQuestions.reduce((sum, question) => sum + (question.marks || 0), 0)
-          : section.questions_count;
-        return {
-          sl: index + 1,
-          name: section.name,
-          questions: section.questions_count || sectionQuestions.length,
-          marks,
-          duration: section.duration_minutes,
-        };
-      });
+      .map((section, index) => ({
+        sl: index + 1,
+        name: section.name,
+        questions: section.questions_count,
+        marks: sectionTotalMarks(section, data.questions),
+        duration: section.duration_minutes,
+      }));
   }
 
   const grouped = new Map<string, { questions: number; marks: number }>();

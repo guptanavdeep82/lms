@@ -1,37 +1,100 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { staticPush, staticReplace } from "@/lib/static-nav";
 import { useLiveParam } from "@/lib/use-live-param";
-import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, FileText, Globe2, Loader2, MonitorCheck, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, Award, CheckCircle2, Clock3, FileText, Loader2, MonitorCheck, ShieldCheck, UserRound } from "lucide-react";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
-import { mockTestsApiUrl, type MockTestDetailResponse, type MockTestSection } from "@/lib/mock-tests";
+import {
+  examTotalsFromDetail,
+  MOCK_EXAM_MESSAGE_SOURCE,
+  mockTestProgressUrl,
+  mockTestsApiUrl,
+  sectionTotalMarks,
+  type MockTestDetailResponse,
+  type MockTestProgressResponse,
+  type MockTestSection,
+} from "@/lib/mock-tests";
 
 export default function DynamicMockSetupPage() {
   const slug = useLiveParam("slug", 2);
   const [data, setData] = useState<MockTestDetailResponse | null>(null);
   const student = getStudentSession();
 
-  useEffect(() => {
+  const applyProgress = useCallback((progress: MockTestProgressResponse) => {
+    setData((previous) => {
+      if (!previous) return previous;
+      return {
+        ...previous,
+        sequential_sections: progress.sequential_sections,
+        sections: progress.sections,
+      };
+    });
+  }, []);
+
+  const loadSetup = useCallback(async () => {
     const target = `/student/mock-tests/${slug}/setup`;
     if (!isStudentLoggedIn()) {
       staticReplace(`/login?redirect=${encodeURIComponent(target)}`);
       return;
     }
 
-    fetch(mockTestsApiUrl(slug, student?.email))
-      .then((response) => response.json())
-      .then((payload: MockTestDetailResponse) => {
-        if (payload.test.is_locked) {
-          staticReplace(`/mock-tests/${payload.test.category_slug ?? ""}`);
-          return;
-        }
-
-        setData(payload);
-      });
+    const response = await fetch(mockTestsApiUrl(slug, student?.email), { cache: "no-store" });
+    if (!response.ok) return;
+    const payload = (await response.json()) as MockTestDetailResponse;
+    if (payload.test.is_locked) {
+      staticReplace(`/mock-tests/${payload.test.category_slug ?? ""}`);
+      return;
+    }
+    setData(payload);
   }, [slug, student?.email]);
+
+  const refreshProgress = useCallback(async () => {
+    if (!student?.email) return;
+    try {
+      const response = await fetch(mockTestProgressUrl(slug, student.email), { cache: "no-store" });
+      if (!response.ok) return;
+      applyProgress((await response.json()) as MockTestProgressResponse);
+    } catch {
+      // Keep the last known setup state if a background refresh fails.
+    }
+  }, [applyProgress, slug, student?.email]);
+
+  useEffect(() => {
+    void loadSetup();
+  }, [loadSetup]);
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      const payload = event.data as { source?: string; type?: string; slug?: string; sections?: MockTestSection[] } | null;
+      if (payload?.source !== MOCK_EXAM_MESSAGE_SOURCE || payload.type !== "section-progress") return;
+      if (payload.slug !== slug || !payload.sections) return;
+      applyProgress({ sequential_sections: true, sections: payload.sections });
+    };
+
+    const onFocus = () => {
+      void refreshProgress();
+    };
+
+    const onVisibility = () => {
+      if (!document.hidden) {
+        void refreshProgress();
+      }
+    };
+
+    window.addEventListener("message", onMessage);
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      window.removeEventListener("message", onMessage);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [applyProgress, refreshProgress, slug]);
 
   if (!data) {
     return <main className="grid min-h-screen place-items-center bg-[#eef3f8]"><Loader2 className="animate-spin text-[#3378b9]" size={34} /></main>;
@@ -40,6 +103,10 @@ export default function DynamicMockSetupPage() {
   const test = data.test;
   const sections = data.sections ?? [];
   const usesSections = Boolean(data.sequential_sections && sections.length > 0);
+  const totals = examTotalsFromDetail(data);
+  const previewSection = sections.find((section) => section.status !== "locked") ?? sections[0];
+  const previewDuration = previewSection?.duration_minutes || totals.duration_minutes;
+  const previewQuestionCount = previewSection?.questions_count || totals.questions_count;
 
   const openExamWindow = (section?: MockTestSection) => {
     const sectionQuery = section ? `&section=${encodeURIComponent(section.slug)}` : "";
@@ -69,7 +136,7 @@ export default function DynamicMockSetupPage() {
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs font-bold sm:gap-3 sm:text-sm">
             <span className="rounded-lg bg-white/14 px-3 py-1.5">Language: English</span>
-            <span className="rounded-lg bg-white/14 px-3 py-1.5">Time: {test.duration_minutes} min</span>
+            <span className="rounded-lg bg-white/14 px-3 py-1.5">Time: {totals.duration_minutes} min</span>
           </div>
         </div>
       </header>
@@ -83,9 +150,9 @@ export default function DynamicMockSetupPage() {
 
           <div className="mt-7 grid gap-4 sm:grid-cols-2">
             {[
-              { label: "Total Questions", value: String(test.questions_count), icon: FileText },
-              { label: "Duration", value: `${test.duration_minutes} min`, icon: Clock3 },
-              { label: "Default Language", value: "English", icon: Globe2 },
+              { label: "Total Questions", value: String(totals.questions_count), icon: FileText },
+              { label: "Duration", value: `${totals.duration_minutes} min`, icon: Clock3 },
+              { label: "Total Marks", value: String(totals.total_marks), icon: Award },
               { label: "Candidate", value: student?.name || "Student", icon: UserRound },
             ].map((item) => (
               <div key={item.label} className="rounded-2xl bg-[#f7f9fd] p-5 ring-1 ring-[#e5eaf2]">
@@ -113,7 +180,7 @@ export default function DynamicMockSetupPage() {
                           <div>
                             <p className="text-base font-extrabold text-[#172a69]">{section.sort_order}. {section.name}</p>
                             <p className="mt-1 text-xs font-semibold text-[#667085]">
-                              {section.questions_count} questions · {section.duration_minutes} min · Pass {section.passing_percentage}%
+                              {section.questions_count} questions · {sectionTotalMarks(section)} marks · {section.duration_minutes} min · Pass {section.passing_percentage}%
                             </p>
                             {!hasQuestions ? (
                               <p className="mt-1 text-xs font-bold text-[#b42318]">No questions added yet — contact admin</p>
@@ -157,10 +224,10 @@ export default function DynamicMockSetupPage() {
           <div className="mt-6 rounded-2xl bg-white/8 p-4 ring-1 ring-white/10">
             <div className="flex items-center justify-between text-sm font-bold">
               <span>Timer</span>
-              <span className="rounded-lg bg-white px-3 py-1 text-[#172a69]">{String(test.duration_minutes).padStart(2, "0")}:00</span>
+              <span className="rounded-lg bg-white px-3 py-1 text-[#172a69]">{String(previewDuration).padStart(2, "0")}:00</span>
             </div>
             <div className="mt-4 grid grid-cols-5 gap-2">
-              {Array.from({ length: Math.min(test.questions_count || 10, 10) }, (_, index) => (
+              {Array.from({ length: Math.min(previewQuestionCount || 10, 10) }, (_, index) => (
                 <span key={index} className="grid h-9 place-items-center rounded-lg bg-white/16 text-xs font-extrabold">{index + 1}</span>
               ))}
             </div>
