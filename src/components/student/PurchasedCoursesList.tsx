@@ -23,6 +23,7 @@ import {
 } from "@/lib/packages";
 import { getStudentSession } from "@/lib/student-auth";
 import { BookmarkButton } from "@/components/student/BookmarkButton";
+import { ProtectedVideoPlayer } from "@/components/student/ProtectedVideoPlayer";
 
 const gradients = [
   "from-[#172a69] via-[#2350b8] to-[#13a38b]",
