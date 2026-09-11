@@ -62,6 +62,18 @@ export type StudentNoteRecord = {
   updated_at?: string | null;
 };
 
+export type StudentBookmarkType = "course" | "mock_test" | "current_affair" | "mock_question";
+
+export type StudentBookmarkRecord = {
+  id: number;
+  type: StudentBookmarkType;
+  bookmarkable_id: number | null;
+  title: string;
+  url: string | null;
+  excerpt?: string | null;
+  created_at?: string | null;
+};
+
 function apiUrl(path: string) {
   return `${publicBackendBaseUrl}/api/student${path}`;
 }
@@ -218,6 +230,40 @@ export async function deleteStudentNote(email: string, id: number) {
   });
   const data = await response.json().catch(() => ({})) as { message?: string };
   if (!response.ok) throw new Error(data.message || "Unable to delete note.");
+}
+
+export async function fetchStudentBookmarks(email: string) {
+  const response = await fetch(apiUrl(`/bookmarks?email=${encodeURIComponent(email)}`), { cache: "no-store" });
+  if (!response.ok) return [] as StudentBookmarkRecord[];
+  const data = await response.json() as { bookmarks?: StudentBookmarkRecord[] };
+  return data.bookmarks || [];
+}
+
+export async function createStudentBookmark(input: {
+  email: string;
+  type: StudentBookmarkType;
+  id: number;
+  title?: string;
+  url?: string;
+  excerpt?: string;
+}) {
+  const response = await fetch(apiUrl("/bookmarks"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(input),
+  });
+  const data = await response.json().catch(() => ({})) as { bookmark?: StudentBookmarkRecord; message?: string };
+  if (!response.ok) throw new Error(data.message || "Unable to save bookmark.");
+  return data.bookmark || null;
+}
+
+export async function deleteStudentBookmark(email: string, id: number) {
+  const response = await fetch(apiUrl(`/bookmarks/${id}?email=${encodeURIComponent(email)}`), {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+  });
+  const data = await response.json().catch(() => ({})) as { message?: string };
+  if (!response.ok) throw new Error(data.message || "Unable to remove bookmark.");
 }
 
 export async function fetchStudentLibraryData(email: string): Promise<StudentLibraryResponse | null> {

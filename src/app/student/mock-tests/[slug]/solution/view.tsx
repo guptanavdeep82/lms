@@ -6,7 +6,9 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { staticReplace } from "@/lib/static-nav";
 import { useLiveParam } from "@/lib/use-live-param";
-import { ArrowLeft, ArrowRight, BarChart3, Bookmark, Clock3, Flag, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, BarChart3, Clock3, Flag, Loader2 } from "lucide-react";
+import { BookmarksProvider } from "@/components/student/BookmarksProvider";
+import { BookmarkButton } from "@/components/student/BookmarkButton";
 import {
   fetchMockAttemptBySlug,
   fetchMockAttemptDetail,
@@ -120,6 +122,7 @@ export default function MockSolutionPage() {
   };
 
   return (
+    <BookmarksProvider>
     <main className="min-h-screen bg-white text-[#111827]" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
       <header className="bg-[#3378b9] text-white">
         <div className="flex min-h-[50px] flex-wrap items-center justify-between gap-2 px-3 py-2 sm:px-5">
@@ -155,7 +158,15 @@ export default function MockSolutionPage() {
             <span className="text-[#00a651]">+{question.marks}</span>
             <span className="text-[#ff3950]">-{question.negative_marks}</span>
             <span className="inline-flex items-center gap-1"><Clock3 size={14} /> {formatMockClock(question.time_spent_seconds)}</span>
-            <Bookmark size={16} className="text-[#667085]" />
+            <BookmarkButton
+              type="mock_question"
+              id={question.id}
+              title={decodeHtmlEntities(question.question_text).slice(0, 120)}
+              url={`/student/mock-tests/${slug}/solution${attemptQuery}`}
+              excerpt={question.section_name}
+              iconOnly
+              className="h-8 w-8 !rounded-lg !px-0"
+            />
             <Flag size={16} className="text-[#ef4444]" />
           </div>
         </div>
@@ -279,6 +290,7 @@ export default function MockSolutionPage() {
         </aside>
       </div>
     </main>
+    </BookmarksProvider>
   );
 }
 

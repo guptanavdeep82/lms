@@ -84,7 +84,7 @@ export default function DynamicMockInstructionsPage() {
               <span className="mr-2 font-bold">2.</span>
               This test has <b>{test.questions_count} questions</b> for a total of <b>{test.total_marks} marks</b>.
               {data.sequential_sections
-                ? " Sections are sequential. You must pass each section to unlock the next one."
+                ? " Sections are sequential. Submit a section to unlock the next one, even if you skip questions."
                 : " You can move between questions using the question palette on the right."}
             </li>
             <li>

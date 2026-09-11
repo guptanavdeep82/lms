@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, CheckCircle2, Loader2, Megaphone, PlayCircle, Radio } from "lucide-react";
+import { ArrowRight, Bookmark, CheckCircle2, Loader2, Megaphone, Newspaper, PlayCircle, Radio } from "lucide-react";
 import { getStudentSession } from "@/lib/student-auth";
 import { StudentPurchasedLiveClasses } from "@/components/student/StudentPurchasedLiveClasses";
+import { StudentBookmarksPanel } from "@/components/student/panels/StudentBookmarksPanel";
+import { fetchCurrentAffairs } from "@/lib/current-affairs";
 import { fetchStudentLibraryData, fetchStudentProfile, fetchTestAttempts } from "@/lib/student-dashboard";
 
 const tickerMessages = [
@@ -18,6 +20,7 @@ export function StudentDashboardOverview() {
   const [loading, setLoading] = useState(true);
   const [displayName, setDisplayName] = useState("Student");
   const [metrics, setMetrics] = useState({ courses: 0, tests: 0, orders: 0 });
+  const [todayAffairs, setTodayAffairs] = useState<number>(0);
 
   useEffect(() => {
     const session = getStudentSession();
@@ -28,19 +31,23 @@ export function StudentDashboardOverview() {
 
     setDisplayName(session.name || "Student");
 
+    const now = new Date();
+
     Promise.all([
       fetchStudentProfile(session.email),
       fetchStudentLibraryData(session.email),
       fetchTestAttempts(session.email, "daily_practice"),
       fetchTestAttempts(session.email, "mock_test"),
+      fetchCurrentAffairs(now.getFullYear(), now.getMonth() + 1, { day: now.getDate() }),
     ])
-      .then(([profile, library, daily, mock]) => {
+      .then(([profile, library, daily, mock, affairs]) => {
         if (profile?.name) setDisplayName(profile.name);
         setMetrics({
           courses: library?.stats.courses_count ?? 0,
           tests: daily.length + mock.length,
           orders: library?.stats.orders_count ?? 0,
         });
+        setTodayAffairs(affairs.length);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -92,7 +99,13 @@ export function StudentDashboardOverview() {
               <Link href="/student/courses" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-[#f5c518] px-4 text-xs font-extrabold text-[#172a69] shadow-lg shadow-black/10 transition hover:bg-[#ffd844] sm:text-sm">
                 Continue Learning <ArrowRight size={16} />
               </Link>
-              <Link href="/student/live-classes" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-[#0957D3] px-4 text-xs font-bold text-white ring-1 ring-white/20 transition hover:brightness-110 sm:text-sm">
+              <Link href="/student/current-affairs" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-[#0957D3] px-4 text-xs font-bold text-white ring-1 ring-white/20 transition hover:brightness-110 sm:text-sm">
+                Current Affairs <Newspaper size={16} />
+              </Link>
+              <Link href="/student/bookmarks" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-white/10 px-4 text-xs font-bold text-white ring-1 ring-white/20 transition hover:bg-white/15 sm:text-sm">
+                Bookmarks <Bookmark size={16} />
+              </Link>
+              <Link href="/student/live-classes" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-white/10 px-4 text-xs font-bold text-white ring-1 ring-white/20 transition hover:bg-white/15 sm:text-sm">
                 Join Live Class <Radio size={16} />
               </Link>
               <Link href="/student/mock-tests" className="inline-flex h-10 items-center gap-2 rounded-2xl bg-white/10 px-4 text-xs font-bold text-white ring-1 ring-white/20 transition hover:bg-white/15 sm:text-sm">
@@ -102,11 +115,12 @@ export function StudentDashboardOverview() {
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
           {[
             ["Courses", metrics.courses, "/student/courses"],
             ["Tests Taken", metrics.tests, "/student/test-results"],
             ["Orders", metrics.orders, "/student/orders"],
+            ["Today's CA", todayAffairs, "/student/current-affairs"],
           ].map(([label, value, href]) => (
             <Link key={label as string} href={href as string} className="rounded-[22px] border border-[#dfe5ef] bg-white p-4 shadow-sm transition hover:border-[#c7d2fe]">
               <p className="text-xs font-bold text-[#7d8799] sm:text-sm">{label}</p>
@@ -127,6 +141,22 @@ export function StudentDashboardOverview() {
           </Link>
         </div>
         <StudentPurchasedLiveClasses compact />
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-2">
+        <StudentBookmarksPanel compact />
+        <div className="rounded-[28px] border border-[#dfe5ef] bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#7d8799]">Current Affairs</p>
+          <h2 className="mt-1 text-lg font-extrabold text-[#172a69]">Revise today&apos;s capsule</h2>
+          <p className="mt-2 text-sm font-medium leading-6 text-[#667085]">
+            {todayAffairs > 0
+              ? `${todayAffairs} current affairs note${todayAffairs === 1 ? "" : "s"} published today.`
+              : "No current affairs for today yet. Browse previous dates from the calendar."}
+          </p>
+          <Link href="/student/current-affairs" className="mt-5 inline-flex h-10 items-center gap-2 rounded-2xl bg-[#172a69] px-4 text-xs font-extrabold text-white">
+            Open Current Affairs <Newspaper size={16} />
+          </Link>
+        </div>
       </section>
     </div>
   );

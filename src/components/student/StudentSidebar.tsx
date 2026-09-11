@@ -5,12 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { staticPush } from "@/lib/static-nav";
 import {
+  Bookmark,
   BookOpen,
   Gift,
   Grid2X2,
   Headphones,
   History,
   LogOut,
+  Newspaper,
   Radio,
   ShoppingBag,
   StickyNote,
@@ -29,6 +31,8 @@ const navGroups = [
       { label: "My Courses", icon: BookOpen, href: "/student/courses" },
       { label: "Live Classes", icon: Radio, href: "/student/live-classes" },
       { label: "Mock Tests", icon: WalletCards, href: "/student/mock-tests" },
+      { label: "Current Affairs", icon: Newspaper, href: "/student/current-affairs" },
+      { label: "Bookmarks", icon: Bookmark, href: "/student/bookmarks" },
       { label: "My Notes", icon: StickyNote, href: "/student/notes" },
       { label: "Test Results", icon: Target, href: "/student/test-results" },
     ],
@@ -125,5 +129,5 @@ export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
 }
 
 export function studentMobileNavItems() {
-  return navGroups.flatMap((group) => group.items).slice(0, 7);
+  return navGroups.flatMap((group) => group.items).slice(0, 8);
 }

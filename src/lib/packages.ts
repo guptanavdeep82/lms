@@ -67,6 +67,12 @@ export type StudentLibraryFolderVideo = {
   video_url: string | null;
   size_label?: string;
   mime_type?: string | null;
+  qualities?: Array<{
+    id: string;
+    label: string;
+    url: string;
+    height?: number | null;
+  }>;
 };
 
 export type StudentLibraryFolderPdf = {

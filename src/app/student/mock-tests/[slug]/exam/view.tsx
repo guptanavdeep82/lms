@@ -9,7 +9,7 @@ import { PaletteIcon, formatExamClock, formatMmSs } from "@/components/student/m
 import type { MockAttemptAnswerInput } from "@/lib/mock-attempt-analysis";
 import { saveMockResult } from "@/lib/mock-results";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
-import { mockTestsApiUrl, mockTestSectionExamUrl, type MockQuestion, type MockTestDetailResponse, type MockTestSectionExamResponse } from "@/lib/mock-tests";
+import { mockTestsApiUrl, mockTestSectionExamUrl, nextUnlockedSection, type MockQuestion, type MockTestDetailResponse, type MockTestSectionExamResponse } from "@/lib/mock-tests";
 import { decodeHtmlEntities } from "@/lib/html-entities";
 
 export default function DynamicMockExamPage() {
@@ -251,7 +251,7 @@ export default function DynamicMockExamPage() {
       visit_order: visitOrder[item.id] ?? null,
     }));
 
-    await saveMockResult(
+    const saved = await saveMockResult(
       {
         slug,
         testTitle: sectionMeta ? `${data.test.title} - ${sectionMeta.name}` : data.test.title,
@@ -271,7 +271,13 @@ export default function DynamicMockExamPage() {
     );
 
     if (sectionMeta) {
-      staticPush(`/student/mock-tests/${slug}/result?section=${encodeURIComponent(sectionMeta.slug)}`);
+      const next = nextUnlockedSection(saved?.progress?.sections ?? data.sections ?? [], sectionMeta.slug);
+      if (next) {
+        staticReplace(`/student/mock-tests/${slug}/exam?examWindow=1&section=${encodeURIComponent(next.slug)}`);
+        return;
+      }
+
+      staticReplace(`/student/mock-tests/${slug}/result?section=${encodeURIComponent(sectionMeta.slug)}`);
       return;
     }
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, Clock3, FileText, Loader2, Play, WalletCards } from "lucide-react";
+import { BookmarkButton } from "@/components/student/BookmarkButton";
 import { fetchStudentPurchases, hasItemAccess, type StudentPurchase } from "@/lib/checkout";
 import { mockTestsApiUrl, type MockCategory, type MockTest, type MockTestsResponse } from "@/lib/mock-tests";
 import { getStudentSession } from "@/lib/student-auth";
@@ -121,12 +122,23 @@ export function PurchasedMockTestsList() {
                     </div>
                   </div>
                   {test.questions_count > 0 ? (
-                    <Link
-                      href={`/student/mock-tests/${test.slug}/instructions`}
-                      className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#172a69] text-xs font-extrabold text-white transition hover:bg-[#10215a]"
-                    >
-                      <Play size={14} /> Start Test
-                    </Link>
+                    <div className="mt-4 flex gap-2">
+                      <Link
+                        href={`/student/mock-tests/${test.slug}/instructions`}
+                        className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#172a69] text-xs font-extrabold text-white transition hover:bg-[#10215a]"
+                      >
+                        <Play size={14} /> Start Test
+                      </Link>
+                      <BookmarkButton
+                        type="mock_test"
+                        id={test.id}
+                        title={test.title}
+                        url={`/student/mock-tests/${test.slug}/instructions`}
+                        excerpt={test.category || test.test_type}
+                        iconOnly
+                        className="h-10 w-10 shrink-0 !px-0"
+                      />
+                    </div>
                   ) : (
                     <p className="mt-4 text-center text-xs font-semibold text-[#7d8799]">Questions coming soon</p>
                   )}

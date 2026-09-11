@@ -199,15 +199,9 @@ export default function MockResultPage() {
               </div>
             </div>
 
-            {!passed && (
-              <p className="mt-4 rounded-xl border border-[#fecdca] bg-[#fff5f5] px-4 py-3 text-sm font-semibold text-[#b42318]">
-                You need at least {passingPercentage}% to unlock the next section. Retry this section to continue.
-              </p>
-            )}
-
-            {passed && nextSection && (
+            {nextSection && nextSection.status !== "locked" && (
               <p className="mt-4 rounded-xl border border-[#abefc6] bg-[#f6fef9] px-4 py-3 text-sm font-semibold text-[#027a48]">
-                Great work! {nextSection.name} is now unlocked.
+                {nextSection.name} is now unlocked. Continue to the next section.
               </p>
             )}
           </div>
@@ -336,7 +330,7 @@ export default function MockResultPage() {
         {isSectionResult && sections.length > 0 && (
           <div className="rounded-[28px] border border-[#dfe5ef] bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:p-8">
             <h2 className="text-lg font-extrabold text-[#172a69]">All Sections Progress</h2>
-            <p className="mt-1 text-sm font-semibold text-[#667085]">Complete sections in order to unlock the next one.</p>
+            <p className="mt-1 text-sm font-semibold text-[#667085]">Submit a section to unlock the next one.</p>
 
             <div className="mt-6 space-y-3">
               {[...sections]
@@ -369,7 +363,7 @@ export default function MockResultPage() {
           </div>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            {isSectionResult && passed && nextSection && nextSection.status !== "locked" && (
+            {isSectionResult && nextSection && nextSection.status !== "locked" && (
               <Link
                 href={`/student/mock-tests/${slug}/exam?section=${encodeURIComponent(nextSection.slug)}&examWindow=1`}
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#027a48] px-5 text-sm font-bold text-white"
@@ -422,12 +416,14 @@ export default function MockResultPage() {
 function SectionProgressRow({ section, isCurrent }: { section: MockTestSection; isCurrent: boolean }) {
   const statusStyles = {
     passed: "border-[#abefc6] bg-[#ecfdf3] text-[#027a48]",
+    completed: "border-[#b2ddff] bg-[#eff8ff] text-[#175cd3]",
     available: "border-[#b2ddff] bg-[#eff8ff] text-[#175cd3]",
     locked: "border-[#eaecf0] bg-[#f9fafb] text-[#667085]",
   };
 
   const statusLabel = {
     passed: "Passed",
+    completed: "Submitted",
     available: "Available",
     locked: "Locked",
   };
@@ -441,7 +437,7 @@ function SectionProgressRow({ section, isCurrent }: { section: MockTestSection; 
       } ${statusStyles[section.status]}`}
     >
       <div className="flex items-center gap-3">
-        {section.status === "locked" ? <Lock size={18} /> : section.status === "passed" ? <CheckCircle2 size={18} /> : <Clock3 size={18} />}
+        {section.status === "locked" ? <Lock size={18} /> : section.status === "passed" ? <CheckCircle2 size={18} /> : section.status === "completed" ? <CheckCircle2 size={18} /> : <Clock3 size={18} />}
         <div>
           <p className="font-extrabold">{section.name}</p>
           <p className="text-xs font-semibold opacity-80">

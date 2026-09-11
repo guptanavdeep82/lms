@@ -20,7 +20,7 @@ export type MockTestSection = {
   passing_percentage: number;
   instructions: string | null;
   questions_count: number;
-  status: "locked" | "available" | "passed";
+  status: "locked" | "available" | "passed" | "completed";
   best_score: number;
   best_percentage: number;
   attempts_count: number;
@@ -115,6 +115,17 @@ export function mockTestsApiUrl(slug?: string, email?: string) {
 
 export function mockTestSectionExamUrl(slug: string, sectionSlug: string, email: string) {
   return `${publicBackendBaseUrl}/api/mock-tests/${encodeURIComponent(slug)}/sections/${encodeURIComponent(sectionSlug)}/exam?email=${encodeURIComponent(email)}`;
+}
+
+export function nextUnlockedSection(sections: MockTestSection[], currentSlug: string): MockTestSection | null {
+  const sorted = [...sections].sort((a, b) => a.sort_order - b.sort_order);
+  const index = sorted.findIndex((section) => section.slug === currentSlug);
+  if (index < 0) return null;
+
+  const next = sorted[index + 1];
+  if (!next || next.status === "locked") return null;
+
+  return next;
 }
 
 export function mockTestProgressUrl(slug: string, email: string) {

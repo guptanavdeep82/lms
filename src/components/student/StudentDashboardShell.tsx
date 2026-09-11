@@ -3,6 +3,7 @@
 import { Bell, Menu, Search } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { staticReplace } from "@/lib/static-nav";
+import { BookmarksProvider } from "@/components/student/BookmarksProvider";
 import { StudentMobileNav } from "@/components/student/StudentMobileNav";
 import { StudentSidebar } from "@/components/student/StudentSidebar";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
@@ -64,7 +65,9 @@ export function StudentDashboardShell({ children }: StudentDashboardShellProps) 
         </header>
 
         <StudentMobileNav />
-        <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-8">{children}</div>
+        <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-8">
+          <BookmarksProvider>{children}</BookmarksProvider>
+        </div>
       </section>
     </main>
   );

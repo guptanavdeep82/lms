@@ -99,11 +99,12 @@ export default function DynamicMockSetupPage() {
           <div className="mt-7 space-y-3">
             {usesSections ? (
               <>
-                <p className="text-sm font-semibold text-[#344054]">This test has sequential sections. Pass one section to unlock the next.</p>
+                <p className="text-sm font-semibold text-[#344054]">This test has sequential sections. Submit a section to unlock the next one — even if you skip questions.</p>
                 <div className="grid gap-3">
                   {sections.map((section) => {
                     const locked = section.status === "locked";
                     const passed = section.status === "passed";
+                    const completed = section.status === "completed";
                     const hasQuestions = section.questions_count > 0;
                     const disabled = locked || !hasQuestions;
                     return (
@@ -119,6 +120,8 @@ export default function DynamicMockSetupPage() {
                             ) : null}
                             {passed ? (
                               <p className="mt-1 text-xs font-bold text-[#15803d]">Passed · Best {section.best_percentage}%</p>
+                            ) : completed ? (
+                              <p className="mt-1 text-xs font-bold text-[#175cd3]">Submitted · Best {section.best_percentage}%</p>
                             ) : null}
                           </div>
                           <button
@@ -127,7 +130,7 @@ export default function DynamicMockSetupPage() {
                             onClick={() => openExamWindow(section)}
                             className="inline-flex h-10 items-center rounded-xl bg-[#3378b9] px-4 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-45"
                           >
-                            {locked ? "Locked" : !hasQuestions ? "Unavailable" : passed ? "Retry Exam" : "Start Exam"}
+                            {locked ? "Locked" : !hasQuestions ? "Unavailable" : passed || completed ? "Retry Exam" : "Start Exam"}
                           </button>
                         </div>
                       </div>

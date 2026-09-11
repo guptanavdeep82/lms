@@ -22,6 +22,7 @@ import {
   type StudentLibraryFolderVideo,
 } from "@/lib/packages";
 import { getStudentSession } from "@/lib/student-auth";
+import { BookmarkButton } from "@/components/student/BookmarkButton";
 
 const gradients = [
   "from-[#172a69] via-[#2350b8] to-[#13a38b]",
@@ -136,31 +137,41 @@ function PurchasedCourseCard({
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7d8799]">{courseTypeLabel(course)}</p>
         <h3 className="mt-1 min-h-[44px] text-[15px] font-extrabold leading-snug text-[#111827]">{course.title}</h3>
         <p className="mt-1 text-xs font-semibold text-[#7d8799]">{courseMetaLine(course)}</p>
-
-        {isFolderBased ? (
-          <button
-            type="button"
-            onClick={() => onOpen(course)}
-            className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#172a69] text-xs font-extrabold text-white transition hover:brightness-110"
-          >
-            Continue Learning <PlayCircle size={16} />
-          </button>
-        ) : (
-          <Link
-            href={isLive ? "/student/live-classes" : courseLearnHref(course)}
-            className={`mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl text-xs font-extrabold text-white transition hover:brightness-110 ${isLive ? "bg-[#0957D3]" : "bg-[#172a69]"}`}
-          >
-            {isLive ? (
-              <>
-                Join Live <Radio size={16} />
-              </>
-            ) : (
-              <>
-                Continue Learning <PlayCircle size={16} />
-              </>
-            )}
-          </Link>
-        )}
+        <div className="mt-4 flex gap-2">
+          {isFolderBased ? (
+            <button
+              type="button"
+              onClick={() => onOpen(course)}
+              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-[#172a69] text-xs font-extrabold text-white transition hover:brightness-110"
+            >
+              Continue Learning <PlayCircle size={16} />
+            </button>
+          ) : (
+            <Link
+              href={isLive ? "/student/live-classes" : courseLearnHref(course)}
+              className={`inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl text-xs font-extrabold text-white transition hover:brightness-110 ${isLive ? "bg-[#0957D3]" : "bg-[#172a69]"}`}
+            >
+              {isLive ? (
+                <>
+                  Join Live <Radio size={16} />
+                </>
+              ) : (
+                <>
+                  Continue Learning <PlayCircle size={16} />
+                </>
+              )}
+            </Link>
+          )}
+          <BookmarkButton
+            type="course"
+            id={course.id}
+            title={course.title}
+            url={isLive ? "/student/live-classes" : courseLearnHref(course)}
+            excerpt={courseTypeLabel(course)}
+            iconOnly
+            className="h-10 w-10 shrink-0 !px-0"
+          />
+        </div>
       </div>
     </article>
   );
@@ -355,7 +366,13 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
             </button>
           </div>
           <div className="aspect-video w-full">
-            <video src={activeVideo.video_url} controls autoPlay className="h-full w-full bg-black object-contain" />
+            <ProtectedVideoPlayer
+              url={activeVideo.video_url}
+              qualities={activeVideo.qualities ?? []}
+              watermark={getStudentSession()?.email || getStudentSession()?.name || "KR Logics"}
+              autoPlay
+              title={activeVideo.title}
+            />
           </div>
         </div>
       ) : null}

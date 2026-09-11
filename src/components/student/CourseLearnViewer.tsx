@@ -7,42 +7,9 @@ import { useLiveParam } from "@/lib/use-live-param";
 import { ArrowLeft, FileText, Loader2, Lock, PlayCircle } from "lucide-react";
 import { StudentDashboardShell } from "@/components/student/StudentDashboardShell";
 import { fetchStudentAccess } from "@/lib/checkout";
-import { fetchCourseBySlug, fetchLessonVideoUrl, type ApiCourseLesson } from "@/lib/courses";
-import { isDirectVideoUrl, youtubeEmbedUrl } from "@/lib/lesson-video";
+import { fetchCourseBySlug, fetchLessonVideoPlayback, type ApiCourseLesson, type LessonVideoQuality } from "@/lib/courses";
+import { ProtectedVideoPlayer } from "@/components/student/ProtectedVideoPlayer";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
-
-function LessonVideoPlayer({ url }: { url: string }) {
-  const embedUrl = youtubeEmbedUrl(url);
-
-  if (embedUrl) {
-    return (
-      <iframe
-        src={embedUrl}
-        title="Course lesson video"
-        className="h-full w-full border-0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
-    );
-  }
-
-  if (isDirectVideoUrl(url)) {
-    return (
-      <video src={url} controls className="h-full w-full bg-black object-contain">
-        <track kind="captions" />
-      </video>
-    );
-  }
-
-  return (
-    <iframe
-      src={url}
-      title="Course lesson video"
-      className="h-full w-full border-0"
-      allowFullScreen
-    />
-  );
-}
 
 function CourseThumb({ imageUrl, title, gradient }: { imageUrl: string | null; title: string; gradient: string }) {
   if (imageUrl) {
@@ -70,6 +37,7 @@ export function CourseLearnViewer() {
   const [lessons, setLessons] = useState<ApiCourseLesson[]>([]);
   const [activeLessonId, setActiveLessonId] = useState<number | null>(null);
   const [playbackUrl, setPlaybackUrl] = useState<string | null>(null);
+  const [playbackQualities, setPlaybackQualities] = useState<LessonVideoQuality[]>([]);
   const [videoLoading, setVideoLoading] = useState(false);
   const [videoError, setVideoError] = useState<string | null>(null);
 
@@ -114,6 +82,7 @@ export function CourseLearnViewer() {
   useEffect(() => {
     if (!activeLesson || !canWatchLesson(activeLesson)) {
       setPlaybackUrl(null);
+      setPlaybackQualities([]);
       setVideoError(null);
       setVideoLoading(false);
       return;
@@ -122,12 +91,14 @@ export function CourseLearnViewer() {
     const session = getStudentSession();
     if (!session?.email) {
       setPlaybackUrl(null);
+      setPlaybackQualities([]);
       return;
     }
 
     // External URLs (YouTube, etc.) come from the course payload.
     if (activeLesson.video_delivery === "external" && activeLesson.video_url) {
       setPlaybackUrl(activeLesson.video_url);
+      setPlaybackQualities([]);
       setVideoError(null);
       setVideoLoading(false);
       return;
@@ -139,6 +110,7 @@ export function CourseLearnViewer() {
 
     if (!needsSignedUrl) {
       setPlaybackUrl(activeLesson.video_url);
+      setPlaybackQualities([]);
       setVideoError(null);
       setVideoLoading(false);
       return;
@@ -148,16 +120,19 @@ export function CourseLearnViewer() {
     setVideoLoading(true);
     setVideoError(null);
     setPlaybackUrl(null);
+    setPlaybackQualities([]);
 
-    fetchLessonVideoUrl(activeLesson.id, session.email)
-      .then((url) => {
+    fetchLessonVideoPlayback(activeLesson.id, session.email)
+      .then((playback) => {
         if (cancelled) return;
-        if (!url) {
+        if (!playback?.video_url) {
           setVideoError("Unable to load this lesson video. Please try again.");
           setPlaybackUrl(null);
+          setPlaybackQualities([]);
           return;
         }
-        setPlaybackUrl(url);
+        setPlaybackUrl(playback.video_url);
+        setPlaybackQualities(playback.qualities);
       })
       .finally(() => {
         if (!cancelled) setVideoLoading(false);
@@ -198,7 +173,12 @@ export function CourseLearnViewer() {
                   <Loader2 className="size-8 animate-spin text-white/80" />
                 </div>
               ) : playbackUrl ? (
-                <LessonVideoPlayer url={playbackUrl} />
+                <ProtectedVideoPlayer
+                  url={playbackUrl}
+                  qualities={playbackQualities}
+                  watermark={getStudentSession()?.email || getStudentSession()?.name || "KR Logics"}
+                  title={activeLesson.title}
+                />
               ) : (
                 <div className="grid h-full place-items-center p-8 text-center">
                   <PlayCircle className="mb-3 size-10 text-[#94a3b8]" />
