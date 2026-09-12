@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, FileText, Loader2, Newspaper, Search } from "lucide-react";
+import { CurrentAffairBody } from "@/components/current-affairs/CurrentAffairBody";
 import { BookmarkButton } from "@/components/student/BookmarkButton";
 import { fetchCurrentAffairs, type CurrentAffairItem } from "@/lib/current-affairs";
 
@@ -221,7 +222,7 @@ export function StudentCurrentAffairsPanel() {
                       className="shrink-0"
                     />
                   </div>
-                  <p className="mt-3 whitespace-pre-wrap text-sm font-medium leading-6 text-[#334155]">{item.content}</p>
+                  <CurrentAffairBody content={item.content} />
                   {item.pdf_url ? (
                     <a
                       href={item.pdf_url}

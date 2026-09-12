@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, FileText, Loader2 } from "lucide-react";
+import { CurrentAffairBody } from "@/components/current-affairs/CurrentAffairBody";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { fetchCurrentAffairs, type CurrentAffairItem } from "@/lib/current-affairs";
 
@@ -142,7 +143,7 @@ export default function CurrentAffairsPage() {
               {selectedItems.map((item) => (
                 <article key={item.id} className="rounded-xl border border-[#eef3fb] bg-[#f8fbff] p-4">
                   <h3 className="text-base font-extrabold text-[#0E318D]">{item.title}</h3>
-                  <p className="mt-2 whitespace-pre-wrap text-sm font-medium leading-6 text-[#334155]">{item.content}</p>
+                  <CurrentAffairBody content={item.content} />
                   {item.pdf_url ? (
                     <a href={item.pdf_url} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg bg-[#0957D3] px-3 text-xs font-extrabold text-white">
                       <FileText size={14} /> Open PDF
