@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { GOOGLE_CLIENT_ID, mountGoogleSignInButton, type GoogleStudent } from "@/lib/google-sign-in";
+import { mountGoogleSignInButton, type GoogleStudent } from "@/lib/google-sign-in";
 
 type GoogleSignInButtonProps = {
   onSuccess: (student: GoogleStudent) => void;
@@ -43,10 +43,7 @@ export function GoogleSignInButton({
 
   useEffect(() => {
     const container = overlayRef.current;
-    if (!container || !GOOGLE_CLIENT_ID) {
-      if (!GOOGLE_CLIENT_ID) {
-        setError("Google login is not configured.");
-      }
+    if (!container) {
       return;
     }
 
@@ -62,7 +59,9 @@ export function GoogleSignInButton({
       .catch((mountError) => {
         if (!cancelled) {
           setReady(false);
-          setError(mountError instanceof Error ? mountError.message : "Google Sign-In failed.");
+          const message = mountError instanceof Error ? mountError.message : "Google Sign-In failed.";
+          console.error("[Google login]", mountError);
+          setError(message);
         }
       });
 
