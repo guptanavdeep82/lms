@@ -8,7 +8,8 @@ const from = join(project, "out");
 const to = join(project, "dist");
 
 if (!existsSync(from)) {
-  throw new Error("Next.js export folder `out` was not created. Static export failed.");
+  console.log("SSR build: no static `out` folder. Serve with `next start` using the `.next` directory.");
+  process.exit(0);
 }
 
 rmSync(to, { recursive: true, force: true });

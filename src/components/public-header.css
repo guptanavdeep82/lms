@@ -1,7 +1,13 @@
+:root {
+  --public-trending-height: 42px;
+}
+
 .public-trending-strip {
   position: sticky;
   top: 0;
   z-index: 110;
+  width: 100%;
+  max-width: none;
   display: flex;
   align-items: center;
   gap: 18px;
@@ -75,8 +81,10 @@ header.public-home-header {
   position: sticky;
   top: var(--public-trending-height, 0px);
   z-index: 100;
-  width: 100%;
-  max-width: none;
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
   padding: 0 5%;
   background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid rgba(9, 87, 211, 0.12);
@@ -89,7 +97,7 @@ header.public-home-header {
 }
 
 .public-home-header .header-inner {
-  display: grid;
+  display: grid !important;
   grid-template-columns: auto 1fr auto;
   grid-template-areas:
     "logo search btns"
@@ -98,7 +106,9 @@ header.public-home-header {
   column-gap: 28px;
   row-gap: 12px;
   min-height: 104px;
-  max-width: none;
+  height: auto !important;
+  width: 100% !important;
+  max-width: none !important;
 }
 
 .public-home-header .logo-wrap {
@@ -667,7 +677,7 @@ header.public-home-header {
   }
 
   .public-home-header nav {
-    display: none;
+    display: none !important;
     position: fixed;
     top: 0;
     right: 0;
@@ -686,7 +696,7 @@ header.public-home-header {
   }
 
   .public-home-header.mobile-nav-open nav {
-    display: flex;
+    display: flex !important;
   }
 
   .public-home-header nav > a,

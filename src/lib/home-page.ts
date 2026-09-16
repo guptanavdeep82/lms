@@ -10,11 +10,16 @@ export type HomeBanner = {
   url: string | null;
 };
 
-export type HomeCategoryChip = {
-  title: string;
-  subtitle: string;
+export type HomeCourseTileItem = {
+  label: string;
   url: string;
   icon: string;
+};
+
+export type HomeCourseTile = {
+  title: string;
+  tone: string;
+  items: HomeCourseTileItem[];
 };
 
 export type HomePlayStore = {
@@ -108,6 +113,7 @@ export type HomePageSettings = {
   hero_secondary_btn_url: string;
   hero_secondary_btn_note: string;
   category_chips: HomeCategoryChip[];
+  top_course_tiles: HomeCourseTile[];
   play_store: HomePlayStore;
   trending_links: HomeTrendingLink[];
   achievement_stats: HomeAchievementStat[];
@@ -276,6 +282,58 @@ export const defaultHomePageSettings: HomePageSettings = {
     { title: "Teaching Exams", subtitle: "120+ Courses", url: "/courses", icon: "fa-chalkboard-user" },
     { title: "UPSC Exams", subtitle: "100+ Courses", url: "/courses", icon: "fa-landmark-dome" },
     { title: "State Exams", subtitle: "90+ Courses", url: "/courses", icon: "fa-map-location-dot" },
+  ],
+  top_course_tiles: [
+    {
+      title: "Popular",
+      tone: "lavender",
+      items: [
+        { label: "PDF Courses", url: "/courses?type=pdf", icon: "fa-file-pdf" },
+        { label: "Mock Tests", url: "/mock-tests", icon: "fa-clipboard-list" },
+        { label: "Live Classes", url: "/live-classes", icon: "fa-video" },
+        { label: "Current Affairs", url: "/current-affairs", icon: "fa-newspaper" },
+      ],
+    },
+    {
+      title: "Video Classes",
+      tone: "mint",
+      items: [
+        { label: "Video Courses", url: "/courses?type=video", icon: "fa-circle-play" },
+        { label: "Live Classes", url: "/live-classes", icon: "fa-video" },
+        { label: "Quant Practice", url: "/courses", icon: "fa-calculator" },
+        { label: "Reasoning", url: "/courses", icon: "fa-brain" },
+      ],
+    },
+    {
+      title: "PDF Courses",
+      tone: "sky",
+      items: [
+        { label: "PDF Courses", url: "/courses?type=pdf", icon: "fa-file-pdf" },
+        { label: "Study Notes", url: "/notes", icon: "fa-book-open" },
+        { label: "Free PDFs", url: "/courses?type=pdf", icon: "fa-file-arrow-down" },
+        { label: "Descriptive", url: "/courses", icon: "fa-pen-nib" },
+      ],
+    },
+    {
+      title: "Free Materials",
+      tone: "peach",
+      items: [
+        { label: "Free PDFs", url: "/courses?type=pdf", icon: "fa-file-lines" },
+        { label: "Practice Quiz", url: "/mock-tests", icon: "fa-list-check" },
+        { label: "Daily CA", url: "/current-affairs", icon: "fa-calendar-day" },
+        { label: "Mock Tests", url: "/mock-tests", icon: "fa-bolt" },
+      ],
+    },
+    {
+      title: "Follow Us",
+      tone: "rose",
+      items: [
+        { label: "WhatsApp", url: "/contact", icon: "fa-whatsapp" },
+        { label: "YouTube", url: "https://www.youtube.com", icon: "fa-youtube" },
+        { label: "Instagram", url: "https://www.instagram.com", icon: "fa-instagram" },
+        { label: "Facebook", url: "https://www.facebook.com", icon: "fa-facebook-f" },
+      ],
+    },
   ],
   play_store: {
     enabled: true,
@@ -454,6 +512,9 @@ export function normalizeHomePageSettings(settings?: Partial<HomePageSettings> |
     },
     contact_section: { ...defaultHomePageSettings.contact_section, ...(source.contact_section ?? {}) },
     category_chips: source.category_chips?.length ? source.category_chips : defaultHomePageSettings.category_chips,
+    top_course_tiles: source.top_course_tiles?.length
+      ? source.top_course_tiles
+      : defaultHomePageSettings.top_course_tiles,
     play_store: {
       ...defaultHomePageSettings.play_store,
       ...(source.play_store ?? {}),
@@ -473,7 +534,10 @@ export function normalizeHomePageSettings(settings?: Partial<HomePageSettings> |
 
 export async function fetchHomePageData(): Promise<HomePageResponse | null> {
   try {
-    const response = await fetch(homePageApiUrl(), { cache: typeof window === "undefined" ? "force-cache" : "no-store" });
+    const response = await fetch(homePageApiUrl(), {
+      cache: typeof window === "undefined" ? "force-cache" : "no-store",
+      next: typeof window === "undefined" ? { revalidate: 120 } : undefined,
+    });
     if (!response.ok) return null;
 
     const payload = (await response.json()) as Partial<HomePageResponse>;

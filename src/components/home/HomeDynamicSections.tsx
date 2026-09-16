@@ -1,6 +1,6 @@
 "use client";
 
-import type { HomePageFaculty, HomePageFaq, HomePageReview, HomePageSettings, HomeTopCourse } from "@/lib/home-page";
+import { defaultHomePageSettings, type HomePageFaculty, type HomePageFaq, type HomePageReview, type HomePageSettings } from "@/lib/home-page";
 
 const facultyColors = ["#1B2E6B", "#15803D", "#185FA5", "#D85A30", "#7F77DD", "#BA7517"];
 const facultyBackgrounds = ["var(--light2)", "#F0FDF4", "#EEF6FF", "#FFF7ED", "#F5F3FF", "#FFF8EB"];
@@ -176,117 +176,36 @@ export function HomeFaqSection({ faqs }: { faqs: HomePageFaq[] }) {
   );
 }
 
-type CourseTileItem = {
-  label: string;
-  url: string;
-  icon: string;
-  external?: boolean;
-};
-
-type CourseTile = {
-  title: string;
-  tone: string;
-  items: CourseTileItem[];
-};
-
-function courseIcon(type: string | null | undefined) {
-  if (type === "pdf") return "fa-file-pdf";
-  if (type === "live") return "fa-video";
-  return "fa-circle-play";
-}
-
 function faClass(icon: string) {
-  if (icon.startsWith("fa ") || icon.startsWith("fab ")) return icon;
+  if (icon.startsWith("fa ") || icon.startsWith("fab ") || icon.startsWith("fas ") || icon.startsWith("far ")) return icon;
   if (["fa-whatsapp", "fa-youtube", "fa-instagram", "fa-facebook-f", "fa-telegram-plane"].includes(icon)) {
     return `fab ${icon}`;
   }
   return `fa ${icon}`;
 }
 
-function shortLabel(title: string) {
-  const value = title.trim();
-  return value.length > 22 ? `${value.slice(0, 20)}…` : value;
-}
-
-function courseItems(courses: HomeTopCourse[], fallbacks: CourseTileItem[]) {
-  const fromCourses = courses.slice(0, 4).map((course) => ({
-    label: shortLabel(course.title),
-    url: `/courses/${course.slug}`,
-    icon: courseIcon(course.course_type),
-  }));
-
-  const seen = new Set(fromCourses.map((item) => item.label.toLowerCase()));
-  const extras = fallbacks.filter((item) => !seen.has(item.label.toLowerCase()));
-
-  return [...fromCourses, ...extras].slice(0, 4);
-}
-
 export function HomeTopCourseTiles({
-  courses,
   settings,
 }: {
-  courses: HomeTopCourse[];
+  courses?: unknown;
   settings?: HomePageSettings | null;
 }) {
-  const videoCourses = courses.filter((course) => course.course_type === "video");
-  const pdfCourses = courses.filter((course) => course.course_type === "pdf");
-  const liveCourses = courses.filter((course) => course.course_type === "live");
-  const whatsappHref = settings?.whatsapp_number
-    ? `https://wa.me/${settings.whatsapp_number.replace(/[^\d]/g, "")}`
-    : null;
+  const tiles = (settings?.top_course_tiles?.length
+    ? settings.top_course_tiles
+    : defaultHomePageSettings.top_course_tiles
+  )
+    .slice(0, 5)
+    .map((tile) => ({
+      title: tile.title,
+      tone: tile.tone || "lavender",
+      items: (tile.items ?? []).slice(0, 4).map((item) => ({
+        ...item,
+        external: /^https?:\/\//i.test(item.url),
+      })),
+    }))
+    .filter((tile) => tile.title && tile.items.length);
 
-  const tiles: CourseTile[] = [
-    {
-      title: "Popular",
-      tone: "lavender",
-      items: courseItems(courses, [
-        { label: "PDF Courses", url: "/courses?type=pdf", icon: "fa-file-pdf" },
-        { label: "Mock Tests", url: "/mock-tests", icon: "fa-clipboard-list" },
-        { label: "Live Classes", url: "/live-classes", icon: "fa-video" },
-        { label: "Current Affairs", url: "/current-affairs", icon: "fa-newspaper" },
-      ]),
-    },
-    {
-      title: "Video Classes",
-      tone: "mint",
-      items: courseItems(videoCourses.length ? videoCourses : courses, [
-        { label: "Video Courses", url: "/courses?type=video", icon: "fa-circle-play" },
-        { label: "Live Classes", url: "/live-classes", icon: "fa-video" },
-        { label: "Quant Practice", url: "/courses", icon: "fa-calculator" },
-        { label: "Reasoning", url: "/courses", icon: "fa-brain" },
-      ]),
-    },
-    {
-      title: "PDF Courses",
-      tone: "sky",
-      items: courseItems(pdfCourses.length ? pdfCourses : courses.slice().reverse(), [
-        { label: "PDF Courses", url: "/courses?type=pdf", icon: "fa-file-pdf" },
-        { label: "Study Notes", url: "/notes", icon: "fa-book-open" },
-        { label: "Free PDFs", url: "/courses?type=pdf", icon: "fa-file-arrow-down" },
-        { label: "Descriptive", url: "/courses", icon: "fa-pen-nib" },
-      ]),
-    },
-    {
-      title: "Free Materials",
-      tone: "peach",
-      items: courseItems(liveCourses, [
-        { label: "Free PDFs", url: "/courses?type=pdf", icon: "fa-file-lines" },
-        { label: "Practice Quiz", url: "/mock-tests", icon: "fa-list-check" },
-        { label: "Daily CA", url: "/current-affairs", icon: "fa-calendar-day" },
-        { label: "Mock Tests", url: "/mock-tests", icon: "fa-bolt" },
-      ]),
-    },
-    {
-      title: "Follow Us",
-      tone: "rose",
-      items: [
-        { label: "WhatsApp", url: whatsappHref || "/contact", icon: "fa-whatsapp", external: Boolean(whatsappHref) },
-        { label: "YouTube", url: settings?.youtube_link || "https://www.youtube.com", icon: "fa-youtube", external: true },
-        { label: "Instagram", url: settings?.instagram_link || "https://www.instagram.com", icon: "fa-instagram", external: true },
-        { label: "Facebook", url: settings?.facebook_link || "https://www.facebook.com", icon: "fa-facebook-f", external: true },
-      ],
-    },
-  ];
+  if (!tiles.length) return null;
 
   return (
     <>
