@@ -52,6 +52,16 @@ export type HomeOfferBar = {
   btn_url: string;
 };
 
+export type HomeWelcomePopup = {
+  enabled: boolean;
+  eyebrow: string;
+  title: string;
+  description: string;
+  btn_text: string;
+  btn_url: string;
+  image_url: string | null;
+};
+
 export type HomeFeaturePoint = {
   icon: string;
   title: string;
@@ -105,6 +115,7 @@ export type HomePageSettings = {
   trending_links: HomeTrendingLink[];
   achievement_stats: HomeAchievementStat[];
   offer_bar: HomeOfferBar;
+  welcome_popup: HomeWelcomePopup;
   about_section: HomeAboutSection;
   contact_section: HomeContactSection;
   footer_about: string;
@@ -351,6 +362,16 @@ export const defaultHomePageSettings: HomePageSettings = {
     btn_text: "Grab The Offer",
     btn_url: "/courses",
   },
+  welcome_popup: {
+    enabled: false,
+    eyebrow: "New Batch",
+    title: "Start your exam preparation today",
+    description:
+      "Access courses, mock tests and live classes for Banking, SSC, Railway and more — all in one place.",
+    btn_text: "Explore Now",
+    btn_url: "/courses",
+    image_url: null,
+  },
   about_section: {
     eyebrow: "About Us",
     title: "Building India's<br>Banking Professionals",
@@ -404,6 +425,11 @@ export function normalizeHomePageSettings(settings?: Partial<HomePageSettings> |
     ...defaultHomePageSettings,
     ...source,
     offer_bar: { ...defaultHomePageSettings.offer_bar, ...(source.offer_bar ?? {}) },
+    welcome_popup: {
+      ...defaultHomePageSettings.welcome_popup,
+      ...(source.welcome_popup ?? {}),
+      enabled: Boolean((source.welcome_popup ?? defaultHomePageSettings.welcome_popup).enabled),
+    },
     about_section: {
       ...defaultHomePageSettings.about_section,
       ...(source.about_section ?? {}),
