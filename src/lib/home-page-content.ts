@@ -221,75 +221,6 @@ export function buildAchieveOfferMarkup(settings: HomePageSettings): string {
   return `${achieveStrip}\n\n${offerBar}`;
 }
 
-export function buildWhyKrLogicsMarkup(settings: HomePageSettings): string {
-  const section = settings.why_kr_logics;
-  const cards = section.cards
-    .map(
-      (card) =>
-        `<div class="why-kr-card">
-      <div class="why-kr-icon"><i class="${faIconClass(card.icon)}"></i></div>
-      <h3>${escapeHtml(card.title)}</h3>
-      <p>${escapeHtml(card.description)}</p>
-    </div>`,
-    )
-    .join("");
-
-  return `<section class="why-kr-section">
-  <div class="why-kr-head">
-    <h2>${escapeHtml(section.title)}</h2>
-    <p>${escapeHtml(section.description)}</p>
-  </div>
-  <div class="why-kr-grid">${cards}</div>
-</section>`;
-}
-
-export function buildMockSectionMarkup(settings: HomePageSettings): string {
-  const section = settings.mock_section;
-  const optionLabels = ["A", "B", "C", "D"];
-  const features = section.features
-    .map(
-      (feature) =>
-        `<div class="mock-feat"><div class="mock-feat-icon"><i class="${faIconClass(feature.icon)}"></i></div><div><h4>${escapeHtml(feature.title)}</h4><p>${escapeHtml(feature.description)}</p></div></div>`,
-    )
-    .join("");
-  const options = section.demo_options
-    .map((option, index) => {
-      const isCorrect = index === section.demo_correct_index;
-      return `<div class="mock-opt${isCorrect ? " correct" : ""}"><span class="opt-circle">${optionLabels[index] || index + 1}</span>${escapeHtml(option)}${isCorrect ? ' <i class="fa fa-check-circle" style="margin-left:auto;font-size:14px"></i>' : ""}</div>`;
-    })
-    .join("");
-
-  return `<section class="mock-section" id="mock">
-  <div class="mock-layout">
-    <div>
-      <div class="sec-eyebrow">${escapeHtml(section.eyebrow)}</div>
-      <h2 class="sec-title">${section.title ?? ""}</h2>
-      <p style="font-size:15px;color:var(--gray);line-height:1.8">${escapeHtml(section.description)}</p>
-      <div class="mock-feat-list">${features}</div>
-      <a href="${escapeHtml(section.cta_url)}" class="mock-cta"><i class="fa fa-play-circle"></i> ${escapeHtml(section.cta_text)}</a>
-    </div>
-    <div>
-      <div class="mock-ui">
-        <div class="mock-header-bar">
-          <div class="mock-exam-name">${escapeHtml(section.demo_exam_name)}</div>
-          <div class="mock-timer">23:47</div>
-        </div>
-        <div class="mock-prog">
-          <span class="done"></span><span class="done"></span><span class="done"></span><span class="cur"></span><span></span><span></span><span></span><span></span><span></span><span></span>
-        </div>
-        <div class="mock-q-lbl">${escapeHtml(section.demo_section)}</div>
-        <div class="mock-q-text">${escapeHtml(section.demo_question)}</div>
-        <div class="mock-opts">${options}</div>
-        <div class="mock-nav">
-          <button class="prev">← Previous</button>
-          <button class="next">Save &amp; Next →</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>`;
-}
-
 function buildHeroLeftContentMarkup(settings: HomePageSettings): string {
   return `<div class="hero-badge"><i class="fa fa-star"></i> ${escapeHtml(settings.hero_badge)}</div>
       <h1>${settings.hero_title ?? ""}</h1>
@@ -395,7 +326,6 @@ export function applyHomePageData(markup: string, settings: HomePageSettings): s
     /<div style="font-family:'Sora',sans-serif;font-size:30px;font-weight:800;color:var\(--navy\)">850\+<\/div>/,
     buildSelectionsMiniCardMarkup(settings),
   );
-  nextMarkup = nextMarkup.replace(/<section class="mock-section" id="mock">[\s\S]*?<\/section>/, buildMockSectionMarkup(settings));
   nextMarkup = nextMarkup.replace(/<section class="contact-section" id="contact">[\s\S]*?<\/section>/, buildContactSectionMarkup(settings));
 
   nextMarkup = nextMarkup.replace(

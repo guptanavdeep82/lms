@@ -68,26 +68,6 @@ export type HomeAboutSection = {
   points: HomeFeaturePoint[];
 };
 
-export type HomeWhyKrLogics = {
-  title: string;
-  description: string;
-  cards: HomeFeaturePoint[];
-};
-
-export type HomeMockSection = {
-  eyebrow: string;
-  title: string;
-  description: string;
-  features: HomeFeaturePoint[];
-  cta_text: string;
-  cta_url: string;
-  demo_exam_name: string;
-  demo_section: string;
-  demo_question: string;
-  demo_options: string[];
-  demo_correct_index: number;
-};
-
 export type HomeContactSection = {
   intro: string;
   address: string;
@@ -126,8 +106,6 @@ export type HomePageSettings = {
   achievement_stats: HomeAchievementStat[];
   offer_bar: HomeOfferBar;
   about_section: HomeAboutSection;
-  why_kr_logics: HomeWhyKrLogics;
-  mock_section: HomeMockSection;
   contact_section: HomeContactSection;
   footer_about: string;
 };
@@ -407,73 +385,6 @@ export const defaultHomePageSettings: HomePageSettings = {
       },
     ],
   },
-  why_kr_logics: {
-    title: "Why KR Logics?",
-    description:
-      "At KR Logics, our mission is to guide banking aspirants with expert content, smart practice tools, and mentorship that keeps every student moving toward selection.",
-    cards: [
-      {
-        icon: "fa-book-open-reader",
-        title: "High Quality Study Material Curated by Experts",
-        description:
-          "Mock tests, PDFs, eBooks, notes and video lessons are prepared around the latest banking exam pattern by experienced faculty.",
-      },
-      {
-        icon: "fa-display",
-        title: "Defined All-in-One Course Package with Video Series",
-        description:
-          "Get structured courses for SBI, IBPS, RBI and insurance exams with recorded classes, live tests and revision material in one place.",
-      },
-      {
-        icon: "fa-user-tie",
-        title: "Career Guidance & Personal Mentorship",
-        description:
-          "Our mentors help students build a practical study plan, analyze weak areas and stay consistent throughout the preparation journey.",
-      },
-      {
-        icon: "fa-chalkboard-user",
-        title: "Highly Experienced Faculty",
-        description:
-          "Learn from subject experts who have helped banking aspirants improve accuracy, speed and confidence for competitive exams.",
-      },
-    ],
-  },
-  mock_section: {
-    eyebrow: "Test Series",
-    title: "Mock Test<br>Platform",
-    description:
-      "Practice with India's most updated mock tests designed by banking experts. Real exam feel with instant in-depth analysis.",
-    features: [
-      {
-        icon: "fa-desktop",
-        title: "Real Exam Interface",
-        description: "Exactly like the actual exam — timer, section switching & question navigation",
-      },
-      {
-        icon: "fa-chart-bar",
-        title: "Deep Performance Analysis",
-        description: "Accuracy, speed, topic-wise score & All India percentile ranking",
-      },
-      {
-        icon: "fa-video",
-        title: "Video Solutions",
-        description: "Detailed video explanations for every question from expert faculty",
-      },
-      {
-        icon: "fa-users",
-        title: "All India Rankings",
-        description: "Compete with 12,000+ students & know exactly where you stand",
-      },
-    ],
-    cta_text: "Start Free Mock Test",
-    cta_url: "/mock-tests",
-    demo_exam_name: "IBPS PO Prelims 2025 — Mock #7",
-    demo_section: "Question 4 of 35 · Reasoning Ability",
-    demo_question:
-      "In a row of 40 students, Rahul is 15th from the left. Priya is 10 positions to the right of Rahul. What is Priya's position from the right end?",
-    demo_options: ["14th from the right", "16th from the right", "18th from the right", "12th from the right"],
-    demo_correct_index: 1,
-  },
   contact_section: {
     intro:
       "Have questions about admissions or courses? Our counselling team is ready to help you choose the right path for your banking career.",
@@ -499,23 +410,6 @@ export function normalizeHomePageSettings(settings?: Partial<HomePageSettings> |
       points: source.about_section?.points?.length
         ? source.about_section.points
         : defaultHomePageSettings.about_section.points,
-    },
-    why_kr_logics: {
-      ...defaultHomePageSettings.why_kr_logics,
-      ...(source.why_kr_logics ?? {}),
-      cards: source.why_kr_logics?.cards?.length
-        ? source.why_kr_logics.cards
-        : defaultHomePageSettings.why_kr_logics.cards,
-    },
-    mock_section: {
-      ...defaultHomePageSettings.mock_section,
-      ...(source.mock_section ?? {}),
-      features: source.mock_section?.features?.length
-        ? source.mock_section.features
-        : defaultHomePageSettings.mock_section.features,
-      demo_options: source.mock_section?.demo_options?.length
-        ? source.mock_section.demo_options
-        : defaultHomePageSettings.mock_section.demo_options,
     },
     contact_section: { ...defaultHomePageSettings.contact_section, ...(source.contact_section ?? {}) },
     category_chips: source.category_chips?.length ? source.category_chips : defaultHomePageSettings.category_chips,

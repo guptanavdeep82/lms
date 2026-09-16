@@ -112,35 +112,6 @@ const examCategoriesMarkup = `<section class="achieve-strip">
   </div>
 </section>`;
 
-const whyKrLogicsMarkup = `<section class="why-kr-section">
-  <div class="why-kr-head">
-    <h2>Why KR Logics?</h2>
-    <p>At KR Logics, our mission is to guide banking aspirants with expert content, smart practice tools, and mentorship that keeps every student moving toward selection.</p>
-  </div>
-  <div class="why-kr-grid">
-    <div class="why-kr-card">
-      <div class="why-kr-icon"><i class="fa fa-book-open-reader"></i></div>
-      <h3>High Quality Study Material Curated by Experts</h3>
-      <p>Mock tests, PDFs, eBooks, notes and video lessons are prepared around the latest banking exam pattern by experienced faculty.</p>
-    </div>
-    <div class="why-kr-card">
-      <div class="why-kr-icon"><i class="fa fa-display"></i></div>
-      <h3>Defined All-in-One Course Package with Video Series</h3>
-      <p>Get structured courses for SBI, IBPS, RBI and insurance exams with recorded classes, live tests and revision material in one place.</p>
-    </div>
-    <div class="why-kr-card">
-      <div class="why-kr-icon"><i class="fa fa-user-tie"></i></div>
-      <h3>Career Guidance &amp; Personal Mentorship</h3>
-      <p>Our mentors help students build a practical study plan, analyze weak areas and stay consistent throughout the preparation journey.</p>
-    </div>
-    <div class="why-kr-card">
-      <div class="why-kr-icon"><i class="fa fa-chalkboard-user"></i></div>
-      <h3>Highly Experienced Faculty</h3>
-      <p>Learn from subject experts who have helped banking aspirants improve accuracy, speed and confidence for competitive exams.</p>
-    </div>
-  </div>
-</section>`;
-
 const brandStyles = `
 .kr-logics-reference-home {
   --navy: #0538A1;
