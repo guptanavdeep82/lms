@@ -255,12 +255,15 @@ body {
 /* ════════ HERO — light canvas, purple accents (reference style) ════════ */
 .kr-logics-reference-home .hero {
   position: relative !important;
+  width: 100% !important;
+  max-width: none !important;
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 60%, #eef3fb 100%) !important;
   overflow: hidden !important;
   min-height: auto !important;
   padding: 34px 5% 34px !important;
   display: block !important;
   align-items: stretch !important;
+  box-sizing: border-box;
 }
 .kr-logics-reference-home .hero-bg-blob {
   position: absolute;
@@ -278,10 +281,10 @@ body {
   z-index: 2;
   align-items: stretch !important;
   display: grid !important;
-  grid-template-columns: minmax(320px, 0.92fr) minmax(520px, 1.08fr) !important;
-  gap: 40px !important;
-  max-width: 1240px !important;
-  margin: 0 auto !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) !important;
+  gap: 48px !important;
+  max-width: none !important;
+  margin: 0 !important;
   width: 100% !important;
 }
 .kr-logics-reference-home .hero-left {

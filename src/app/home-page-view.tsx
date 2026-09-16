@@ -198,15 +198,17 @@ const brandStyles = `
 }
 .kr-logics-reference-home .hero {
   min-height: auto;
-  padding-top: 56px;
-  padding-bottom: 48px;
+  width: 100%;
+  max-width: none;
+  padding: 56px 5% 48px;
 }
 .kr-logics-reference-home .hero-inner {
-  grid-template-columns: minmax(340px, 1fr) minmax(480px, 1.15fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   gap: 48px;
   align-items: center;
-  max-width: 1240px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
+  width: 100%;
 }
 .kr-logics-reference-home .sec-eyebrow,
 .kr-logics-reference-home .testi-stars,
