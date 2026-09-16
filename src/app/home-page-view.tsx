@@ -1425,6 +1425,17 @@ footer.public-site-footer .public-site-footer-inner {
   max-width: 100%;
   box-sizing: border-box;
 }
+.kr-logics-reference-home .course-tiles-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+}
+.kr-logics-reference-home .course-tone-tile {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 248px !important;
+}
 @media (max-width: 900px) {
   header.public-home-header .hdr-btns {
     display: none !important;
@@ -1468,6 +1479,9 @@ footer.public-site-footer .public-site-footer-inner {
   .kr-logics-reference-home .hero-btn-sec {
     width: 100% !important;
     max-width: 100% !important;
+  }
+  .kr-logics-reference-home .course-tiles-grid {
+    grid-template-columns: 1fr !important;
   }
   .kr-logics-reference-home .course-tone-items {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;

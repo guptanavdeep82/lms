@@ -190,20 +190,25 @@ export function HomeTopCourseTiles({
   courses?: unknown;
   settings?: HomePageSettings | null;
 }) {
-  const tiles = (settings?.top_course_tiles?.length
-    ? settings.top_course_tiles
-    : defaultHomePageSettings.top_course_tiles
-  )
-    .slice(0, 5)
-    .map((tile) => ({
-      title: tile.title,
-      tone: tile.tone || "lavender",
-      items: (tile.items ?? []).slice(0, 4).map((item) => ({
+  const fallback = defaultHomePageSettings.top_course_tiles;
+  const source = settings?.top_course_tiles?.length ? settings.top_course_tiles : fallback;
+  const tiles = fallback.map((defaultTile, index) => {
+    const tile = source[index] ?? defaultTile;
+    const items = defaultTile.items.map((defaultItem, itemIndex) => {
+      const item = tile.items?.[itemIndex] ?? defaultItem;
+      return {
+        ...defaultItem,
         ...item,
-        external: /^https?:\/\//i.test(item.url),
-      })),
-    }))
-    .filter((tile) => tile.title && tile.items.length);
+        external: /^https?:\/\//i.test(item.url || defaultItem.url),
+      };
+    });
+
+    return {
+      title: tile.title || defaultTile.title,
+      tone: tile.tone || defaultTile.tone,
+      items,
+    };
+  });
 
   if (!tiles.length) return null;
 
