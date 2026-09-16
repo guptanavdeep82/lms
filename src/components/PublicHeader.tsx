@@ -178,6 +178,19 @@ export function PublicHeader({ active, pages }: PublicHeaderProps) {
             <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer" onClick={closeMobileNav}>Blog</a>
             {navLink("/faq", "FAQ", "faq")}
             {navLink("/contact", "Contact", "contact")}
+            <div className="hdr-btns-in-nav">
+              {isLoggedIn ? (
+                <>
+                  <Link href="/student/dashboard" className="btn-primary" onClick={closeMobileNav}>Dashboard</Link>
+                  <button type="button" onClick={handleLogout} className="btn-ghost">Logout</button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" className="btn-ghost" onClick={closeMobileNav}>Login</Link>
+                  <Link href={registerHref} className="btn-primary" onClick={closeMobileNav}>Enroll Free →</Link>
+                </>
+              )}
+            </div>
           </nav>
 
           <div className="hdr-btns">

@@ -120,6 +120,7 @@ header.public-home-header {
   position: relative;
   width: 100%;
   max-width: 460px;
+  min-width: 0;
 }
 
 .public-home-header .header-search {
@@ -276,8 +277,8 @@ header.public-home-header {
   color: rgba(9, 40, 120, 0.6);
 }
 
-.public-home-header .hdr-btns {
-  grid-area: btns;
+.public-home-header .hdr-btns-in-nav {
+  display: none;
 }
 
 .public-home-header .mobile-menu-btn {
@@ -314,7 +315,7 @@ header.public-home-header {
   display: block;
   height: 78px;
   width: auto;
-  max-width: none;
+  max-width: 100%;
   object-fit: contain;
   border-radius: 0;
   box-shadow: none;
@@ -567,6 +568,7 @@ header.public-home-header {
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  grid-area: btns;
 }
 
 .public-home-header .btn-ghost,
@@ -629,18 +631,46 @@ header.public-home-header {
 
 @media (max-width: 900px) {
   .public-home-header {
-    padding-inline: 14px;
+    padding-inline: 12px;
   }
 
   .public-home-header .header-inner {
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
-      "logo menu btns"
-      "search search search";
+      "logo menu"
+      "search search";
     min-height: 0;
     column-gap: 10px;
     row-gap: 10px;
     padding-block: 10px;
+  }
+
+  .public-home-header .hdr-btns {
+    display: none !important;
+  }
+
+  .public-home-header .hdr-btns-in-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(9, 87, 211, 0.12);
+  }
+
+  .public-home-header .hdr-btns-in-nav .btn-ghost,
+  .public-home-header .hdr-btns-in-nav .btn-primary {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .public-home-header .logo-wrap {
+    min-width: 0;
+    max-width: min(220px, calc(100vw - 78px));
+    overflow: hidden;
+    flex-shrink: 1;
   }
 
   .public-home-header .mobile-menu-btn {
@@ -659,11 +689,13 @@ header.public-home-header {
   }
 
   .public-home-header .logo-wrap > img {
-    height: 56px;
+    height: 44px;
+    max-width: 100%;
   }
 
   .public-home-header .header-search-wrap {
     max-width: none;
+    min-width: 0;
   }
 
   .public-home-header .header-search {
@@ -804,7 +836,7 @@ header.public-home-header {
 
 @media (max-width: 640px) {
   .public-home-header .logo-wrap > img {
-    height: 48px;
+    height: 40px;
   }
 
   .public-home-header .header-search button {

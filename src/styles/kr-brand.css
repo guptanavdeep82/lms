@@ -293,6 +293,8 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-width: 0;
+  max-width: 100%;
 }
 .kr-logics-reference-home .hero h1 {
   color: var(--kr-ink) !important;
@@ -301,6 +303,10 @@ body {
   line-height: 1.1;
   font-weight: 800;
   margin-top: 14px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
 }
 .kr-logics-reference-home .hero h1 em {
   color: var(--kr-blue) !important;
@@ -327,10 +333,12 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  max-width: min(100%, 420px);
+  max-width: 100%;
+  box-sizing: border-box;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
 }
 .kr-logics-reference-home .hero-badge i {
   color: var(--kr-gold-dark) !important;
@@ -804,11 +812,12 @@ body {
 
 /* ════════ CATEGORY STRIP — compact chips under the hero ════════ */
 .kr-logics-reference-home .cat-strip {
-  width: min(1240px, calc(100% - 40px));
+  width: min(1240px, calc(100% - 32px));
+  max-width: 100%;
   margin: -30px auto 0;
   padding: 14px;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
   background: #ffffff;
   border: 1px solid var(--kr-border);
@@ -816,11 +825,13 @@ body {
   box-shadow: 0 22px 50px rgba(9, 40, 120, 0.12);
   position: relative;
   z-index: 5;
+  box-sizing: border-box;
 }
 .kr-logics-reference-home .cat-chip {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
   padding: 11px;
   border-radius: 13px;
   background: #f5f8fc;
@@ -877,13 +888,19 @@ body {
 }
 @media (max-width: 1000px) {
   .kr-logics-reference-home .cat-strip {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 @media (max-width: 560px) {
   .kr-logics-reference-home .cat-strip {
-    grid-template-columns: repeat(2, 1fr);
-    margin-top: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: auto;
+    margin: 18px 16px 0;
+    padding: 12px !important;
+  }
+  .kr-logics-reference-home .cat-chip-meta b,
+  .kr-logics-reference-home .cat-chip-meta small {
+    white-space: normal;
   }
 }
 
@@ -1042,15 +1059,22 @@ body {
   display: flex !important;
   flex-direction: column !important;
   justify-content: stretch !important;
+  min-width: 0;
+  max-width: 100%;
 }
 .kr-logics-reference-home .hero-ref-wrap {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
 }
 .kr-logics-reference-home .hero-ref-banner {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border-radius: 24px;
   overflow: hidden;
   background: #ffffff;
@@ -1164,10 +1188,10 @@ body {
 /* ════════ RESPONSIVE — tablet & mobile ════════ */
 @media (max-width: 992px) {
   .kr-logics-reference-home .hero {
-    padding: 26px 5% 30px !important;
+    padding: 26px 16px 30px !important;
   }
   .kr-logics-reference-home .hero-inner {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 24px !important;
     align-items: start !important;
   }
@@ -1176,11 +1200,11 @@ body {
     justify-content: flex-start;
   }
   .kr-logics-reference-home .hero-p {
-    max-width: 640px;
+    max-width: 100%;
   }
   .kr-logics-reference-home .hero-right {
-    width: 100%;
-    max-width: 640px;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 0 auto;
   }
   .kr-logics-reference-home .hero-ref-wrap,
@@ -1191,22 +1215,41 @@ body {
 
 @media (max-width: 600px) {
   .kr-logics-reference-home .hero {
-    padding: 18px 5% 24px !important;
+    padding: 18px 16px 24px !important;
   }
   .kr-logics-reference-home .hero h1 {
-    font-size: clamp(27px, 8vw, 36px);
+    font-size: clamp(26px, 7.4vw, 34px) !important;
+  }
+  .kr-logics-reference-home .hero-badge {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 7px 12px;
+    border-radius: 14px;
   }
   .kr-logics-reference-home .hero-stats {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 10px !important;
   }
   .kr-logics-reference-home .hero-btns {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
+    width: 100%;
   }
   .kr-logics-reference-home .hero-btn-main,
   .kr-logics-reference-home .hero-btn-sec {
-    flex: 1 1 100%;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     justify-content: center;
+    box-sizing: border-box;
+  }
+  .kr-logics-reference-home .hero-ref-arrow.left {
+    left: 8px;
+  }
+  .kr-logics-reference-home .hero-ref-arrow.right {
+    right: 8px;
   }
 }
 
@@ -1294,7 +1337,7 @@ body {
 
 .kr-logics-reference-home .course-tone-items {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -1304,6 +1347,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  min-width: 0;
   min-height: 72px;
   padding: 10px 8px;
   border-radius: 16px;
@@ -1312,6 +1356,7 @@ body {
   color: #1e1b3a !important;
   text-align: center;
   text-decoration: none;
+  overflow: hidden;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -1336,6 +1381,9 @@ body {
   font-size: 12px;
   font-weight: 700;
   line-height: 1.25;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .kr-logics-reference-home .tone-lavender { background: #f3e8ff; }
@@ -1380,4 +1428,42 @@ body {
   .kr-logics-reference-home .course-tiles-grid {
     grid-template-columns: 1fr !important;
   }
+
+  .kr-logics-reference-home .courses-section,
+  .kr-logics-reference-home .about-section,
+  .kr-logics-reference-home .mock-section,
+  .kr-logics-reference-home .faculty-section,
+  .kr-logics-reference-home .faq-section,
+  .kr-logics-reference-home .contact-section,
+  .kr-logics-reference-home .testi-section {
+    padding-inline: 16px !important;
+  }
+
+  .kr-logics-reference-home .achieve-strip,
+  .kr-logics-reference-home .offer-bar {
+    width: auto !important;
+    max-width: none !important;
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+    padding: 20px 16px !important;
+    box-sizing: border-box;
+  }
+
+  .kr-logics-reference-home .achieve-item {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .kr-logics-reference-home .hstat {
+    min-width: 0;
+  }
+
+  .kr-logics-reference-home .hstat-meta strong {
+    overflow-wrap: anywhere;
+  }
+}
+
+.kr-logics-reference-home {
+  overflow-x: clip;
+  max-width: 100%;
 }

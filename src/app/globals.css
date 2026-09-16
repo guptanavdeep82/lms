@@ -430,14 +430,22 @@ canvas {
     display: none !important;
   }
 
-  .kr-logics-reference-home section,
+  .kr-logics-reference-home section:not(.hero):not(.cat-strip):not(.achieve-strip):not(.offer-bar),
   .hero-strip,
   .main-wrap {
     padding-inline: 18px !important;
   }
 
   .kr-logics-reference-home .hero h1 {
-    font-size: clamp(28px, 9vw, 38px) !important;
+    font-size: clamp(26px, 7.4vw, 34px) !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+    max-width: 100% !important;
+  }
+
+  .public-home-header .hdr-btns {
+    display: none !important;
   }
 
   .sec-title,
