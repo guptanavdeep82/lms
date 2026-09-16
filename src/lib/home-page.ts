@@ -5,6 +5,11 @@ export type HomeTrendingLink = {
   url: string;
 };
 
+export type HomeBanner = {
+  image_url: string;
+  url: string | null;
+};
+
 export type HomeCategoryChip = {
   title: string;
   subtitle: string;
@@ -85,6 +90,7 @@ export type HomePageSettings = {
   mock_tests: number;
   experience: string | null;
   banner_images: string[];
+  banners: HomeBanner[];
   about_us_video: string | null;
   videos: string[];
   video_reviews: string[];
@@ -245,6 +251,7 @@ export const defaultHomePageSettings: HomePageSettings = {
   mock_tests: 200,
   experience: "7+ Years",
   banner_images: [],
+  banners: [],
   about_us_video: null,
   videos: [],
   video_reviews: [],
@@ -456,6 +463,9 @@ export function normalizeHomePageSettings(settings?: Partial<HomePageSettings> |
       ? source.achievement_stats
       : defaultHomePageSettings.achievement_stats,
     banner_images: source.banner_images ?? defaultHomePageSettings.banner_images,
+    banners: source.banners?.length
+      ? source.banners
+      : (source.banner_images ?? []).map((image_url) => ({ image_url, url: null })),
     videos: source.videos ?? defaultHomePageSettings.videos,
     video_reviews: source.video_reviews ?? defaultHomePageSettings.video_reviews,
   };

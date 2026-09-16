@@ -2,6 +2,7 @@ import {
   formatCompactStat,
   formatStatNumber,
   extractYouTubeId,
+  type HomeBanner,
   type HomeCategoryChip,
   type HomePageCategory,
   type HomePageSettings,
@@ -387,8 +388,8 @@ export function applyHomePageData(markup: string, settings: HomePageSettings): s
   );
   nextMarkup = nextMarkup.replace(/<div class="about-float">[\s\S]*?<\/div>/, buildAboutFloatMarkup(settings));
   nextMarkup = nextMarkup.replace(
-    /(<section class="about-section" id="about">[\s\S]*?<div style="position:relative">[\s\S]*?<\/div>\s*)<div>(\s*<div class="sec-eyebrow">About Us)/,
-    `$1${buildAboutContentMarkup(settings)}`,
+    /<div>\s*<div class="sec-eyebrow">About Us<\/div>[\s\S]*?<\/section>/,
+    `${buildAboutContentMarkup(settings)}\n  </div>\n</section>`,
   );
   nextMarkup = nextMarkup.replace(
     /<div style="font-family:'Sora',sans-serif;font-size:30px;font-weight:800;color:var\(--navy\)">850\+<\/div>/,
@@ -434,16 +435,30 @@ export function applyTopCoursesMarkup(markup: string, courses: HomeTopCourse[]):
   return markup.replace(/<div class="courses-grid">[\s\S]*?<\/div>(?=\s*<\/section>)/, `<div class="courses-grid">${cards}</div>`);
 }
 
-export function buildHeroShowcaseMarkup(bannerImages: string[], settings?: HomePageSettings | null): string {
-  const defaultBanners = ["/hero-banner.png", "/hero-banner-2.png"];
-  const images = bannerImages.length > 0 ? bannerImages : defaultBanners;
-  const slides = images
-    .map(
-      (image, index) =>
-        `<div class="hero-ref-slide${index === 0 ? " active" : ""}"><img src="${escapeHtml(image)}" alt="Banking exam promotional banner" loading="${index === 0 ? "eager" : "lazy"}" /></div>`,
-    )
+export function buildHeroShowcaseMarkup(banners: HomeBanner[] | string[], settings?: HomePageSettings | null): string {
+  const defaultBanners: HomeBanner[] = [
+    { image_url: "/hero-banner.png", url: null },
+    { image_url: "/hero-banner-2.png", url: null },
+  ];
+  const items: HomeBanner[] = banners.length
+    ? banners.map((banner) => (typeof banner === "string" ? { image_url: banner, url: null } : banner))
+    : (settings?.banners?.length ? settings.banners : defaultBanners);
+  const slides = items
+    .map((banner, index) => {
+      const image = `<img src="${escapeHtml(banner.image_url)}" alt="Banking exam promotional banner" loading="${index === 0 ? "eager" : "lazy"}" />`;
+      const className = `hero-ref-slide${index === 0 ? " active" : ""}`;
+      const href = banner.url?.trim();
+
+      if (!href) {
+        return `<div class="${className}">${image}</div>`;
+      }
+
+      const isExternal = /^https?:\/\//i.test(href);
+      const extra = isExternal ? ' target="_blank" rel="noopener noreferrer"' : "";
+      return `<a href="${escapeHtml(href)}" class="${className}"${extra}>${image}</a>`;
+    })
     .join("");
-  const dots = images
+  const dots = items
     .slice(0, 5)
     .map((_, index) => `<span${index === 0 ? ' class="active"' : ""}></span>`)
     .join("");

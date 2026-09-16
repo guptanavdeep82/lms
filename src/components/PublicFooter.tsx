@@ -10,6 +10,7 @@ type PublicFooterProps = {
 };
 
 const companyLinks = [
+  { label: "Home", href: "/" },
   { label: "All Packages", href: "/packages" },
   { label: "Mock Test Series", href: "/mock-tests" },
   { label: "Live Classes", href: "/live-classes" },
@@ -20,6 +21,7 @@ const companyLinks = [
 const usefulLinks = [
   { label: "Video Courses", href: "/courses" },
   { label: "Faculty", href: "/faculty" },
+  { label: "FAQ", href: "/faq" },
   { label: "Register", href: "/register" },
   { label: "Student Login", href: "/login" },
   { label: "Blog", href: "/blog" },
@@ -133,7 +135,7 @@ export function PublicFooter({ settings }: PublicFooterProps) {
           <div className="public-site-footer-col public-site-footer-contact">
             <h5>Get in touch</h5>
             <p className="flex items-start gap-2">
-              <MapPin size={14} className="mt-0.5 shrink-0 text-[#0957D3]" />
+              <MapPin size={14} className="public-site-footer-icon mt-0.5 shrink-0" />
               <span
                 dangerouslySetInnerHTML={{
                   __html: settings?.contact_section?.address?.trim() || "KR Logics Institute, Near City Mall,<br>Jodhpur, Rajasthan — 342001",
@@ -141,7 +143,7 @@ export function PublicFooter({ settings }: PublicFooterProps) {
               />
             </p>
             <p className="flex items-start gap-2">
-              <Mail size={14} className="mt-0.5 shrink-0 text-[#0957D3]" />
+              <Mail size={14} className="public-site-footer-icon mt-0.5 shrink-0" />
               <span
                 dangerouslySetInnerHTML={{
                   __html: settings?.contact_section?.email?.trim() || "admissions@krlogics.com",
@@ -149,7 +151,7 @@ export function PublicFooter({ settings }: PublicFooterProps) {
               />
             </p>
             <p className="flex items-start gap-2">
-              <Phone size={14} className="mt-0.5 shrink-0 text-[#0957D3]" />
+              <Phone size={14} className="public-site-footer-icon mt-0.5 shrink-0" />
               <span>{settings?.whatsapp_number?.trim() || "+91 98765 43210"} (Mon–Sat, 9 AM – 8 PM)</span>
             </p>
           </div>

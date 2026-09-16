@@ -247,8 +247,7 @@ body {
 /* Dark/premium sections — deep navy */
 .kr-logics-reference-home .about-main-card,
 .kr-logics-reference-home .mini-card-dark,
-.kr-logics-reference-home .testi-section,
-.kr-logics-reference-home footer {
+.kr-logics-reference-home .testi-section {
   background: var(--kr-navy) !important;
   color: var(--kr-white) !important;
 }
@@ -325,6 +324,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  max-width: min(100%, 420px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .kr-logics-reference-home .hero-badge i {
   color: var(--kr-gold-dark) !important;
@@ -1255,4 +1258,112 @@ body {
 [class*="hover:bg-[#2f78bf]"]:hover[class*="text-["],
 [class*="hover:bg-[#050808]"]:hover[class*="text-["] {
   color: var(--kr-white) !important;
+}
+
+.kr-logics-reference-home .course-tiles-section {
+  background: #ffffff !important;
+}
+
+.kr-logics-reference-home .public-trending-strip {
+  padding-block: 10px !important;
+}
+
+.kr-logics-reference-home .course-tiles-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.kr-logics-reference-home .course-tone-tile {
+  border-radius: 22px;
+  padding: 18px 16px 16px;
+  min-height: 210px;
+}
+
+.kr-logics-reference-home .course-tone-tile h3 {
+  margin: 0 0 14px;
+  text-align: center;
+  font-family: var(--font-sora), "Sora", sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1e1b3a;
+}
+
+.kr-logics-reference-home .course-tone-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.kr-logics-reference-home .course-tone-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 72px;
+  padding: 10px 8px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  color: #1e1b3a !important;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.kr-logics-reference-home .course-tone-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
+}
+
+.kr-logics-reference-home .course-tone-ic {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  color: #0957D3;
+  font-size: 15px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+}
+
+.kr-logics-reference-home .course-tone-item span:last-child {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.kr-logics-reference-home .tone-lavender { background: #f3e8ff; }
+.kr-logics-reference-home .tone-lavender .course-tone-ic { color: #7e22ce; }
+.kr-logics-reference-home .tone-mint { background: #dcfce7; }
+.kr-logics-reference-home .tone-mint .course-tone-ic { color: #15803d; }
+.kr-logics-reference-home .tone-sky { background: #dbeafe; }
+.kr-logics-reference-home .tone-sky .course-tone-ic { color: #1d4ed8; }
+.kr-logics-reference-home .tone-peach { background: #ffedd5; }
+.kr-logics-reference-home .tone-peach .course-tone-ic { color: #c2410c; }
+.kr-logics-reference-home .tone-rose { background: #ffe4e6; }
+.kr-logics-reference-home .tone-rose .course-tone-ic { color: #be123c; }
+
+.kr-logics-reference-home .hero-ref-slide {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.kr-logics-reference-home a.hero-ref-slide {
+  cursor: pointer;
+}
+
+@media (max-width: 1180px) {
+  .kr-logics-reference-home .course-tiles-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .kr-logics-reference-home .course-tiles-grid {
+    grid-template-columns: 1fr !important;
+  }
 }

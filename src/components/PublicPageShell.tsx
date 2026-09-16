@@ -4,7 +4,7 @@ import { PublicHeader } from "@/components/PublicHeader";
 import type { HomePageSettings } from "@/lib/home-page";
 
 type PublicPageShellProps = {
-  active?: "home" | "courses" | "packages" | "mock-tests" | "faculty" | "contact" | "live-classes" | "current-affairs";
+  active?: "home" | "courses" | "packages" | "mock-tests" | "faculty" | "contact" | "live-classes" | "current-affairs" | "faq";
   children: ReactNode;
   className?: string;
   footerSettings?: HomePageSettings | null;

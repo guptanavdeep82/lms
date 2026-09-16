@@ -1,6 +1,6 @@
 "use client";
 
-import type { HomePageFaculty, HomePageFaq, HomePageReview } from "@/lib/home-page";
+import type { HomePageFaculty, HomePageFaq, HomePageReview, HomePageSettings, HomeTopCourse } from "@/lib/home-page";
 
 const facultyColors = ["#1B2E6B", "#15803D", "#185FA5", "#D85A30", "#7F77DD", "#BA7517"];
 const facultyBackgrounds = ["var(--light2)", "#F0FDF4", "#EEF6FF", "#FFF7ED", "#F5F3FF", "#FFF8EB"];
@@ -87,10 +87,10 @@ export function HomeReviewsSection({
       <section className="testi-section">
         <div className="sec-center">
           <div className="sec-eyebrow" style={{ background: "rgba(245,197,24,.15)", color: "var(--gold)" }}>
-            Student Stories
+            Google Play
           </div>
           <h2 className="sec-title" style={{ color: "#fff" }}>
-            What Our Students Say
+            Google Play Reviews
           </h2>
           <p className="sec-sub" style={{ color: "rgba(255,255,255,.55)" }}>
             {fromPlayStore
@@ -168,6 +168,156 @@ export function HomeFaqSection({ faqs }: { faqs: HomePageFaq[] }) {
                 <p>{faq.answer}</p>
               </div>
             </div>
+          ))}
+        </div>
+      </section>
+      <div className="divider" />
+    </>
+  );
+}
+
+type CourseTileItem = {
+  label: string;
+  url: string;
+  icon: string;
+  external?: boolean;
+};
+
+type CourseTile = {
+  title: string;
+  tone: string;
+  items: CourseTileItem[];
+};
+
+function courseIcon(type: string | null | undefined) {
+  if (type === "pdf") return "fa-file-pdf";
+  if (type === "live") return "fa-video";
+  return "fa-circle-play";
+}
+
+function faClass(icon: string) {
+  if (icon.startsWith("fa ") || icon.startsWith("fab ")) return icon;
+  if (["fa-whatsapp", "fa-youtube", "fa-instagram", "fa-facebook-f", "fa-telegram-plane"].includes(icon)) {
+    return `fab ${icon}`;
+  }
+  return `fa ${icon}`;
+}
+
+function shortLabel(title: string) {
+  const value = title.trim();
+  return value.length > 22 ? `${value.slice(0, 20)}…` : value;
+}
+
+function courseItems(courses: HomeTopCourse[], fallbacks: CourseTileItem[]) {
+  const fromCourses = courses.slice(0, 4).map((course) => ({
+    label: shortLabel(course.title),
+    url: `/courses/${course.slug}`,
+    icon: courseIcon(course.course_type),
+  }));
+
+  const seen = new Set(fromCourses.map((item) => item.label.toLowerCase()));
+  const extras = fallbacks.filter((item) => !seen.has(item.label.toLowerCase()));
+
+  return [...fromCourses, ...extras].slice(0, 4);
+}
+
+export function HomeTopCourseTiles({
+  courses,
+  settings,
+}: {
+  courses: HomeTopCourse[];
+  settings?: HomePageSettings | null;
+}) {
+  const videoCourses = courses.filter((course) => course.course_type === "video");
+  const pdfCourses = courses.filter((course) => course.course_type === "pdf");
+  const liveCourses = courses.filter((course) => course.course_type === "live");
+  const whatsappHref = settings?.whatsapp_number
+    ? `https://wa.me/${settings.whatsapp_number.replace(/[^\d]/g, "")}`
+    : null;
+
+  const tiles: CourseTile[] = [
+    {
+      title: "Popular",
+      tone: "lavender",
+      items: courseItems(courses, [
+        { label: "PDF Courses", url: "/courses?type=pdf", icon: "fa-file-pdf" },
+        { label: "Mock Tests", url: "/mock-tests", icon: "fa-clipboard-list" },
+        { label: "Live Classes", url: "/live-classes", icon: "fa-video" },
+        { label: "Current Affairs", url: "/current-affairs", icon: "fa-newspaper" },
+      ]),
+    },
+    {
+      title: "Video Classes",
+      tone: "mint",
+      items: courseItems(videoCourses.length ? videoCourses : courses, [
+        { label: "Video Courses", url: "/courses?type=video", icon: "fa-circle-play" },
+        { label: "Live Classes", url: "/live-classes", icon: "fa-video" },
+        { label: "Quant Practice", url: "/courses", icon: "fa-calculator" },
+        { label: "Reasoning", url: "/courses", icon: "fa-brain" },
+      ]),
+    },
+    {
+      title: "PDF Courses",
+      tone: "sky",
+      items: courseItems(pdfCourses.length ? pdfCourses : courses.slice().reverse(), [
+        { label: "PDF Courses", url: "/courses?type=pdf", icon: "fa-file-pdf" },
+        { label: "Study Notes", url: "/notes", icon: "fa-book-open" },
+        { label: "Free PDFs", url: "/courses?type=pdf", icon: "fa-file-arrow-down" },
+        { label: "Descriptive", url: "/courses", icon: "fa-pen-nib" },
+      ]),
+    },
+    {
+      title: "Free Materials",
+      tone: "peach",
+      items: courseItems(liveCourses, [
+        { label: "Free PDFs", url: "/courses?type=pdf", icon: "fa-file-lines" },
+        { label: "Practice Quiz", url: "/mock-tests", icon: "fa-list-check" },
+        { label: "Daily CA", url: "/current-affairs", icon: "fa-calendar-day" },
+        { label: "Mock Tests", url: "/mock-tests", icon: "fa-bolt" },
+      ]),
+    },
+    {
+      title: "Follow Us",
+      tone: "rose",
+      items: [
+        { label: "WhatsApp", url: whatsappHref || "/contact", icon: "fa-whatsapp", external: Boolean(whatsappHref) },
+        { label: "YouTube", url: settings?.youtube_link || "https://www.youtube.com", icon: "fa-youtube", external: true },
+        { label: "Instagram", url: settings?.instagram_link || "https://www.instagram.com", icon: "fa-instagram", external: true },
+        { label: "Facebook", url: settings?.facebook_link || "https://www.facebook.com", icon: "fa-facebook-f", external: true },
+      ],
+    },
+  ];
+
+  return (
+    <>
+      <section className="courses-section course-tiles-section" id="courses">
+        <div className="courses-header">
+          <div>
+            <div className="sec-eyebrow">Programs</div>
+            <h2 className="sec-title">Top Courses</h2>
+          </div>
+          <a href="/courses" className="view-all-btn">View All Courses →</a>
+        </div>
+        <div className="course-tiles-grid">
+          {tiles.map((tile) => (
+            <article className={`course-tone-tile tone-${tile.tone}`} key={tile.title}>
+              <h3>{tile.title}</h3>
+              <div className="course-tone-items">
+                {tile.items.map((item) => (
+                  <a
+                    key={`${tile.title}-${item.label}`}
+                    href={item.url}
+                    className="course-tone-item"
+                    {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    <span className="course-tone-ic">
+                      <i className={faClass(item.icon)} />
+                    </span>
+                    <span>{item.label}</span>
+                  </a>
+                ))}
+              </div>
+            </article>
           ))}
         </div>
       </section>
