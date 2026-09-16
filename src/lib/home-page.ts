@@ -10,6 +10,13 @@ export type HomeBanner = {
   url: string | null;
 };
 
+export type HomeCategoryChip = {
+  title: string;
+  subtitle: string;
+  url: string;
+  icon: string;
+};
+
 export type HomeCourseTileItem = {
   label: string;
   url: string;
