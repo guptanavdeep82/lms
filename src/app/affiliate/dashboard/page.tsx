@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { staticPush, staticReplace } from "@/lib/static-nav";
-import { PublicHeader } from "@/components/PublicHeader";
 import {
   AffiliateDashboardResponse,
   getAffiliateSession,
@@ -57,7 +56,6 @@ export default function AffiliateDashboardPage() {
   return (
     <main className="min-h-screen bg-[#f6f8fc] text-[#111827]" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');`}</style>
-      <PublicHeader />
 
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">

@@ -2,7 +2,10 @@ import { siteOrigin } from "@/lib/site-url";
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat, Poppins, Rajdhani, Sora } from "next/font/google";
 import { FcmProvider } from "@/components/notifications/FcmProvider";
+import { PublicChrome } from "@/components/PublicChrome";
 import { StaticRuntime } from "@/components/StaticRuntime";
+import { fetchHeaderCmsPages } from "@/lib/cms-pages";
+import { fetchHomePageData } from "@/lib/home-page";
 import "./globals.css";
 import "@/components/public-header.css";
 import "@/components/public-footer.css";
@@ -43,11 +46,16 @@ export const metadata: Metadata = {
     "Public LMS website for competitive exam courses, mock tests, notes, live classes, forums, and student subscriptions.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [homeData, headerPages] = await Promise.all([
+    fetchHomePageData(),
+    fetchHeaderCmsPages(),
+  ]);
+
   return (
     <html
       lang="en"
@@ -63,7 +71,11 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground font-[family-name:var(--font-poppins)]">
         <StaticRuntime>
-          <FcmProvider>{children}</FcmProvider>
+          <FcmProvider>
+            <PublicChrome footerSettings={homeData?.settings ?? null} headerPages={headerPages}>
+              {children}
+            </PublicChrome>
+          </FcmProvider>
         </StaticRuntime>
       </body>
     </html>

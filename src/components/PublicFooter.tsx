@@ -20,7 +20,6 @@ const companyLinks = [
 
 const usefulLinks = [
   { label: "Video Courses", href: "/courses" },
-  { label: "Faculty", href: "/faculty" },
   { label: "FAQ", href: "/faq" },
   { label: "Register", href: "/register" },
   { label: "Student Login", href: "/login" },

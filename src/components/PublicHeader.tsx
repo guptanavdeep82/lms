@@ -1,38 +1,61 @@
 "use client";
 
-import { type MouseEvent, useEffect, useState } from "react";
+import { type MouseEvent, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { cmsPageHref, fetchCmsPages, type CmsPageSummary } from "@/lib/cms-pages";
+import { cmsPageHref, fetchHeaderCmsPages, type CmsPageSummary } from "@/lib/cms-pages";
 import { BRAND_LOGO_ALT, BRAND_LOGO_HEADER_SRC } from "@/lib/brand";
 import { HeaderSearch } from "@/components/HeaderSearch";
 import { TrendingLinksBar } from "@/components/home/TrendingLinksBar";
 import { getStudentSession, logoutStudent } from "@/lib/student-auth";
 
+type ActiveKey = "home" | "courses" | "packages" | "mock-tests" | "contact" | "live-classes" | "current-affairs" | "faq";
+
 type PublicHeaderProps = {
-  active?: "home" | "courses" | "packages" | "mock-tests" | "faculty" | "contact" | "live-classes" | "current-affairs" | "faq";
+  active?: ActiveKey;
+  pages?: CmsPageSummary[];
 };
 
 type MenuKey = "courses" | "latest-exam";
 
-export function PublicHeader({ active }: PublicHeaderProps) {
+function activeFromPath(pathname: string): ActiveKey | undefined {
+  if (pathname === "/") return "home";
+  if (pathname.startsWith("/courses")) return "courses";
+  if (pathname.startsWith("/packages")) return "packages";
+  if (pathname.startsWith("/mock-tests")) return "mock-tests";
+  if (pathname.startsWith("/live-classes")) return "live-classes";
+  if (pathname.startsWith("/current-affairs")) return "current-affairs";
+  if (pathname.startsWith("/faq")) return "faq";
+  if (pathname.startsWith("/contact")) return "contact";
+  return undefined;
+}
+
+export function PublicHeader({ active, pages }: PublicHeaderProps) {
+  const pathname = usePathname() || "/";
+  const currentActive = active ?? activeFromPath(pathname);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [cmsPages, setCmsPages] = useState<CmsPageSummary[]>([]);
+  const [cmsPages, setCmsPages] = useState<CmsPageSummary[]>(pages ?? []);
 
   useEffect(() => {
+    setCmsPages(pages ?? []);
+  }, [pages]);
+
+  useEffect(() => {
+    if (pages) return;
     let mounted = true;
 
-    fetchCmsPages().then((pages) => {
-      if (mounted) setCmsPages(pages);
+    fetchHeaderCmsPages().then((headerPages) => {
+      if (mounted) setCmsPages(headerPages);
     });
 
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [pages]);
 
   useEffect(() => {
     const syncSession = () => setIsLoggedIn(Boolean(getStudentSession()));
@@ -53,6 +76,11 @@ export function PublicHeader({ active }: PublicHeaderProps) {
     };
   }, [mobileNavOpen]);
 
+  const headerPages = useMemo(
+    () => cmsPages.filter((page) => page.show_in_header !== false),
+    [cmsPages],
+  );
+
   const registerHref = getRegisterHref();
 
   const handleLogout = () => {
@@ -72,8 +100,8 @@ export function PublicHeader({ active }: PublicHeaderProps) {
     setOpenMenu((current) => (current === menu ? null : menu));
   };
 
-  const navLink = (href: string, label: string, key?: PublicHeaderProps["active"]) => (
-    <Link href={href} className={key && active === key ? "active" : ""} onClick={closeMobileNav}>
+  const navLink = (href: string, label: string, key?: ActiveKey) => (
+    <Link href={href} className={key && currentActive === key ? "active" : ""} onClick={closeMobileNav}>
       {label}
     </Link>
   );
@@ -115,7 +143,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
               <Link
                 href="/courses"
                 onClick={(event) => toggleSubmenu(event, "courses")}
-                className={`exam-menu-trigger ${active === "courses" ? "active" : ""}`}
+                className={`exam-menu-trigger ${currentActive === "courses" ? "active" : ""}`}
               >
                 Courses <span className="chev">⌄</span>
               </Link>
@@ -126,7 +154,7 @@ export function PublicHeader({ active }: PublicHeaderProps) {
             </div>
             <div className="exam-menu-wrap latest-exam-wrap">
               <Link
-                href={cmsPages[0] ? cmsPageHref(cmsPages[0].slug) : "#"}
+                href={headerPages[0] ? cmsPageHref(headerPages[0].slug) : "#"}
                 onClick={(event) => toggleSubmenu(event, "latest-exam")}
                 className="exam-menu-trigger"
               >
@@ -134,13 +162,13 @@ export function PublicHeader({ active }: PublicHeaderProps) {
               </Link>
               <div className={`exam-mega latest-exam-mega ${openMenu === "latest-exam" ? "open" : ""}`}>
                 <div className="exam-grid">
-                  {cmsPages.map((page, index) => (
+                  {headerPages.map((page, index) => (
                     <Link key={page.id} href={cmsPageHref(page.slug)} className="exam-link" onClick={closeMobileNav}>
                       <span className={`exam-icon ${examTone(index)}`}>{initials(page.title)}</span>
                       <span className="exam-link-label">{page.title}</span>
                     </Link>
                   ))}
-                  {!cmsPages.length && <div className="exam-empty">No exam pages available yet.</div>}
+                  {!headerPages.length && <div className="exam-empty">No exam pages available yet.</div>}
                 </div>
               </div>
             </div>

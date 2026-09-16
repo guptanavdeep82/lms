@@ -1,63 +1,15 @@
-import Image from "next/image";
-import Link from "next/link";
 import { Bot } from "lucide-react";
-import { navItems } from "@/lib/data";
-import { PublicHeader } from "@/components/PublicHeader";
 
 export function Header() {
-  return <PublicHeader />;
+  return null;
 }
 
 export function Footer() {
-  return (
-    <footer className="bg-[#10100d] text-white">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-8">
-        <div>
-          <div className="flex items-center gap-3">
-            <Image src="/kr-logics-logo.png" alt="Logics logo" width={54} height={54} className="rounded-md object-cover" />
-            <div>
-              <p className="font-black uppercase tracking-[0.2em]">Kaneesh Reena Logics</p>
-              <p className="text-sm text-white/55">SBI, RBI, IBPS, Insurance and competitive exams.</p>
-            </div>
-          </div>
-          <p className="mt-6 max-w-xl text-sm leading-6 text-white/65">
-            A student-first LMS website concept with course selling, subscriptions, video learning, mock tests, notes, live classes, forum, blog, AI assistant, and WhatsApp support.
-          </p>
-        </div>
-        <div>
-          <p className="mb-4 text-sm font-bold uppercase tracking-[0.18em] text-[#f7c843]">Explore</p>
-          <div className="grid gap-3 text-sm text-white/70">
-            {navItems.slice(0, 6).map((item) => (
-              <Link key={item.href} href={item.href} className="hover:text-white">{item.label}</Link>
-            ))}
-          </div>
-        </div>
-        <div>
-          <p className="mb-4 text-sm font-bold uppercase tracking-[0.18em] text-[#f7c843]">Student Support</p>
-          <div className="grid gap-3 text-sm text-white/70">
-            <span>OTP login and Google sign-in</span>
-            <span>Gallabox WhatsApp automation</span>
-            <span>AI website chat assistant</span>
-            <span>Secure subscription access</span>
-          </div>
-        </div>
-      </div>
-      <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-white/45">
-        (c) 2026 Kaneesh Reena Logics LMS. Public website design prototype.
-      </div>
-    </footer>
-  );
+  return null;
 }
 
 export function PageShell({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Header />
-      <main className="flex-1">{children}</main>
-      <FloatingChat />
-      <Footer />
-    </>
-  );
+  return <main className="flex-1">{children}</main>;
 }
 
 export function FloatingChat() {
