@@ -3,6 +3,10 @@ RewriteBase /
 Options -MultiViews
 DirectoryIndex index.html
 
+# Canonical host: www.hostingwala.tech -> hostingwala.tech
+RewriteCond %{HTTP_HOST} ^www\.hostingwala\.tech$ [NC]
+RewriteRule ^ https://hostingwala.tech%{REQUEST_URI} [R=301,L]
+
 <IfModule mod_dir.c>
   DirectorySlash Off
 </IfModule>

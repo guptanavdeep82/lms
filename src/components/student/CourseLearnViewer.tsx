@@ -176,7 +176,6 @@ export function CourseLearnViewer() {
                 <ProtectedVideoPlayer
                   url={playbackUrl}
                   qualities={playbackQualities}
-                  watermark={getStudentSession()?.email || getStudentSession()?.name || "KR Logics"}
                   title={activeLesson.title}
                 />
               ) : (

@@ -51,6 +51,7 @@ export type StudentLibraryFolder = {
   purchased_count: number;
   video_count?: number;
   pdf_count?: number;
+  mock_count?: number;
   has_access?: boolean;
 };
 
@@ -181,10 +182,14 @@ export async function fetchPackages(): Promise<PackageItem[]> {
 export async function fetchStudentLibrary(
   email: string,
   folderId?: number | null,
+  kind?: "video" | "pdf" | "mock_test" | null,
 ): Promise<StudentLibraryResponse | null> {
   const params = new URLSearchParams({ email });
   if (folderId != null) {
     params.set("folder", String(folderId));
+  }
+  if (kind) {
+    params.set("kind", kind);
   }
   const response = await fetch(`${publicBackendBaseUrl}/api/student/library?${params.toString()}`, {
     cache: "no-store",

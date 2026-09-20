@@ -413,7 +413,7 @@ export default function DynamicMockExamPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white text-[#111827]" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+    <main className="h-screen overflow-hidden bg-white text-[#111827]" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
       <header className="flex min-h-[50px] flex-col gap-2 bg-[#3378b9] px-3 py-2 text-white sm:px-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-3">
@@ -466,19 +466,20 @@ export default function DynamicMockExamPage() {
 
           <div className="grid grid-rows-[auto_1fr] overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] px-2 py-2 text-sm">
-              <span>Q: {currentIndex + 1} / {questions.length}</span>
+              <span className="min-w-0 truncate font-bold text-[#111827]">{test.title}</span>
               <div className="flex flex-wrap items-center gap-2 sm:gap-5">
+                <span className="text-[#667085]">{currentIndex + 1} / {questions.length}</span>
                 <span className="rounded border border-[#cfd7df] px-3 py-1">Qn. Time : <Clock3 size={12} className="inline" /></span>
                 <span><b>Marks :</b> <span className="text-[#00a651]">+{question.marks}</span> | <span className="text-[#ff3950]">-{question.negative_marks}</span></span>
               </div>
             </div>
 
-            <div className="grid overflow-auto lg:grid-cols-2 lg:overflow-hidden">
-              <div className="border-b border-[#cfd7df] p-3 text-[15px] leading-7 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:text-[18px] lg:leading-8">
+            <div className="grid min-h-0 overflow-hidden lg:grid-cols-2">
+              <div className="overflow-hidden border-b border-[#cfd7df] p-3 text-[15px] leading-7 lg:border-b-0 lg:border-r lg:text-[18px] lg:leading-8">
                 <p className="mb-4 font-bold">{decodeHtmlEntities(question.question_text)}</p>
               </div>
 
-              <div className="p-4 text-[15px] leading-7 lg:overflow-y-auto lg:text-[18px] lg:leading-8">
+              <div className="overflow-hidden p-4 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
                 <h2 className="mb-3 font-bold">Choose the correct answer.</h2>
                 <div className="mt-4 space-y-4">
                   {(Object.entries(question.options) as Array<[keyof MockQuestion["options"], string | null]>).map(([key, option]) => (
@@ -544,7 +545,7 @@ export default function DynamicMockExamPage() {
           </div>
 
           <div className="overflow-y-auto p-4">
-            <h3 className="mb-4 bg-[#e8e8e8] py-2 text-center text-sm font-bold">{question.section_name}</h3>
+            <h3 className="mb-4 bg-[#e8e8e8] py-2 text-center text-sm font-bold">{test.title}</h3>
             <div className="grid grid-cols-5 gap-2 sm:grid-cols-7 lg:grid-cols-4 lg:gap-3">
               {questions.map((item, index) => {
                 const hasAnswer = Boolean(answers[item.id]);

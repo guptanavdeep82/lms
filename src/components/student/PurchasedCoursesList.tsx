@@ -8,6 +8,7 @@ import {
   ChevronRight,
   ClipboardList,
   FileText,
+  Folder,
   Lock,
   PlayCircle,
   Radio,
@@ -16,11 +17,14 @@ import {
 import {
   fetchStudentLibrary,
   formatInr,
+  type StudentLibraryBreadcrumb,
   type StudentLibraryCourse,
+  type StudentLibraryFolder,
   type StudentLibraryFolderMockTest,
   type StudentLibraryFolderPdf,
   type StudentLibraryFolderVideo,
 } from "@/lib/packages";
+import { fetchMediaVideoPlayback } from "@/lib/courses";
 import { getStudentSession } from "@/lib/student-auth";
 import { BookmarkButton } from "@/components/student/BookmarkButton";
 import { ProtectedVideoPlayer } from "@/components/student/ProtectedVideoPlayer";
@@ -178,25 +182,60 @@ function PurchasedCourseCard({
   );
 }
 
-type CourseContentBucket = "mock_tests" | "videos" | "pdfs";
-
 type PurchasedCoursesListProps = {
   compact?: boolean;
 };
 
+function folderMetaLine(folder: StudentLibraryFolder, kind?: "video" | "pdf" | "mock_test" | null) {
+  const parts: string[] = [];
+  if (folder.subfolder_count > 0) parts.push(`${folder.subfolder_count} folder${folder.subfolder_count === 1 ? "" : "s"}`);
+  if (kind !== "pdf" && kind !== "mock_test" && (folder.video_count || 0) > 0) {
+    parts.push(`${folder.video_count} video${folder.video_count === 1 ? "" : "s"}`);
+  }
+  if (kind !== "video" && kind !== "mock_test" && (folder.pdf_count || 0) > 0) {
+    parts.push(`${folder.pdf_count} PDF${folder.pdf_count === 1 ? "" : "s"}`);
+  }
+  if (kind !== "video" && kind !== "pdf" && (folder.mock_count || 0) > 0) {
+    parts.push(`${folder.mock_count} mock test${folder.mock_count === 1 ? "" : "s"}`);
+  }
+  return parts.join(" • ") || "Folder";
+}
+
+type LibraryKind = "video" | "pdf" | "mock_test";
+
+const contentBuckets: Array<{
+  kind: LibraryKind;
+  title: string;
+  subtitle: string;
+  gradient: string;
+  icon: typeof Video;
+}> = [
+  { kind: "video", title: "Video", subtitle: "Watch course videos", gradient: "from-[#172a69] via-[#2350b8] to-[#13a38b]", icon: Video },
+  { kind: "pdf", title: "PDF", subtitle: "Open study PDFs", gradient: "from-[#ba7517] via-[#f0a500] to-[#ffcf33]", icon: FileText },
+  { kind: "mock_test", title: "Mock Test", subtitle: "Practice mock tests", gradient: "from-[#0538A1] via-[#0957D3] to-[#13a38b]", icon: ClipboardList },
+];
+
+function courseCrumbs(breadcrumb: StudentLibraryBreadcrumb[], courseRootId: number | null | undefined) {
+  if (!courseRootId || breadcrumb.length === 0) return breadcrumb;
+  const rootIndex = breadcrumb.findIndex((item) => item.id === courseRootId);
+  return rootIndex >= 0 ? breadcrumb.slice(rootIndex) : breadcrumb;
+}
+
 export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListProps) {
   const [courses, setCourses] = useState<StudentLibraryCourse[]>([]);
+  const [folders, setFolders] = useState<StudentLibraryFolder[]>([]);
+  const [breadcrumb, setBreadcrumb] = useState<StudentLibraryBreadcrumb[]>([]);
   const [folderVideos, setFolderVideos] = useState<StudentLibraryFolderVideo[]>([]);
   const [folderPdfs, setFolderPdfs] = useState<StudentLibraryFolderPdf[]>([]);
   const [folderMockTests, setFolderMockTests] = useState<StudentLibraryFolderMockTest[]>([]);
   const [scopedCourse, setScopedCourse] = useState<StudentLibraryCourse | null>(null);
-  const [contentBucket, setContentBucket] = useState<CourseContentBucket | null>(null);
+  const [contentKind, setContentKind] = useState<LibraryKind | null>(null);
   const [activeVideo, setActiveVideo] = useState<StudentLibraryFolderVideo | null>(null);
   const [loading, setLoading] = useState(true);
   const [browsing, setBrowsing] = useState(false);
   const [browseError, setBrowseError] = useState(false);
 
-  const loadLibrary = useCallback(async (nextFolderId: number | null, options?: { silent?: boolean }) => {
+  const loadLibrary = useCallback(async (nextFolderId: number | null, options?: { silent?: boolean; kind?: LibraryKind | null }) => {
     const session = getStudentSession();
     if (!session?.email) {
       setLoading(false);
@@ -210,7 +249,7 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
     }
     setActiveVideo(null);
     setBrowseError(false);
-    const library = await fetchStudentLibrary(session.email, nextFolderId);
+    const library = await fetchStudentLibrary(session.email, nextFolderId, options?.kind ?? null);
     if (!library) {
       if (nextFolderId != null) {
         setBrowseError(true);
@@ -225,6 +264,8 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
     } else if ((library.courses || []).length > 0) {
       setCourses(library.courses);
     }
+    setFolders(library.folders || []);
+    setBreadcrumb(library.breadcrumb || []);
     setFolderVideos(library.folder_videos || []);
     setFolderPdfs(library.folder_pdfs || []);
     setFolderMockTests(library.folder_mock_tests || []);
@@ -236,26 +277,74 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
     void loadLibrary(null);
   }, [loadLibrary]);
 
-  const openCourse = useCallback(
-    (course: StudentLibraryCourse) => {
-      setScopedCourse(course);
-      setContentBucket(null);
-      if (course.course_folder_id != null) {
-        void loadLibrary(course.course_folder_id, { silent: true });
-      }
-    },
-    [loadLibrary],
-  );
+  const openCourse = useCallback((course: StudentLibraryCourse) => {
+    setScopedCourse(course);
+    setContentKind(null);
+    setFolders([]);
+    setBreadcrumb([]);
+    setFolderVideos([]);
+    setFolderPdfs([]);
+    setFolderMockTests([]);
+    setActiveVideo(null);
+    setBrowseError(false);
+  }, []);
 
   const backToMyCourses = useCallback(() => {
     setScopedCourse(null);
-    setContentBucket(null);
+    setContentKind(null);
+    setFolders([]);
+    setBreadcrumb([]);
+    setFolderVideos([]);
+    setFolderPdfs([]);
+    setFolderMockTests([]);
     setActiveVideo(null);
   }, []);
 
-  const backToCourseHub = useCallback(() => {
-    setContentBucket(null);
+  const crumbs = courseCrumbs(breadcrumb, scopedCourse?.course_folder_id);
+
+  const openBucket = useCallback(
+    (kind: LibraryKind) => {
+      if (scopedCourse?.course_folder_id == null) return;
+      setContentKind(kind);
+      setActiveVideo(null);
+      void loadLibrary(scopedCourse.course_folder_id, { silent: true, kind });
+    },
+    [loadLibrary, scopedCourse],
+  );
+
+  const openFolder = useCallback(
+    (folderId: number) => {
+      if (!contentKind) return;
+      setActiveVideo(null);
+      void loadLibrary(folderId, { silent: true, kind: contentKind });
+    },
+    [contentKind, loadLibrary],
+  );
+
+  const backToParentFolder = useCallback(() => {
     setActiveVideo(null);
+    if (!contentKind || crumbs.length <= 1) {
+      setContentKind(null);
+      setFolders([]);
+      setBreadcrumb([]);
+      setFolderVideos([]);
+      setFolderPdfs([]);
+      setFolderMockTests([]);
+      setBrowseError(false);
+      return;
+    }
+    void loadLibrary(crumbs[crumbs.length - 2].id, { silent: true, kind: contentKind });
+  }, [contentKind, crumbs, loadLibrary]);
+
+  const playVideo = useCallback(async (video: StudentLibraryFolderVideo) => {
+    const session = getStudentSession();
+    if (!session?.email) return;
+    const playback = await fetchMediaVideoPlayback(video.id, session.email);
+    setActiveVideo({
+      ...video,
+      video_url: playback?.video_url || video.video_url,
+      qualities: playback?.qualities ?? video.qualities ?? [],
+    });
   }, []);
 
   if (loading) {
@@ -297,18 +386,13 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
     );
   }
 
-  const bucketItems = contentBucket === "videos"
-    ? folderVideos
-    : contentBucket === "pdfs"
-      ? folderPdfs
-      : contentBucket === "mock_tests"
-        ? folderMockTests
-        : [];
-  const bucketEmptyLabel = contentBucket === "videos"
-    ? "No videos have been added to this course yet."
-    : contentBucket === "pdfs"
-      ? "No PDFs have been added to this course yet."
-      : "No mock tests have been added to this course yet.";
+  const bucketLabel = contentKind ? contentBuckets.find((bucket) => bucket.kind === contentKind)?.title || "Folder" : scopedCourse.title;
+  const currentFolderName = contentKind
+    ? crumbs.length > 1
+      ? crumbs[crumbs.length - 1].name
+      : bucketLabel
+    : scopedCourse.title;
+  const isEmpty = folders.length === 0 && folderVideos.length === 0 && folderPdfs.length === 0 && folderMockTests.length === 0;
 
   return (
     <div className="space-y-5">
@@ -316,15 +400,15 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={contentBucket ? backToCourseHub : backToMyCourses}
+            onClick={contentKind ? backToParentFolder : backToMyCourses}
             className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#172a69] shadow-sm ring-1 ring-[#dfe5ef] transition hover:bg-[#eef2ff]"
-            aria-label={contentBucket ? "Back to course folders" : "Back to My Courses"}
+            aria-label={contentKind ? (crumbs.length > 1 ? "Back to parent folder" : "Back to course folders") : "Back to My Courses"}
           >
             <ArrowLeft size={16} />
           </button>
           <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#7d8799]">Now viewing</p>
-            <h2 className="truncate text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{scopedCourse.title}</h2>
+            <h2 className="truncate text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{currentFolderName}</h2>
           </div>
         </div>
         <button
@@ -336,84 +420,23 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
         </button>
       </div>
 
-      <nav className="flex flex-wrap items-center gap-1 text-sm font-bold text-[#667085]">
-        <button
-          type="button"
-          onClick={backToCourseHub}
-          className={`rounded-lg px-2 py-1 transition hover:bg-[#eef2ff] hover:text-[#172a69] ${!contentBucket ? "bg-[#eef2ff] text-[#172a69]" : ""}`}
-        >
-          {scopedCourse.title}
-        </button>
-        {contentBucket ? (
-          <span className="inline-flex items-center gap-1">
-            <ChevronRight size={14} className="text-[#c0c7d4]" />
-            <span className="rounded-lg bg-[#eef2ff] px-2 py-1 text-[#172a69]">
-              {contentBucket === "mock_tests" ? "Mock Test" : contentBucket === "videos" ? "Videos" : "PDF"}
-            </span>
-          </span>
-        ) : null}
-      </nav>
-
-      {activeVideo?.video_url ? (
-        <div className="overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-black shadow-[0_12px_34px_rgba(15,23,42,0.08)]">
-          <div className="flex items-center justify-between gap-3 bg-[#111827] px-4 py-3">
-            <p className="truncate text-sm font-extrabold text-white">{activeVideo.title}</p>
-            <button
-              type="button"
-              onClick={() => setActiveVideo(null)}
-              className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/20"
-            >
-              Close
-            </button>
-          </div>
-          <div className="aspect-video w-full">
-            <ProtectedVideoPlayer
-              url={activeVideo.video_url}
-              qualities={activeVideo.qualities ?? []}
-              watermark={getStudentSession()?.email || getStudentSession()?.name || "KR Logics"}
-              autoPlay
-              title={activeVideo.title}
-            />
-          </div>
-        </div>
-      ) : null}
-
-      {browsing ? (
-        <p className="text-sm font-semibold text-[#667085]">Loading...</p>
-      ) : browseError ? (
-        <div className="rounded-[20px] border border-dashed border-[#dfe5ef] bg-[#f8fafc] p-8 text-center">
-          <p className="text-sm font-bold text-[#667085]">Could not load this course. Please try again.</p>
-          <button
-            type="button"
-            onClick={() => scopedCourse?.course_folder_id != null && void loadLibrary(scopedCourse.course_folder_id, { silent: true })}
-            className="mt-4 inline-flex h-11 items-center rounded-2xl bg-[#172a69] px-5 text-sm font-extrabold text-white"
-          >
-            Retry
-          </button>
-        </div>
-      ) : !contentBucket ? (
+      {!contentKind ? (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {([
-            { key: "mock_tests" as const, name: "Mock Test", count: folderMockTests.length, icon: ClipboardList, gradient: "from-[#0538A1] via-[#0957D3] to-[#13a38b]" },
-            { key: "videos" as const, name: "Videos", count: folderVideos.length, icon: Video, gradient: "from-[#172a69] via-[#2350b8] to-[#13a38b]" },
-            { key: "pdfs" as const, name: "PDF", count: folderPdfs.length, icon: FileText, gradient: "from-[#ba7517] via-[#f0a500] to-[#ffcf33]" },
-          ]).map((bucket) => {
+          {contentBuckets.map((bucket) => {
             const Icon = bucket.icon;
             return (
               <button
-                key={bucket.key}
+                key={bucket.kind}
                 type="button"
-                onClick={() => setContentBucket(bucket.key)}
+                onClick={() => openBucket(bucket.kind)}
                 className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white text-left shadow-[0_12px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
               >
                 <div className={`relative flex min-h-[132px] items-center justify-center bg-gradient-to-br ${bucket.gradient}`}>
-                  <Icon className="text-white/90" size={42} />
+                  <Icon className="text-white/95" size={42} />
                 </div>
                 <div className="flex flex-1 flex-col p-5">
-                  <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{bucket.name}</h2>
-                  <p className="mt-1 text-sm font-semibold text-[#7d8799]">
-                    {bucket.count} {bucket.key === "videos" ? `video${bucket.count === 1 ? "" : "s"}` : bucket.key === "pdfs" ? `PDF${bucket.count === 1 ? "" : "s"}` : `mock test${bucket.count === 1 ? "" : "s"}`}
-                  </p>
+                  <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{bucket.title}</h2>
+                  <p className="mt-1 text-sm font-semibold text-[#7d8799]">{bucket.subtitle}</p>
                   <span className="mt-auto inline-flex items-center gap-1 pt-4 text-xs font-extrabold text-[#0957D3]">
                     Open <ChevronRight size={14} />
                   </span>
@@ -422,107 +445,204 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
             );
           })}
         </div>
-      ) : bucketItems.length === 0 ? (
-        <div className="rounded-[20px] border border-dashed border-[#dfe5ef] bg-[#f8fafc] p-8 text-center">
-          <p className="text-sm font-bold text-[#667085]">{bucketEmptyLabel}</p>
-        </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {contentBucket === "videos"
-            ? folderVideos.map((video) => (
-              <article
-                key={`video-${video.id}`}
-                className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white shadow-[0_12px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
-              >
-                <div className="relative flex min-h-[132px] items-center justify-center bg-gradient-to-br from-[#172a69] via-[#2350b8] to-[#13a38b]">
-                  <Video className="text-white/80" size={42} />
-                  <span className="absolute left-4 top-4 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-extrabold text-white backdrop-blur">
-                    Lesson
-                  </span>
-                </div>
-                <div className="flex flex-1 flex-col p-4">
-                  <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{video.title}</h2>
-                  <p className="mt-1 text-sm font-semibold text-[#7d8799]">{video.size_label || "Video lesson"}</p>
-                  <button
-                    type="button"
-                    disabled={!video.video_url}
-                    onClick={() => setActiveVideo(video)}
-                    className="mt-auto inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#172a69] px-3 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Play <PlayCircle size={16} />
-                  </button>
-                </div>
-              </article>
-            ))
-            : null}
+        <>
+          <nav className="flex flex-wrap items-center gap-1 text-sm font-bold text-[#667085]">
+            <button
+              type="button"
+              onClick={() => {
+                setContentKind(null);
+                setFolders([]);
+                setBreadcrumb([]);
+                setFolderVideos([]);
+                setFolderPdfs([]);
+                setFolderMockTests([]);
+                setActiveVideo(null);
+              }}
+              className="rounded-lg px-2 py-1 transition hover:bg-[#eef2ff] hover:text-[#172a69]"
+            >
+              {scopedCourse.title}
+            </button>
+            <ChevronRight size={14} className="text-[#c0c7d4]" />
+            <button
+              type="button"
+              onClick={() => scopedCourse.course_folder_id != null && void loadLibrary(scopedCourse.course_folder_id, { silent: true, kind: contentKind })}
+              className={`rounded-lg px-2 py-1 transition hover:bg-[#eef2ff] hover:text-[#172a69] ${crumbs.length <= 1 ? "bg-[#eef2ff] text-[#172a69]" : ""}`}
+            >
+              {bucketLabel}
+            </button>
+            {crumbs.slice(1).map((crumb, index) => (
+              <span key={crumb.id} className="inline-flex items-center gap-1">
+                <ChevronRight size={14} className="text-[#c0c7d4]" />
+                <button
+                  type="button"
+                  onClick={() => openFolder(crumb.id)}
+                  className={`rounded-lg px-2 py-1 transition hover:bg-[#eef2ff] hover:text-[#172a69] ${index === crumbs.slice(1).length - 1 ? "bg-[#eef2ff] text-[#172a69]" : ""}`}
+                >
+                  {crumb.name}
+                </button>
+              </span>
+            ))}
+          </nav>
 
-          {contentBucket === "pdfs"
-            ? folderPdfs.map((pdf) => (
-              <article
-                key={`pdf-${pdf.id}`}
-                className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white shadow-[0_12px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
+          {activeVideo?.video_url ? (
+            <div className="overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-black shadow-[0_12px_34px_rgba(15,23,42,0.08)]">
+              <div className="flex items-center justify-between gap-3 bg-[#111827] px-4 py-3">
+                <p className="truncate text-sm font-extrabold text-white">{activeVideo.title}</p>
+                <button
+                  type="button"
+                  onClick={() => setActiveVideo(null)}
+                  className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/20"
+                >
+                  Close
+                </button>
+              </div>
+              <div className="aspect-video w-full">
+                <ProtectedVideoPlayer
+                  url={activeVideo.video_url}
+                  qualities={activeVideo.qualities ?? []}
+                  autoPlay
+                  title={activeVideo.title}
+                />
+              </div>
+            </div>
+          ) : null}
+
+          {browsing ? (
+            <p className="text-sm font-semibold text-[#667085]">Loading...</p>
+          ) : browseError ? (
+            <div className="rounded-[20px] border border-dashed border-[#dfe5ef] bg-[#f8fafc] p-8 text-center">
+              <p className="text-sm font-bold text-[#667085]">Could not load this folder. Please try again.</p>
+              <button
+                type="button"
+                onClick={() => {
+                  const folderId = crumbs.length ? crumbs[crumbs.length - 1].id : scopedCourse.course_folder_id;
+                  if (folderId != null && contentKind) {
+                    void loadLibrary(folderId, { silent: true, kind: contentKind });
+                  }
+                }}
+                className="mt-4 inline-flex h-11 items-center rounded-2xl bg-[#172a69] px-5 text-sm font-extrabold text-white"
               >
-                <div className="relative flex min-h-[132px] items-center justify-center bg-gradient-to-br from-[#ba7517] via-[#f0a500] to-[#ffcf33]">
-                  <FileText className="text-white/90" size={42} />
-                  <span className="absolute left-4 top-4 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-extrabold text-white backdrop-blur">
-                    PDF
-                  </span>
-                </div>
-                <div className="flex flex-1 flex-col p-4">
-                  <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{pdf.title}</h2>
-                  <p className="mt-1 text-sm font-semibold text-[#7d8799]">{pdf.size_label || "PDF notes"}</p>
-                  {pdf.url ? (
-                    <a
-                      href={pdf.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                Retry
+              </button>
+            </div>
+          ) : isEmpty ? (
+            <div className="rounded-[20px] border border-dashed border-[#dfe5ef] bg-[#f8fafc] p-8 text-center">
+              <p className="text-sm font-bold text-[#667085]">This folder is empty.</p>
+            </div>
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {folders.map((folder) => (
+                <button
+                  key={`folder-${folder.id}`}
+                  type="button"
+                  onClick={() => openFolder(folder.id)}
+                  className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white text-left shadow-[0_12px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
+                >
+                  <div className="relative flex min-h-[132px] items-center justify-center bg-gradient-to-br from-[#f59e0b] via-[#fbbf24] to-[#fde68a]">
+                    <Folder className="text-white/95" size={42} />
+                  </div>
+                  <div className="flex flex-1 flex-col p-5">
+                    <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{folder.name}</h2>
+                    <p className="mt-1 text-sm font-semibold text-[#7d8799]">{folderMetaLine(folder, contentKind)}</p>
+                    <span className="mt-auto inline-flex items-center gap-1 pt-4 text-xs font-extrabold text-[#0957D3]">
+                      Open <ChevronRight size={14} />
+                    </span>
+                  </div>
+                </button>
+              ))}
+
+              {folderVideos.map((video) => (
+                <article
+                  key={`video-${video.id}`}
+                  className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white shadow-[0_12px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
+                >
+                  <div className="relative flex min-h-[132px] items-center justify-center bg-gradient-to-br from-[#172a69] via-[#2350b8] to-[#13a38b]">
+                    <Video className="text-white/80" size={42} />
+                    <span className="absolute left-4 top-4 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-extrabold text-white backdrop-blur">
+                      Lesson
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col p-4">
+                    <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{video.title}</h2>
+                    <p className="mt-1 text-sm font-semibold text-[#7d8799]">{video.size_label || "Video lesson"}</p>
+                    <button
+                      type="button"
+                      disabled={!video.video_url}
+                      onClick={() => void playVideo(video)}
+                      className="mt-auto inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#172a69] px-3 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Play <PlayCircle size={16} />
+                    </button>
+                  </div>
+                </article>
+              ))}
+
+              {folderPdfs.map((pdf) => (
+                <article
+                  key={`pdf-${pdf.id}`}
+                  className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white shadow-[0_12px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
+                >
+                  <div className="relative flex min-h-[132px] items-center justify-center bg-gradient-to-br from-[#ba7517] via-[#f0a500] to-[#ffcf33]">
+                    <FileText className="text-white/90" size={42} />
+                    <span className="absolute left-4 top-4 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-extrabold text-white backdrop-blur">
+                      PDF
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col p-4">
+                    <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{pdf.title}</h2>
+                    <p className="mt-1 text-sm font-semibold text-[#7d8799]">{pdf.size_label || "PDF notes"}</p>
+                    {pdf.url ? (
+                      <a
+                        href={pdf.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-auto inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#172a69] px-3 text-xs font-extrabold text-white"
+                      >
+                        Open PDF <FileText size={16} />
+                      </a>
+                    ) : (
+                      <span className="mt-auto inline-flex h-10 w-full items-center justify-center rounded-xl bg-[#eef2f7] text-xs font-extrabold text-[#94a3b8]">
+                        Unavailable
+                      </span>
+                    )}
+                  </div>
+                </article>
+              ))}
+
+              {folderMockTests.map((test) => (
+                <article
+                  key={`mock-${test.id}`}
+                  className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white shadow-[0_12px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
+                >
+                  <div className="relative flex min-h-[132px] items-center justify-center overflow-hidden bg-gradient-to-br from-[#0538A1] via-[#0957D3] to-[#13a38b]">
+                    {test.image_url ? (
+                      <img src={test.image_url} alt={test.title} className="h-full w-full object-cover" />
+                    ) : (
+                      <ClipboardList className="text-white/85" size={42} />
+                    )}
+                    <span className="absolute left-4 top-4 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-extrabold text-white backdrop-blur">
+                      Mock Test
+                    </span>
+                  </div>
+                  <div className="flex flex-1 flex-col p-4">
+                    <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{test.title}</h2>
+                    <p className="mt-1 text-sm font-semibold text-[#7d8799]">
+                      {test.duration_minutes ? `${test.duration_minutes} min` : "Mock test"}
+                      {test.questions_count > 0 ? ` · ${test.questions_count} question${test.questions_count === 1 ? "" : "s"}` : ""}
+                    </p>
+                    <Link
+                      href={`/student/mock-tests/${test.slug}/instructions`}
                       className="mt-auto inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#172a69] px-3 text-xs font-extrabold text-white"
                     >
-                      Open PDF <FileText size={16} />
-                    </a>
-                  ) : (
-                    <span className="mt-auto inline-flex h-10 w-full items-center justify-center rounded-xl bg-[#eef2f7] text-xs font-extrabold text-[#94a3b8]">
-                      Unavailable
-                    </span>
-                  )}
-                </div>
-              </article>
-            ))
-            : null}
-
-          {contentBucket === "mock_tests"
-            ? folderMockTests.map((test) => (
-              <article
-                key={`mock-${test.id}`}
-                className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#dfe5ef] bg-white shadow-[0_12px_34px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
-              >
-                <div className="relative flex min-h-[132px] items-center justify-center overflow-hidden bg-gradient-to-br from-[#0538A1] via-[#0957D3] to-[#13a38b]">
-                  {test.image_url ? (
-                    <img src={test.image_url} alt={test.title} className="h-full w-full object-cover" />
-                  ) : (
-                    <ClipboardList className="text-white/85" size={42} />
-                  )}
-                  <span className="absolute left-4 top-4 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-extrabold text-white backdrop-blur">
-                    Mock Test
-                  </span>
-                </div>
-                <div className="flex flex-1 flex-col p-4">
-                  <h2 className="text-[17px] font-extrabold tracking-[-0.03em] text-[#172a69]">{test.title}</h2>
-                  <p className="mt-1 text-sm font-semibold text-[#7d8799]">
-                    {test.duration_minutes ? `${test.duration_minutes} min` : "Mock test"}
-                    {test.questions_count > 0 ? ` · ${test.questions_count} question${test.questions_count === 1 ? "" : "s"}` : ""}
-                  </p>
-                  <Link
-                    href={`/student/mock-tests/${test.slug}/instructions`}
-                    className="mt-auto inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#172a69] px-3 text-xs font-extrabold text-white"
-                  >
-                    Start Test <PlayCircle size={16} />
-                  </Link>
-                </div>
-              </article>
-            ))
-            : null}
-        </div>
+                      Start Test <PlayCircle size={16} />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

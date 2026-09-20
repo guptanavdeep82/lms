@@ -133,6 +133,11 @@ export function lessonVideoApiUrl(lessonId: number, email: string) {
   return `${publicBackendBaseUrl}/api/lesson/${lessonId}/video?${query}`;
 }
 
+export function mediaVideoApiUrl(mediaId: number, email: string) {
+  const query = `email=${encodeURIComponent(email)}`;
+  return `${publicBackendBaseUrl}/api/media/${mediaId}/video?${query}`;
+}
+
 export type LessonVideoQuality = {
   id: string;
   label: string;
@@ -162,6 +167,20 @@ export async function fetchLessonVideoPlayback(lessonId: number, email: string):
 export async function fetchLessonVideoUrl(lessonId: number, email: string): Promise<string | null> {
   const playback = await fetchLessonVideoPlayback(lessonId, email);
   return playback?.video_url ?? null;
+}
+
+export async function fetchMediaVideoPlayback(mediaId: number, email: string): Promise<LessonVideoPlayback | null> {
+  try {
+    const response = await fetch(mediaVideoApiUrl(mediaId, email), { cache: "no-store" });
+    if (!response.ok) return null;
+    const payload = (await response.json()) as { video_url?: string | null; qualities?: LessonVideoQuality[] };
+    return {
+      video_url: payload.video_url ?? null,
+      qualities: payload.qualities ?? [],
+    };
+  } catch {
+    return null;
+  }
 }
 
 function normalizeCategorySlug(slug: string | null): string {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Menu, Search } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { staticReplace } from "@/lib/static-nav";
 import { BookmarksProvider } from "@/components/student/BookmarksProvider";
@@ -50,10 +50,6 @@ export function StudentDashboardShell({ children }: StudentDashboardShellProps) 
             >
               <Menu size={20} />
             </button>
-            <div className="hidden h-11 w-[480px] items-center gap-3 rounded-2xl border border-[#e4e8f1] bg-[#f8fafc] px-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)] md:flex">
-              <Search size={18} className="text-[#7d8799]" />
-              <span className="text-sm font-medium text-[#7d8799]">Search courses, mock tests, notes...</span>
-            </div>
           </div>
           <div className="flex items-center gap-3">
             <button type="button" className="relative grid h-11 w-11 place-items-center rounded-2xl border border-[#e4e8f1] bg-white text-[#172a69] shadow-sm">

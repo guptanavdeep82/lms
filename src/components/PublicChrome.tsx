@@ -15,7 +15,7 @@ type PublicChromeProps = {
 };
 
 function hidePublicChrome(pathname: string) {
-  return pathname.startsWith("/student") || pathname.startsWith("/admin");
+  return pathname.startsWith("/student") || pathname.startsWith("/admin") || pathname.startsWith("/app-google-auth");
 }
 
 export function PublicChrome({

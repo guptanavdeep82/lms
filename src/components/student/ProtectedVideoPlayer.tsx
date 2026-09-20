@@ -10,36 +10,38 @@ export type VideoQualityOption = {
   height?: number | null;
 };
 
-export function fallbackVideoQualities(url: string): VideoQualityOption[] {
-  if (!url) return [];
+export function uniqueVideoQualities(url: string, incoming: VideoQualityOption[] = []): VideoQualityOption[] {
+  const source = incoming.filter((item) => item.url);
+  const list = source.length > 0
+    ? source
+    : url
+      ? [{ id: "auto", label: "Auto", url, height: null }]
+      : [];
 
-  return [
-    { id: "auto", label: "Auto", url, height: null },
-    { id: "720p", label: "720p", url, height: 720 },
-    { id: "480p", label: "480p", url, height: 480 },
-    { id: "360p", label: "360p", url, height: 360 },
-  ];
+  const seen = new Set<string>();
+  const unique: VideoQualityOption[] = [];
+  for (const item of list) {
+    if (seen.has(item.url)) continue;
+    seen.add(item.url);
+    unique.push(item);
+  }
+  return unique;
 }
 
 export function ProtectedVideoPlayer({
   url,
   qualities = [],
-  watermark,
   autoPlay = false,
   title = "Course video",
 }: {
   url: string;
   qualities?: VideoQualityOption[];
-  watermark?: string | null;
   autoPlay?: boolean;
   title?: string;
 }) {
-  const options = useMemo(() => {
-    const incoming = qualities.filter((item) => item.url);
-    return incoming.length >= 3 ? incoming : fallbackVideoQualities(url);
-  }, [qualities, url]);
+  const options = useMemo(() => uniqueVideoQualities(url, qualities), [qualities, url]);
 
-  const [activeId, setActiveId] = useState(() => options.find((item) => item.id === "720p")?.id ?? options[0]?.id ?? "auto");
+  const [activeId, setActiveId] = useState(() => options[0]?.id ?? "auto");
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const wasPlayingRef = useRef(false);
   const resumeAtRef = useRef(0);
@@ -50,7 +52,7 @@ export function ProtectedVideoPlayer({
 
   useEffect(() => {
     if (!options.some((item) => item.id === activeId)) {
-      setActiveId(options.find((item) => item.id === "720p")?.id ?? options[0]?.id ?? "auto");
+      setActiveId(options[0]?.id ?? "auto");
     }
   }, [activeId, options]);
 
@@ -107,19 +109,10 @@ export function ProtectedVideoPlayer({
     </label>
   ) : null;
 
-  const watermarkLayer = watermark ? (
-    <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center overflow-hidden">
-      <span className="rotate-[-22deg] text-sm font-extrabold tracking-[0.18em] text-white/25 select-none">
-        {watermark}
-      </span>
-    </div>
-  ) : null;
-
   if (embedUrl) {
     return (
       <div className="relative h-full w-full bg-black" onContextMenu={(event) => event.preventDefault()}>
         {qualityPicker}
-        {watermarkLayer}
         <iframe
           src={`${embedUrl}&modestbranding=1&rel=0&fs=0`}
           title={title}
@@ -135,7 +128,6 @@ export function ProtectedVideoPlayer({
     return (
       <div className="relative h-full w-full bg-black" onContextMenu={(event) => event.preventDefault()}>
         {qualityPicker}
-        {watermarkLayer}
         <video
           key={playbackUrl}
           ref={videoRef}
@@ -158,7 +150,6 @@ export function ProtectedVideoPlayer({
 
   return (
     <div className="relative h-full w-full bg-black" onContextMenu={(event) => event.preventDefault()}>
-      {watermarkLayer}
       <iframe src={playbackUrl} title={title} className="h-full w-full border-0" />
     </div>
   );
