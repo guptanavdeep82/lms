@@ -11,6 +11,7 @@ import {
   examTotalsFromDetail,
   MOCK_EXAM_MESSAGE_SOURCE,
   mockTestProgressUrl,
+  mockTestResetProgressUrl,
   mockTestsApiUrl,
   sectionTotalMarks,
   type MockTestDetailResponse,
@@ -21,6 +22,7 @@ import {
 export default function DynamicMockSetupPage() {
   const slug = useLiveParam("slug", 2);
   const [data, setData] = useState<MockTestDetailResponse | null>(null);
+  const [resetting, setResetting] = useState(false);
   const student = getStudentSession();
 
   const applyProgress = useCallback((progress: MockTestProgressResponse) => {
@@ -29,6 +31,8 @@ export default function DynamicMockSetupPage() {
       return {
         ...previous,
         sequential_sections: progress.sequential_sections,
+        allow_section_retry: progress.allow_section_retry,
+        has_in_progress: progress.has_in_progress,
         sections: progress.sections,
       };
     });
@@ -103,6 +107,8 @@ export default function DynamicMockSetupPage() {
   const test = data.test;
   const sections = data.sections ?? [];
   const usesSections = Boolean(data.sequential_sections && sections.length > 0);
+  const allowSectionRetry = data.allow_section_retry ?? data.test.allow_section_retry ?? data.test.test_type !== "full_length";
+  const allSectionsSubmitted = usesSections && sections.filter((section) => section.questions_count > 0).every((section) => section.status === "passed" || section.status === "completed");
   const totals = examTotalsFromDetail(data);
   const previewSection = sections.find((section) => section.status !== "locked") ?? sections[0];
   const previewDuration = previewSection?.duration_minutes || totals.duration_minutes;
@@ -123,6 +129,27 @@ export default function DynamicMockSetupPage() {
     }
 
     staticPush(examUrl);
+  };
+
+  const reattemptFullMock = async () => {
+    if (!student?.email || resetting) return;
+    setResetting(true);
+    try {
+      const response = await fetch(mockTestResetProgressUrl(slug), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: student.email }),
+      });
+      if (response.ok) {
+        const progress = (await response.json()) as MockTestProgressResponse;
+        applyProgress(progress);
+        const first = [...progress.sections].sort((a, b) => a.sort_order - b.sort_order)[0];
+        openExamWindow(first);
+        return;
+      }
+    } finally {
+      setResetting(false);
+    }
   };
 
   return (
@@ -166,14 +193,35 @@ export default function DynamicMockSetupPage() {
           <div className="mt-7 space-y-3">
             {usesSections ? (
               <>
-                <p className="text-sm font-semibold text-[#344054]">This test has sequential sections. Submit a section to unlock the next one — even if you skip questions.</p>
+                <p className="text-sm font-semibold text-[#344054]">
+                  {allowSectionRetry
+                    ? "This test has sequential sections. Submit a section to unlock the next one — even if you leave questions unattempted."
+                    : "This is a full-length mock. Complete each section in order. After finishing, reattempt the complete mock from the beginning."}
+                </p>
+                {allSectionsSubmitted && !allowSectionRetry ? (
+                  <button
+                    type="button"
+                    disabled={resetting}
+                    onClick={() => void reattemptFullMock()}
+                    className="inline-flex h-11 items-center justify-center rounded-xl bg-[#172a69] px-5 text-sm font-extrabold text-white disabled:opacity-60"
+                  >
+                    {resetting ? "Preparing..." : "Reattempt Full Mock"}
+                  </button>
+                ) : null}
                 <div className="grid gap-3">
                   {sections.map((section) => {
                     const locked = section.status === "locked";
                     const passed = section.status === "passed";
                     const completed = section.status === "completed";
                     const hasQuestions = section.questions_count > 0;
-                    const disabled = locked || !hasQuestions;
+                    const canOpen = !locked && hasQuestions && (allowSectionRetry || section.status === "available" || Boolean(section.in_progress));
+                    const label = section.in_progress
+                      ? "Resume Exam"
+                      : passed || completed
+                        ? allowSectionRetry
+                          ? "Retry Exam"
+                          : "Completed"
+                        : "Start Exam";
                     return (
                       <div key={section.id} className="rounded-2xl border border-[#dfe5ef] bg-white p-4 ring-1 ring-[#e5eaf2]">
                         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -189,15 +237,17 @@ export default function DynamicMockSetupPage() {
                               <p className="mt-1 text-xs font-bold text-[#15803d]">Passed · Best {section.best_percentage}%</p>
                             ) : completed ? (
                               <p className="mt-1 text-xs font-bold text-[#175cd3]">Submitted · Best {section.best_percentage}%</p>
+                            ) : section.in_progress ? (
+                              <p className="mt-1 text-xs font-bold text-[#b54708]">Paused — resume exactly where you left off</p>
                             ) : null}
                           </div>
                           <button
                             type="button"
-                            disabled={disabled}
+                            disabled={!canOpen}
                             onClick={() => openExamWindow(section)}
                             className="inline-flex h-10 items-center rounded-xl bg-[#3378b9] px-4 text-xs font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-45"
                           >
-                            {locked ? "Locked" : !hasQuestions ? "Unavailable" : passed || completed ? "Retry Exam" : "Start Exam"}
+                            {locked ? "Locked" : !hasQuestions ? "Unavailable" : label}
                           </button>
                         </div>
                       </div>

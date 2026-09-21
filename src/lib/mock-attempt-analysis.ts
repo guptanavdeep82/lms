@@ -33,6 +33,12 @@ export type MockAttemptQuestion = {
   score_delta: number;
 };
 
+export type MockAttemptComparison = {
+  your_score: number;
+  topper_score: number;
+  average_score: number;
+};
+
 export type MockAttemptSectionSummary = {
   section_name: string;
   total_questions: number;
@@ -45,6 +51,11 @@ export type MockAttemptSectionSummary = {
   score: number;
   total_marks: number;
   time_spent_seconds: number;
+  percentage?: number;
+  percentile?: number;
+  rank?: number;
+  total_participants?: number;
+  comparison?: MockAttemptComparison;
 };
 
 export type MockAttemptTopicSummary = {
@@ -84,7 +95,13 @@ export type MockAttemptDetail = {
     rank?: number;
     total_participants?: number;
     percentile?: number;
+    percentage?: number;
+    your_score?: number;
+    topper_score?: number;
+    average_score?: number;
+    comparison?: MockAttemptComparison;
   };
+  comparison?: MockAttemptComparison;
   sections: MockAttemptSectionSummary[];
   topics: MockAttemptTopicSummary[];
   time_split: {
@@ -127,9 +144,11 @@ export async function fetchMockAttemptDetail(email: string, attemptId: number) {
   return response.json() as Promise<MockAttemptDetail>;
 }
 
-export async function fetchMockAttemptBySlug(email: string, slug: string) {
+export async function fetchMockAttemptBySlug(email: string, slug: string, combined = false) {
+  const params = new URLSearchParams({ email });
+  if (combined) params.set("combined", "1");
   const response = await fetch(
-    apiUrl(`/test-results/by-slug/${slug}?email=${encodeURIComponent(email)}`),
+    apiUrl(`/test-results/by-slug/${slug}?${params.toString()}`),
     { cache: "no-store" }
   );
   if (!response.ok) throw new Error("Unable to load attempt details.");

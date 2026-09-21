@@ -41,7 +41,7 @@ export default function MockAnalysisPage() {
     const attemptId = searchParams.get("attempt") || getMockResult(slug)?.attemptId;
     const loader = attemptId
       ? fetchMockAttemptDetail(session.email, Number(attemptId))
-      : fetchMockAttemptBySlug(session.email, slug);
+      : fetchMockAttemptBySlug(session.email, slug, true);
 
     loader
       .then((payload) => {
@@ -157,7 +157,7 @@ export default function MockAnalysisPage() {
             <table className="min-w-full text-sm">
               <thead className="bg-[#f8fafc] text-left text-xs font-extrabold uppercase tracking-[0.12em] text-[#667085]">
                 <tr>
-                  {["Section", "Attempted", "Correct", "Incorrect", "Skipped", "Unseen", "Accuracy", "Score", "Time"].map((head) => (
+                  {["Section", "Attempted", "Correct", "Incorrect", "Skipped", "Unseen", "Accuracy", "Score", "%", "Percentile", "Time"].map((head) => (
                     <th key={head} className="px-4 py-3">{head}</th>
                   ))}
                 </tr>
@@ -173,6 +173,8 @@ export default function MockAnalysisPage() {
                     <td className="px-4 py-3">{section.unseen}</td>
                     <td className={`px-4 py-3 font-bold ${accuracyToneClass(section.accuracy)}`}>{section.accuracy}%</td>
                     <td className={`px-4 py-3 font-extrabold ${scoreToneClass(section.score, section.total_marks)}`}>{section.score}/{section.total_marks}</td>
+                    <td className="px-4 py-3 font-bold text-[#175cd3]">{(section.percentage ?? 0).toFixed(1)}%</td>
+                    <td className={`px-4 py-3 font-bold ${accuracyToneClass(section.percentile ?? 0)}`}>{section.percentile != null ? `${section.percentile}%ile` : "—"}</td>
                     <td className="px-4 py-3">{formatMockDuration(section.time_spent_seconds)}</td>
                   </tr>
                 ))}
@@ -185,6 +187,8 @@ export default function MockAnalysisPage() {
                   <td className="px-4 py-3">{summary.unseen}</td>
                   <td className={accuracyToneClass(summary.accuracy)}>{summary.accuracy}%</td>
                   <td className={scoreToneClass(summary.score, summary.total_marks)}>{summary.score}/{summary.total_marks}</td>
+                  <td className="px-4 py-3 text-[#175cd3]">{(summary.percentage ?? 0).toFixed(1)}%</td>
+                  <td className={accuracyToneClass(summary.percentile ?? 0)}>{summary.percentile != null ? `${summary.percentile}%ile` : "—"}</td>
                   <td className="px-4 py-3">{formatMockDuration(summary.time_utilized_seconds)}</td>
                 </tr>
               </tbody>

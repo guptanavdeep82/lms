@@ -36,6 +36,7 @@ export type MockTestSection = {
   best_percentage: number;
   attempts_count: number;
   passed_at: string | null;
+  in_progress?: boolean;
   summary?: MockTestSectionSummary | null;
   latest_attempt?: {
     id: number;
@@ -67,6 +68,7 @@ export type MockTest = {
   status: string;
   questions_count: number;
   sequential_sections?: boolean;
+  allow_section_retry?: boolean;
   sections_count?: number;
 };
 
@@ -87,7 +89,23 @@ export type MockTestDetailResponse = {
   test: MockTest;
   sections?: MockTestSection[];
   sequential_sections?: boolean;
+  allow_section_retry?: boolean;
+  has_in_progress?: boolean;
   questions: MockQuestion[];
+  exam_session?: MockExamSession | null;
+};
+
+export type MockExamSession = {
+  current_index: number;
+  remaining_seconds: number;
+  duration_seconds: number;
+  is_paused: boolean;
+  answers?: Record<string, string> | unknown;
+  visited?: number[] | Record<string, boolean>;
+  review_marked?: number[] | Record<string, boolean>;
+  question_times?: Record<string, number>;
+  visit_order?: Record<string, number>;
+  updated_at?: string | null;
 };
 
 export type MockTestSectionExamResponse = {
@@ -104,8 +122,11 @@ export type MockTestSectionExamResponse = {
   questions: MockQuestion[];
   progress: {
     sequential_sections: boolean;
+    allow_section_retry?: boolean;
+    has_in_progress?: boolean;
     sections: MockTestSection[];
   };
+  exam_session?: MockExamSession | null;
 };
 
 const defaultBackendBaseUrl = "https://api.hostingwala.tech";
@@ -164,8 +185,48 @@ export function notifyMockExamOpener(payload: {
 
 export type MockTestProgressResponse = {
   sequential_sections: boolean;
+  allow_section_retry?: boolean;
+  has_in_progress?: boolean;
   sections: MockTestSection[];
 };
+
+export function mockExamSessionUrl(slug: string, email: string, sectionId?: number | null) {
+  const params = new URLSearchParams({ email });
+  if (sectionId) params.set("section_id", String(sectionId));
+  return `${publicBackendBaseUrl}/api/student/mock-tests/${encodeURIComponent(slug)}/exam-session?${params.toString()}`;
+}
+
+export function mockTestResetProgressUrl(slug: string) {
+  return `${publicBackendBaseUrl}/api/student/mock-tests/${encodeURIComponent(slug)}/reset-progress`;
+}
+
+export function toIdFlagMap(raw: unknown): Record<number, boolean> {
+  if (Array.isArray(raw)) {
+    return Object.fromEntries(raw.map((id) => [Number(id), true]));
+  }
+  if (!raw || typeof raw !== "object") return {};
+  return Object.fromEntries(
+    Object.entries(raw as Record<string, unknown>).map(([key, value]) => [Number(key), Boolean(value)])
+  );
+}
+
+export function toIdNumberMap(raw: unknown): Record<number, number> {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  return Object.fromEntries(
+    Object.entries(raw as Record<string, unknown>)
+      .map(([key, value]) => [Number(key), Number(value)] as const)
+      .filter(([, value]) => Number.isFinite(value))
+  );
+}
+
+export function toIdStringMap(raw: unknown): Record<number, string> {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  return Object.fromEntries(
+    Object.entries(raw as Record<string, unknown>)
+      .filter(([, value]) => typeof value === "string" && value)
+      .map(([key, value]) => [Number(key), String(value)])
+  );
+}
 
 export function sectionTotalMarks(section: MockTestSection, questions: MockQuestion[] = []): number {
   if (typeof section.total_marks === "number" && Number.isFinite(section.total_marks)) {

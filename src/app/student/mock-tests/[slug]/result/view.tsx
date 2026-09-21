@@ -38,6 +38,8 @@ export default function MockResultPage() {
   const [categorySlug, setCategorySlug] = useState<string | null>(null);
   const [progress, setProgress] = useState<MockTestProgressResponse | null>(null);
   const [analysis, setAnalysis] = useState<MockAttemptDetail | null>(null);
+  const [combined, setCombined] = useState<MockAttemptDetail | null>(null);
+  const [allowSectionRetry, setAllowSectionRetry] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -62,18 +64,30 @@ export default function MockResultPage() {
       email
         ? attemptId
           ? fetchMockAttemptDetail(email, Number(attemptId)).catch(() => null)
-          : fetchMockAttemptBySlug(email, slug).catch(() => null)
+          : fetchMockAttemptBySlug(email, slug, !sectionSlug).catch(() => null)
         : Promise.resolve(null),
+      email ? fetchMockAttemptBySlug(email, slug, true).catch(() => null) : Promise.resolve(null),
     ])
-      .then(([testPayload, progressPayload, analysisPayload]) => {
+      .then(([testPayload, progressPayload, analysisPayload, combinedPayload]) => {
         setCategorySlug(testPayload.test.category_slug);
+        setAllowSectionRetry(
+          testPayload.allow_section_retry
+            ?? testPayload.test.allow_section_retry
+            ?? testPayload.test.test_type !== "full_length"
+        );
         if (progressPayload) {
           setProgress(progressPayload as MockTestProgressResponse);
+          if ((progressPayload as MockTestProgressResponse).allow_section_retry != null) {
+            setAllowSectionRetry(Boolean((progressPayload as MockTestProgressResponse).allow_section_retry));
+          }
         } else if (storedResult?.progress) {
           setProgress(storedResult.progress);
         }
         if (analysisPayload) {
           setAnalysis(analysisPayload);
+        }
+        if (combinedPayload) {
+          setCombined(combinedPayload);
         }
       })
       .finally(() => setLoading(false));
@@ -81,6 +95,8 @@ export default function MockResultPage() {
 
   const sections = progress?.sections ?? result?.progress?.sections ?? [];
   const isSectionResult = Boolean(sectionSlug || result?.sectionSlug);
+  const allSectionsDone = sections.filter((section) => section.questions_count > 0).every((section) => section.status === "passed" || section.status === "completed");
+  const overview = !isSectionResult || allSectionsDone ? (combined ?? analysis) : analysis;
   const currentSection = useMemo(
     () => sections.find((section) => section.slug === (sectionSlug || result?.sectionSlug)),
     [sections, sectionSlug, result?.sectionSlug]
@@ -175,9 +191,10 @@ export default function MockResultPage() {
               </div>
             </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
               <MetricCard label="Score" value={`${result.score}/${maxMarks}`} tone={result.score < 0 ? "pink" : "green"} />
-              <MetricCard label="Percentage" value={`${displayPercentage.toFixed(1)}%`} tone="blue" />
+              <MetricCard label="Percentage" value={`${(analysis?.summary.percentage ?? displayPercentage).toFixed(1)}%`} tone="blue" />
+              <MetricCard label="Percentile" value={analysis?.summary.percentile != null ? `${analysis.summary.percentile}%ile` : "—"} tone="purple" />
               <MetricCard label="Required" value={`${passingPercentage}%`} tone="purple" />
               <MetricCard
                 label="Time Used"
@@ -207,29 +224,36 @@ export default function MockResultPage() {
           </div>
         )}
 
-        {!isSectionResult && (
+        {!isSectionResult || allSectionsDone ? (
           <div className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <ResultHighlight
                 icon={<Trophy size={22} />}
                 label="Your Score"
-                value={`${result.score} / ${analysis?.summary.total_marks ?? result.total}`}
-                hint="Total marks for this mock test"
-                toneClass={scoreToneClass(result.score, analysis?.summary.total_marks ?? result.total)}
+                value={`${overview?.summary.score ?? result.score} / ${overview?.summary.total_marks ?? result.total}`}
+                hint="Obtained score out of total marks"
+                toneClass={scoreToneClass(overview?.summary.score ?? result.score, overview?.summary.total_marks ?? result.total)}
+              />
+              <ResultHighlight
+                icon={<Award size={22} />}
+                label="Your Percentage"
+                value={`${(overview?.summary.percentage ?? displayPercentage).toFixed(1)}%`}
+                hint="Score as a percent of total marks"
+                toneClass={accuracyToneClass(overview?.summary.percentage ?? displayPercentage)}
               />
               <ResultHighlight
                 icon={<Award size={22} />}
                 label="Your Rank"
-                value={analysis?.summary.rank ? `${analysis.summary.rank} / ${analysis.summary.total_participants}` : '—'}
+                value={overview?.summary.rank ? `${overview.summary.rank} / ${overview.summary.total_participants}` : '—'}
                 hint="Out of all test takers (best attempt per student)"
                 toneClass="text-[#7c3aed]"
               />
               <ResultHighlight
                 icon={<BarChart3 size={22} />}
                 label="Your Percentile"
-                value={analysis?.summary.percentile != null ? `${analysis.summary.percentile}%ile` : '—'}
+                value={overview?.summary.percentile != null ? `${overview.summary.percentile}%ile` : '—'}
                 hint="You scored better than this percent of test takers"
-                toneClass={accuracyToneClass(analysis?.summary.percentile ?? 0)}
+                toneClass={accuracyToneClass(overview?.summary.percentile ?? 0)}
               />
               <ResultHighlight
                 icon={<BarChart3 size={22} />}
@@ -264,7 +288,7 @@ export default function MockResultPage() {
                   Negative or zero section scores are shown in red. Positive scores are shown in green/purple.
                 </p>
                 <div className="mt-5 space-y-4">
-                  {(analysis?.sections ?? []).map((section) => {
+                  {(overview?.sections ?? analysis?.sections ?? []).map((section) => {
                     const width = section.total_marks ? Math.min(100, Math.abs(section.score / section.total_marks) * 100) : 0;
                     return (
                       <div key={section.section_name}>
@@ -283,7 +307,7 @@ export default function MockResultPage() {
                       </div>
                     );
                   })}
-                  {!analysis?.sections?.length && (
+                      {!overview?.sections?.length && !analysis?.sections?.length && (
                     <p className="text-sm font-semibold text-[#667085]">Open Detailed Analysis for the full section breakdown.</p>
                   )}
                 </div>
@@ -299,23 +323,33 @@ export default function MockResultPage() {
                       <tr>
                         <th className="px-4 py-3">Section</th>
                         <th className="px-4 py-3">Score / Max Marks</th>
+                        <th className="px-4 py-3">Percentage</th>
+                        <th className="px-4 py-3">Percentile</th>
                         <th className="px-4 py-3">Accuracy</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {(analysis?.sections ?? []).map((section) => (
+                      {(overview?.sections ?? analysis?.sections ?? []).map((section) => (
                         <tr key={section.section_name} className="border-t border-[#eef2f7]">
                           <td className="px-4 py-3 font-bold text-[#172a69]">{section.section_name}</td>
                           <td className={`px-4 py-3 font-extrabold ${scoreToneClass(section.score, section.total_marks)}`}>
                             {section.score} / {section.total_marks}
+                          </td>
+                          <td className="px-4 py-3 font-bold text-[#175cd3]">{(section.percentage ?? 0).toFixed(1)}%</td>
+                          <td className={`px-4 py-3 font-bold ${accuracyToneClass(section.percentile ?? 0)}`}>
+                            {section.percentile != null ? `${section.percentile}%ile` : "—"}
                           </td>
                           <td className={`px-4 py-3 font-bold ${accuracyToneClass(section.accuracy)}`}>{section.accuracy}%</td>
                         </tr>
                       ))}
                       <tr className="border-t border-[#dfe5ef] bg-[#f8fafc] font-extrabold">
                         <td className="px-4 py-3 text-[#172a69]">TOTAL</td>
-                        <td className={`px-4 py-3 ${scoreToneClass(result.score, analysis?.summary.total_marks ?? result.total)}`}>
-                          {result.score} / {analysis?.summary.total_marks ?? result.total}
+                        <td className={`px-4 py-3 ${scoreToneClass(overview?.summary.score ?? result.score, overview?.summary.total_marks ?? result.total)}`}>
+                          {overview?.summary.score ?? result.score} / {overview?.summary.total_marks ?? result.total}
+                        </td>
+                        <td className="px-4 py-3 text-[#175cd3]">{(overview?.summary.percentage ?? displayPercentage).toFixed(1)}%</td>
+                        <td className={`px-4 py-3 ${accuracyToneClass(overview?.summary.percentile ?? 0)}`}>
+                          {overview?.summary.percentile != null ? `${overview.summary.percentile}%ile` : "—"}
                         </td>
                         <td className={`px-4 py-3 ${accuracyToneClass(accuracy)}`}>{accuracy}%</td>
                       </tr>
@@ -324,6 +358,11 @@ export default function MockResultPage() {
                 </div>
               </div>
             </div>
+
+            <TopperComparisonChart
+              overall={overview?.summary.comparison ?? overview?.comparison}
+              sections={overview?.sections ?? analysis?.sections ?? []}
+            />
           </div>
         )}
 
@@ -380,7 +419,7 @@ export default function MockResultPage() {
                 >
                   Back to Sections
                 </Link>
-                {!passed && (
+                {!passed && allowSectionRetry && (
                   <Link
                     href={`/student/mock-tests/${slug}/exam?section=${encodeURIComponent(sectionSlug || result.sectionSlug || "")}&examWindow=1`}
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[#cdd6e2] bg-white px-5 text-sm font-bold text-[#172a69]"
@@ -391,12 +430,12 @@ export default function MockResultPage() {
               </>
             )}
 
-            {!isSectionResult && (
+            {(!isSectionResult || allSectionsDone) && (
               <Link
-                href={`/student/mock-tests/${slug}/instructions`}
+                href={allowSectionRetry ? `/student/mock-tests/${slug}/instructions` : `/student/mock-tests/${slug}/setup`}
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#3378b9] px-5 text-sm font-bold text-white"
               >
-                <RotateCcw size={16} /> Retake Test
+                <RotateCcw size={16} /> {allowSectionRetry ? "Retake Test" : "Reattempt Full Mock"}
               </Link>
             )}
 
@@ -410,6 +449,70 @@ export default function MockResultPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function TopperComparisonChart({
+  overall,
+  sections,
+}: {
+  overall?: { your_score: number; topper_score: number; average_score: number } | null;
+  sections: Array<{
+    section_name: string;
+    score: number;
+    comparison?: { your_score: number; topper_score: number; average_score: number };
+  }>;
+}) {
+  const rows = [
+    ...(overall
+      ? [{ name: "Overall", you: overall.your_score, topper: overall.topper_score, average: overall.average_score }]
+      : []),
+    ...sections.map((section) => ({
+      name: section.section_name,
+      you: section.comparison?.your_score ?? section.score,
+      topper: section.comparison?.topper_score ?? section.score,
+      average: section.comparison?.average_score ?? section.score,
+    })),
+  ];
+
+  if (!rows.length) return null;
+
+  const maxValue = Math.max(1, ...rows.flatMap((row) => [row.you, row.topper, row.average]));
+
+  return (
+    <div className="rounded-[24px] border border-[#dfe5ef] bg-white p-5 shadow-sm sm:p-6">
+      <h2 className="text-lg font-extrabold text-[#172a69]">You vs Topper vs Average</h2>
+      <p className="mt-1 text-sm font-semibold text-[#667085]">
+        Section-wise comparison of your score against the topper and the average score.
+      </p>
+      <div className="mt-4 flex flex-wrap gap-4 text-xs font-bold uppercase tracking-[0.12em] text-[#667085]">
+        <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-sm bg-[#3378b9]" /> You</span>
+        <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-sm bg-[#f5c518]" /> Topper</span>
+        <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-sm bg-[#98a2b3]" /> Average</span>
+      </div>
+      <div className="mt-5 space-y-5">
+        {rows.map((row) => (
+          <div key={row.name}>
+            <p className="mb-2 text-sm font-extrabold text-[#172a69]">{row.name}</p>
+            <div className="grid gap-1.5">
+              {[
+                { label: "You", value: row.you, color: "bg-[#3378b9]" },
+                { label: "Topper", value: row.topper, color: "bg-[#f5c518]" },
+                { label: "Average", value: row.average, color: "bg-[#98a2b3]" },
+              ].map((bar) => (
+                <div key={bar.label} className="flex items-center gap-3">
+                  <span className="w-16 text-[11px] font-bold uppercase tracking-wide text-[#667085]">{bar.label}</span>
+                  <div className="h-4 flex-1 overflow-hidden rounded-full bg-[#eef2f7]">
+                    <div className={`h-full rounded-full ${bar.color}`} style={{ width: `${Math.max(4, (bar.value / maxValue) * 100)}%` }} />
+                  </div>
+                  <span className="w-14 text-right text-sm font-extrabold text-[#172a69]">{bar.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 

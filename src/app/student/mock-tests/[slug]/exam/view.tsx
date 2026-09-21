@@ -9,7 +9,7 @@ import { PaletteIcon, formatExamClock, formatMmSs } from "@/components/student/m
 import type { MockAttemptAnswerInput } from "@/lib/mock-attempt-analysis";
 import { saveMockResult } from "@/lib/mock-results";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
-import { mockTestsApiUrl, mockTestSectionExamUrl, nextUnlockedSection, notifyMockExamOpener, type MockQuestion, type MockTestDetailResponse, type MockTestSection, type MockTestSectionExamResponse } from "@/lib/mock-tests";
+import { mockTestsApiUrl, mockTestSectionExamUrl, mockExamSessionUrl, nextUnlockedSection, notifyMockExamOpener, toIdFlagMap, toIdNumberMap, toIdStringMap, type MockExamSession, type MockQuestion, type MockTestDetailResponse, type MockTestSection, type MockTestSectionExamResponse } from "@/lib/mock-tests";
 import { decodeHtmlEntities } from "@/lib/html-entities";
 
 export default function DynamicMockExamPage() {
@@ -32,8 +32,11 @@ export default function DynamicMockExamPage() {
   const [pendingNextSection, setPendingNextSection] = useState<MockTestSection | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [optionResetKey, setOptionResetKey] = useState(0);
   const visitCounterRef = useRef(0);
   const questionStartedAtRef = useRef(Date.now());
+  const persistTimerRef = useRef<number | null>(null);
+  const examReadyRef = useRef(false);
   const student = getStudentSession();
 
   useEffect(() => {
@@ -51,6 +54,31 @@ export default function DynamicMockExamPage() {
 
     const sectionSlug = params.get("section");
     const email = student?.email;
+
+    const restoreExamSession = (
+      session: MockExamSession | null | undefined,
+      fallbackSeconds: number,
+      questionCount: number
+    ) => {
+      if (!session) {
+        setRemainingSeconds(fallbackSeconds);
+        setIsPaused(false);
+        examReadyRef.current = true;
+        return;
+      }
+
+      setCurrentIndex(Math.max(0, Math.min(session.current_index ?? 0, Math.max(questionCount - 1, 0))));
+      setRemainingSeconds(session.remaining_seconds ?? fallbackSeconds);
+      setIsPaused(Boolean(session.is_paused));
+      setAnswers(toIdStringMap(session.answers));
+      setVisited(toIdFlagMap(session.visited));
+      setReviewMarked(toIdFlagMap(session.review_marked));
+      setQuestionTimes(toIdNumberMap(session.question_times));
+      const order = toIdNumberMap(session.visit_order);
+      setVisitOrder(order);
+      visitCounterRef.current = Object.values(order).reduce((max, value) => Math.max(max, value), 0);
+      examReadyRef.current = true;
+    };
 
     const loadExam = async () => {
       setLoading(true);
@@ -86,8 +114,8 @@ export default function DynamicMockExamPage() {
           setSectionMeta(payload.section);
           setActiveSectionId(payload.section.id);
           const sectionSeconds = payload.section.duration_minutes * 60;
-          setSectionDurationSeconds(sectionSeconds);
-          setRemainingSeconds(sectionSeconds);
+          setSectionDurationSeconds(payload.exam_session?.duration_seconds || sectionSeconds);
+          restoreExamSession(payload.exam_session, sectionSeconds, payload.questions.length);
           return;
         }
 
@@ -114,8 +142,9 @@ export default function DynamicMockExamPage() {
         }
 
         setData(payload);
-        setSectionDurationSeconds(0);
-        setRemainingSeconds(payload.test.duration_minutes * 60);
+        const fullSeconds = payload.test.duration_minutes * 60;
+        setSectionDurationSeconds(payload.exam_session?.duration_seconds || 0);
+        restoreExamSession(payload.exam_session, fullSeconds, payload.questions.length);
       } catch {
         setLoadError("Network error while loading the exam. Check your connection and try again.");
       } finally {
@@ -139,6 +168,58 @@ export default function DynamicMockExamPage() {
     ? Math.min(100, Math.round((timeUtilizedSeconds / activeDurationSeconds) * 100))
     : 0;
   const timerWarning = sectionMeta && remainingSeconds <= 300;
+
+  const persistExamSession = useCallback(async (paused = isPaused) => {
+    if (!examReadyRef.current || !student?.email || !data) return;
+
+    try {
+      await fetch(mockExamSessionUrl(slug, student.email, activeSectionId), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: student.email,
+          section_id: activeSectionId,
+          current_index: currentIndex,
+          remaining_seconds: remainingSeconds,
+          duration_seconds: activeDurationSeconds,
+          is_paused: paused,
+          answers,
+          visited,
+          review_marked: reviewMarked,
+          question_times: questionTimes,
+          visit_order: visitOrder,
+        }),
+      });
+    } catch {
+      // Keep the local exam running even if autosave fails.
+    }
+  }, [
+    activeDurationSeconds,
+    activeSectionId,
+    answers,
+    currentIndex,
+    data,
+    isPaused,
+    questionTimes,
+    remainingSeconds,
+    reviewMarked,
+    slug,
+    student?.email,
+    visitOrder,
+    visited,
+  ]);
+
+  useEffect(() => {
+    if (!examReadyRef.current || !data || submitting || pendingNextSection) return;
+
+    persistTimerRef.current = window.setInterval(() => {
+      void persistExamSession(isPaused);
+    }, 15000);
+
+    return () => {
+      if (persistTimerRef.current) window.clearInterval(persistTimerRef.current);
+    };
+  }, [data, isPaused, pendingNextSection, persistExamSession, submitting]);
 
   const submitSummary = useMemo(() => {
     type SummaryRow = {
@@ -373,12 +454,7 @@ export default function DynamicMockExamPage() {
     return <main className="grid min-h-screen place-items-center bg-white"><Loader2 className="animate-spin text-[#3378b9]" size={34} /></main>;
   }
 
-  const goToNext = (allowSkip = false, markReview = false) => {
-    if (!allowSkip && !answers[question.id]) {
-      setValidationMessage("Please select an answer before moving next. Use Skip if you want to leave this question.");
-      return;
-    }
-
+  const goToNext = (markReview = false) => {
     if (markReview) {
       setReviewMarked((previous) => ({ ...previous, [question.id]: true }));
     }
@@ -386,21 +462,18 @@ export default function DynamicMockExamPage() {
     accumulateQuestionTime(question.id);
     setValidationMessage("");
     setCurrentIndex((index) => Math.min(index + 1, questions.length - 1));
+    void persistExamSession(isPaused);
   };
 
   const saveAndNext = () => goToNext(false);
-  const markReviewAndNext = () => goToNext(false, true);
-  const skipAndNext = () => goToNext(true);
+  const markReviewAndNext = () => goToNext(true);
 
   const jumpToQuestion = (index: number) => {
-    if (index > currentIndex && !answers[question.id]) {
-      setValidationMessage("Please select an answer before moving next. Use Skip if you want to leave this question.");
-      return;
-    }
-
+    if (index === currentIndex) return;
     accumulateQuestionTime(question.id);
     setValidationMessage("");
     setCurrentIndex(index);
+    void persistExamSession(isPaused);
   };
 
   const clearResponse = () => {
@@ -410,6 +483,18 @@ export default function DynamicMockExamPage() {
       delete next[question.id];
       return next;
     });
+    setReviewMarked((previous) => {
+      const next = { ...previous };
+      delete next[question.id];
+      return next;
+    });
+    setOptionResetKey((value) => value + 1);
+  };
+
+  const togglePause = () => {
+    const next = !isPaused;
+    setIsPaused(next);
+    void persistExamSession(next);
   };
 
   return (
@@ -434,7 +519,7 @@ export default function DynamicMockExamPage() {
                 {formatExamClock(remainingSeconds)}
               </span>
             </div>
-            <button onClick={() => setIsPaused((value) => !value)} className="flex h-9 min-w-[76px] items-center justify-center gap-1 rounded bg-white px-2 text-sm text-[#2768a5]">
+            <button onClick={togglePause} className="flex h-9 min-w-[76px] items-center justify-center gap-1 rounded bg-white px-2 text-sm text-[#2768a5]">
               {isPaused ? <Play size={15} /> : <Pause size={15} />}{isPaused ? "Resume" : "Pause"}
             </button>
             <button onClick={enterFullscreen} className="grid h-9 w-9 place-items-center rounded bg-white text-[#2768a5]"><Expand size={17} /></button>
@@ -481,13 +566,13 @@ export default function DynamicMockExamPage() {
 
               <div className="overflow-hidden p-4 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
                 <h2 className="mb-3 font-bold">Choose the correct answer.</h2>
-                <div className="mt-4 space-y-4">
+                <div className="mt-4 space-y-4" key={`${question.id}-${optionResetKey}-${answers[question.id] ?? "none"}`}>
                   {(Object.entries(question.options) as Array<[keyof MockQuestion["options"], string | null]>).map(([key, option]) => (
                     option ? (
                       <label key={key} className="flex cursor-pointer items-center gap-3">
                         <input
                           type="radio"
-                          name={`question-${question.id}`}
+                          name={`question-${question.id}-${optionResetKey}`}
                           checked={answers[question.id] === key}
                           onChange={() => {
                             setValidationMessage("");
@@ -514,7 +599,6 @@ export default function DynamicMockExamPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-5">
                 <button onClick={markReviewAndNext} className="rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm">Mark for review &amp; next</button>
                 <button onClick={clearResponse} className="rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm">Clear Response</button>
-                <button onClick={skipAndNext} className="rounded-lg border border-[#b9bec8] bg-white px-4 py-2 text-sm font-bold text-[#344054]">Skip</button>
               </div>
             </div>
             <button onClick={saveAndNext} className="rounded-lg bg-[#2f78bf] px-5 py-2 text-center text-sm font-bold text-white shadow">
