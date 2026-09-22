@@ -168,66 +168,11 @@
   box-shadow: 0 8px 20px rgba(9, 87, 211, 0.2);
 }
 
-.courses-price-inputs {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.courses-price-inputs input {
-  flex: 1;
-  padding: 7px 10px;
-  border: 1.5px solid rgba(9, 87, 211, 0.15);
-  border-radius: 7px;
-  font-size: 12px;
-  background: #ffffff;
-  color: #1e1b3a;
-  outline: none;
-  min-width: 0;
-}
-
-.courses-level-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.courses-level-list button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  padding: 7px 10px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: transparent;
-  font-size: 13px;
-  font-weight: 600;
-  color: #3a4763;
-}
-
-.courses-level-list button:hover,
-.courses-level-list button.active {
-  background: rgba(9, 87, 211, 0.06);
-  border-color: rgba(9, 87, 211, 0.15);
-}
-
-.courses-level-cb {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  border: 1.5px solid rgba(9, 87, 211, 0.2);
-  background: #ffffff;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
-  font-size: 9px;
-}
-
-.courses-level-list button.active .courses-level-cb {
-  background: #0957D3;
-  border-color: #0957D3;
+.courses-price-inputs,
+.courses-level-list,
+.courses-filter-section:has(.courses-level-list),
+.courses-filter-section:has(.courses-price-inputs) {
+  display: none !important;
 }
 
 .courses-clear-btn {
