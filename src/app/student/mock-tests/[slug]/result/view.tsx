@@ -359,12 +359,23 @@ export default function MockResultPage() {
               </div>
             </div>
 
-            <TopperComparisonChart
-              overall={overview?.summary.comparison ?? overview?.comparison}
-              sections={overview?.sections ?? analysis?.sections ?? []}
-            />
           </div>
         )}
+
+        <TopperComparisonChart
+          overall={
+            overview?.summary.comparison
+            ?? overview?.comparison
+            ?? analysis?.summary.comparison
+            ?? analysis?.comparison
+            ?? {
+              your_score: overview?.summary.score ?? analysis?.summary.score ?? result.score,
+              topper_score: overview?.summary.topper_score ?? analysis?.summary.topper_score ?? result.score,
+              average_score: overview?.summary.average_score ?? analysis?.summary.average_score ?? result.score,
+            }
+          }
+          sections={overview?.sections ?? analysis?.sections ?? []}
+        />
 
         {isSectionResult && sections.length > 0 && (
           <div className="rounded-[28px] border border-[#dfe5ef] bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:p-8">
@@ -481,9 +492,9 @@ function TopperComparisonChart({
 
   return (
     <div className="rounded-[24px] border border-[#dfe5ef] bg-white p-5 shadow-sm sm:p-6">
-      <h2 className="text-lg font-extrabold text-[#172a69]">You vs Topper vs Average</h2>
+      <h2 className="text-lg font-extrabold text-[#172a69]">Toppers Comparison</h2>
       <p className="mt-1 text-sm font-semibold text-[#667085]">
-        Section-wise comparison of your score against the topper and the average score.
+        Compare your score with the topper and average after completing this test.
       </p>
       <div className="mt-4 flex flex-wrap gap-4 text-xs font-bold uppercase tracking-[0.12em] text-[#667085]">
         <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-sm bg-[#3378b9]" /> You</span>

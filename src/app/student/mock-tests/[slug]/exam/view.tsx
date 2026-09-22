@@ -33,6 +33,7 @@ export default function DynamicMockExamPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [optionResetKey, setOptionResetKey] = useState(0);
+  const [saveNotice, setSaveNotice] = useState("");
   const visitCounterRef = useRef(0);
   const questionStartedAtRef = useRef(Date.now());
   const persistTimerRef = useRef<number | null>(null);
@@ -454,19 +455,25 @@ export default function DynamicMockExamPage() {
     return <main className="grid min-h-screen place-items-center bg-white"><Loader2 className="animate-spin text-[#3378b9]" size={34} /></main>;
   }
 
-  const goToNext = (markReview = false) => {
-    if (markReview) {
-      setReviewMarked((previous) => ({ ...previous, [question.id]: true }));
-    }
+  const saveCurrent = () => {
+    accumulateQuestionTime(question.id);
+    setValidationMessage("");
+    setSaveNotice("Saved");
+    window.setTimeout(() => setSaveNotice(""), 1400);
+    void persistExamSession(isPaused);
+  };
 
+  const goToNext = () => {
     accumulateQuestionTime(question.id);
     setValidationMessage("");
     setCurrentIndex((index) => Math.min(index + 1, questions.length - 1));
     void persistExamSession(isPaused);
   };
 
-  const saveAndNext = () => goToNext(false);
-  const markReviewAndNext = () => goToNext(true);
+  const markForReview = () => {
+    setReviewMarked((previous) => ({ ...previous, [question.id]: !previous[question.id] }));
+    void persistExamSession(isPaused);
+  };
 
   const jumpToQuestion = (index: number) => {
     if (index === currentIndex) return;
@@ -540,8 +547,8 @@ export default function DynamicMockExamPage() {
         )}
       </header>
 
-      <div className="grid min-h-[calc(100vh-50px)] lg:h-[calc(100vh-50px)] lg:grid-cols-[1fr_260px]">
-        <section className="grid min-h-[calc(100vh-50px)] grid-rows-[auto_1fr_auto] overflow-hidden lg:min-h-0">
+      <div className="h-[calc(100vh-50px)] overflow-y-auto lg:grid lg:grid-cols-[1fr_260px] lg:overflow-hidden">
+        <section className="grid h-[calc(100vh-50px)] grid-rows-[auto_1fr_auto] overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] bg-[#f6f6f6] px-2 py-2 text-sm">
             <span className="font-bold text-[#0f60b5] underline">{decodeHtmlEntities(question.section_name)}</span>
             <span className="inline-flex items-center rounded border border-[#111827] bg-white px-3 py-1 text-base">
@@ -553,18 +560,21 @@ export default function DynamicMockExamPage() {
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] px-2 py-2 text-sm">
               <span className="min-w-0 truncate font-bold text-[#111827]">{test.title}</span>
               <div className="flex flex-wrap items-center gap-2 sm:gap-5">
-                <span className="text-[#667085]">{currentIndex + 1} / {questions.length}</span>
+                <span className="rounded border border-[#cfd7df] bg-white px-3 py-1 font-bold text-[#175cd3]">
+                  Attempted {answeredCount}/{questions.length}
+                </span>
+                <span className="text-[#667085]">Q {currentIndex + 1} / {questions.length}</span>
                 <span className="rounded border border-[#cfd7df] px-3 py-1">Qn. Time : <Clock3 size={12} className="inline" /></span>
                 <span><b>Marks :</b> <span className="text-[#00a651]">+{question.marks}</span> | <span className="text-[#ff3950]">-{question.negative_marks}</span></span>
               </div>
             </div>
 
             <div className="grid min-h-0 overflow-hidden lg:grid-cols-2">
-              <div className="overflow-hidden border-b border-[#cfd7df] p-3 text-[15px] leading-7 lg:border-b-0 lg:border-r lg:text-[18px] lg:leading-8">
+              <div className="min-h-0 overflow-y-auto border-b border-[#cfd7df] p-3 text-[15px] leading-7 lg:border-b-0 lg:border-r lg:text-[18px] lg:leading-8">
                 <p className="mb-4 font-bold">{decodeHtmlEntities(question.question_text)}</p>
               </div>
 
-              <div className="overflow-hidden p-4 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
+              <div className="min-h-0 overflow-y-auto p-4 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
                 <h2 className="mb-3 font-bold">Choose the correct answer.</h2>
                 <div className="mt-4 space-y-4" key={`${question.id}-${optionResetKey}-${answers[question.id] ?? "none"}`}>
                   {(Object.entries(question.options) as Array<[keyof MockQuestion["options"], string | null]>).map(([key, option]) => (
@@ -589,21 +599,26 @@ export default function DynamicMockExamPage() {
             </div>
           </div>
 
-          <footer className="flex flex-col items-stretch justify-between gap-3 border-t border-[#cfd7df] bg-[#efefef] px-4 py-3 sm:flex-row sm:items-center">
+          <footer className="flex flex-col items-stretch justify-between gap-3 border-t border-[#cfd7df] bg-[#efefef] px-4 py-3">
             <div className="grid gap-3">
               {validationMessage && (
                 <div className="rounded-lg border border-[#ffd4a3] bg-[#fff7ed] px-3 py-2 text-xs font-bold text-[#9a3412]">
                   {validationMessage}
                 </div>
               )}
-              <div className="flex flex-col gap-3 sm:flex-row sm:gap-5">
-                <button onClick={markReviewAndNext} className="rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm">Mark for review &amp; next</button>
-                <button onClick={clearResponse} className="rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm">Clear Response</button>
+              <div className="flex flex-wrap items-center gap-2">
+                <button type="button" onClick={saveCurrent} className="rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm font-bold text-[#174b82]">Save</button>
+                <button type="button" onClick={goToNext} disabled={currentIndex >= questions.length - 1} className="rounded-lg bg-[#2f78bf] px-4 py-2 text-sm font-bold text-white shadow disabled:opacity-50">Next</button>
+                <button type="button" onClick={markForReview} className={`rounded-lg border px-4 py-2 text-sm font-bold ${reviewMarked[question.id] ? "border-[#6b21a8] bg-[#7e22ce] text-white" : "border-[#8dc8ff] bg-[#cae7ff] text-[#174b82]"}`}>
+                  {reviewMarked[question.id] ? "Marked for Review" : "Mark for Review"}
+                </button>
+                <button type="button" onClick={clearResponse} className="rounded-lg border border-[#b9bec8] bg-white px-4 py-2 text-sm font-bold text-[#344054]">Clear Response</button>
+                <button type="button" onClick={() => setShowSubmitSummary(true)} disabled={submitting} className="rounded-lg bg-[#be123c] px-4 py-2 text-sm font-bold text-white shadow disabled:opacity-60">
+                  {submitting ? "Submitting..." : sectionMeta ? "Submit Section" : "Submit Test"}
+                </button>
+                {saveNotice ? <span className="text-sm font-bold text-[#027a48]">{saveNotice}</span> : null}
               </div>
             </div>
-            <button onClick={saveAndNext} className="rounded-lg bg-[#2f78bf] px-5 py-2 text-center text-sm font-bold text-white shadow">
-              Save &amp; Next
-            </button>
           </footer>
         </section>
 
@@ -614,11 +629,14 @@ export default function DynamicMockExamPage() {
           </div>
 
           <div className="bg-[#f2f2f2] px-4 py-2 text-sm">
-            <p className="mb-2 text-right">
-              {sectionMeta ? "Section Time:" : "Time Left:"}{" "}
-              <b className={`ml-2 rounded px-2 py-1 font-mono ${timerWarning ? "bg-[#ffe4e6] text-[#be123c]" : "bg-white"}`}>
-                {formatExamClock(remainingSeconds)}
-              </b>
+            <p className="mb-2 flex items-center justify-between gap-2">
+              <span className="font-bold text-[#175cd3]">Attempted {answeredCount}/{questions.length}</span>
+              <span>
+                {sectionMeta ? "Section Time:" : "Time Left:"}{" "}
+                <b className={`ml-2 rounded px-2 py-1 font-mono ${timerWarning ? "bg-[#ffe4e6] text-[#be123c]" : "bg-white"}`}>
+                  {formatExamClock(remainingSeconds)}
+                </b>
+              </span>
             </p>
             <div className="grid grid-cols-1 gap-x-5 gap-y-2 text-xs sm:grid-cols-2">
               <span className="flex items-center gap-2"><PaletteIcon status="answered" number={submitSummary.totals.answered} size="sm" /> Answered</span>

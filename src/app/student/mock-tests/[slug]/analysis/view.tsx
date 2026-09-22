@@ -149,6 +149,49 @@ export default function MockAnalysisPage() {
           <StatCard label="Utilized Time" value={formatMockDuration(summary.time_utilized_seconds)} className="bg-[#ecfdf3] text-[#027a48]" />
         </section>
 
+        <section className="rounded-[24px] border border-[#dfe5ef] bg-white p-5 shadow-sm sm:p-6">
+          <h2 className="text-lg font-extrabold text-[#172a69]">Toppers Comparison</h2>
+          <p className="mt-1 text-sm font-semibold text-[#667085]">Compare your score with the topper and average after completing this test.</p>
+          <div className="mt-5 space-y-5">
+            {([
+              {
+                name: "Overall",
+                you: detail.comparison?.your_score ?? summary.comparison?.your_score ?? summary.score,
+                topper: detail.comparison?.topper_score ?? summary.comparison?.topper_score ?? summary.topper_score ?? summary.score,
+                average: detail.comparison?.average_score ?? summary.comparison?.average_score ?? summary.average_score ?? summary.score,
+              },
+              ...sections.map((section) => ({
+                name: section.section_name,
+                you: section.comparison?.your_score ?? section.score,
+                topper: section.comparison?.topper_score ?? section.score,
+                average: section.comparison?.average_score ?? section.score,
+              })),
+            ] as Array<{ name: string; you: number; topper: number; average: number }>).map((row) => {
+              const maxValue = Math.max(1, row.you, row.topper, row.average);
+              return (
+                <div key={row.name}>
+                  <p className="mb-2 text-sm font-extrabold text-[#172a69]">{row.name}</p>
+                  <div className="grid gap-1.5">
+                    {[
+                      { label: "You", value: row.you, color: "bg-[#3378b9]" },
+                      { label: "Topper", value: row.topper, color: "bg-[#f5c518]" },
+                      { label: "Average", value: row.average, color: "bg-[#98a2b3]" },
+                    ].map((bar) => (
+                      <div key={bar.label} className="flex items-center gap-3">
+                        <span className="w-16 text-[11px] font-bold uppercase tracking-wide text-[#667085]">{bar.label}</span>
+                        <div className="h-4 flex-1 overflow-hidden rounded-full bg-[#eef2f7]">
+                          <div className={`h-full rounded-full ${bar.color}`} style={{ width: `${Math.max(4, (bar.value / maxValue) * 100)}%` }} />
+                        </div>
+                        <span className="w-14 text-right text-sm font-extrabold text-[#172a69]">{bar.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         <section className="overflow-hidden rounded-[24px] border border-[#dfe5ef] bg-white shadow-sm">
           <div className="border-b border-[#e5eaf2] px-5 py-4">
             <h2 className="text-lg font-extrabold text-[#172a69]">Sectional Summary</h2>

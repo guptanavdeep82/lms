@@ -10,9 +10,6 @@ type Filters = {
   type: "all" | "video" | "pdf" | "live";
   cat: string;
   exam: string;
-  level: string;
-  minPrice: number | null;
-  maxPrice: number | null;
   rating: number;
   search: string;
   sort: string;
@@ -22,9 +19,6 @@ const defaultFilters: Filters = {
   type: "all",
   cat: "all",
   exam: "all",
-  level: "all",
-  minPrice: null,
-  maxPrice: null,
   rating: 0,
   search: "",
   sort: "popular",
@@ -67,9 +61,6 @@ export function CoursesCatalog() {
     }
     if (filters.cat !== "all") list = list.filter((course) => course.category === filters.cat);
     if (filters.exam !== "all") list = list.filter((course) => course.exam === filters.exam || course.exam === "all");
-    if (filters.level !== "all") list = list.filter((course) => course.level === filters.level);
-    if (filters.minPrice !== null) list = list.filter((course) => course.price >= filters.minPrice!);
-    if (filters.maxPrice !== null) list = list.filter((course) => course.price <= filters.maxPrice!);
     if (filters.rating > 0) list = list.filter((course) => course.rating >= filters.rating);
     if (filters.search) {
       const query = filters.search.toLowerCase();
@@ -175,60 +166,6 @@ export function CoursesCatalog() {
               value={filters.exam}
               onChange={(value) => setFilters((current) => ({ ...current, exam: value }))}
             />
-          </FilterSection>
-
-          <FilterSection title="Price Range">
-            <div className="courses-price-inputs">
-              <input
-                type="number"
-                placeholder="Min ₹"
-                value={filters.minPrice ?? ""}
-                onChange={(event) => setFilters((current) => ({
-                  ...current,
-                  minPrice: event.target.value === "" ? null : Number(event.target.value),
-                }))}
-              />
-              <span>–</span>
-              <input
-                type="number"
-                placeholder="Max ₹"
-                value={filters.maxPrice ?? ""}
-                onChange={(event) => setFilters((current) => ({
-                  ...current,
-                  maxPrice: event.target.value === "" ? null : Number(event.target.value),
-                }))}
-              />
-            </div>
-            <ChipGroup
-              options={[
-                ["free", "Free"], ["u2k", "Under ₹2K"], ["u5k", "Under ₹5K"], ["o5k", "₹5K+"],
-              ]}
-              value=""
-              onChange={(value) => {
-                if (value === "free") setFilters((current) => ({ ...current, minPrice: 0, maxPrice: 0 }));
-                if (value === "u2k") setFilters((current) => ({ ...current, minPrice: null, maxPrice: 2000 }));
-                if (value === "u5k") setFilters((current) => ({ ...current, minPrice: null, maxPrice: 5000 }));
-                if (value === "o5k") setFilters((current) => ({ ...current, minPrice: 5000, maxPrice: null }));
-              }}
-            />
-          </FilterSection>
-
-          <FilterSection title="Level">
-            <div className="courses-level-list">
-              {[
-                ["all", "All Levels"], ["beginner", "Beginner"], ["intermediate", "Intermediate"], ["advanced", "Advanced"],
-              ].map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  className={filters.level === value ? "active" : ""}
-                  onClick={() => setFilters((current) => ({ ...current, level: value }))}
-                >
-                  <span className="courses-level-cb"><i className="fa fa-check" /></span>
-                  <span>{label}</span>
-                </button>
-              ))}
-            </div>
           </FilterSection>
 
           <button type="button" className="courses-clear-btn" onClick={clearFilters}>

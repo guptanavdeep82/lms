@@ -88,7 +88,7 @@ export default function CourseDetailView() {
               </div>
             </div>
             <div className="mt-6 flex flex-wrap gap-2">
-              {[courseTypeLabel, course.category, course.exam, course.level, course.badge].filter(Boolean).map((item) => (
+              {[courseTypeLabel, course.category, course.exam, course.badge].filter(Boolean).map((item) => (
                 <span key={item} className="rounded-full border border-[#ffd21f]/25 bg-white/8 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#ffd21f]">
                   {item}
                 </span>
