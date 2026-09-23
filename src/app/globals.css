@@ -620,3 +620,26 @@ canvas {
 .cms-page-content h4 {
   font-size: 1rem !important;
 }
+
+.exam-rich-html p {
+  margin: 0 0 0.7em;
+}
+
+.exam-rich-html p:last-child {
+  margin-bottom: 0;
+}
+
+.exam-rich-html img,
+.exam-rich-html table {
+  max-width: 100%;
+}
+
+.exam-rich-html table {
+  border-collapse: collapse;
+}
+
+.exam-rich-html td,
+.exam-rich-html th {
+  border: 1px solid #d0d5dd;
+  padding: 4px 8px;
+}

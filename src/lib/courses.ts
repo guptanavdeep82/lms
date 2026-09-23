@@ -259,7 +259,7 @@ export function mapApiCourseToListingCourse(course: ApiCourse): ListingCourse {
     slug: course.slug,
     title: course.title,
     desc: course.short_description || course.description || "Expert-designed course for banking exam preparation.",
-    category: normalizeCategorySlug(course.category_slug),
+    category: (course.category_slug || course.category || "").toLowerCase() || "all",
     exam: normalizeExamSlug(course.exam_type_slug, course.exam_type),
     level: course.level || "beginner",
     price: effectivePrice,

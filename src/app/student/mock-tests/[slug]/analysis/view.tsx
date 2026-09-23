@@ -39,9 +39,9 @@ export default function MockAnalysisPage() {
     if (!session?.email) return;
 
     const attemptId = searchParams.get("attempt") || getMockResult(slug)?.attemptId;
-    const loader = attemptId
-      ? fetchMockAttemptDetail(session.email, Number(attemptId))
-      : fetchMockAttemptBySlug(session.email, slug, true);
+    const loader = fetchMockAttemptBySlug(session.email, slug, true).catch(() => (
+      attemptId ? fetchMockAttemptDetail(session.email, Number(attemptId)) : Promise.reject(new Error("missing"))
+    ));
 
     loader
       .then((payload) => {
@@ -69,7 +69,6 @@ export default function MockAnalysisPage() {
     return map;
   }, [detail]);
   const activeTopics = topicTab === "weakness" ? weaknessTopics : strengthTopics;
-  const attemptQuery = detail?.attempt.id ? `?attempt=${detail.attempt.id}` : "";
 
   if (loading) {
     return <main className="grid min-h-screen place-items-center bg-[#eef3f8]"><Loader2 className="animate-spin text-[#3378b9]" size={34} /></main>;
@@ -103,11 +102,11 @@ export default function MockAnalysisPage() {
             <h1 className="text-2xl font-extrabold tracking-[-0.04em] text-[#172a69]">{detail.attempt.test_title}</h1>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href={`/student/mock-tests/${slug}/result${attemptQuery}`} className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#cdd6e2] bg-white px-4 text-sm font-bold text-[#172a69]">
-              <ArrowLeft size={16} /> Back
+            <Link href={`/student/mock-tests/${slug}/result`} className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#cdd6e2] bg-white px-4 text-sm font-bold text-[#172a69]">
+              <ArrowLeft size={16} /> View Result
             </Link>
-            <Link href={`/student/mock-tests/${slug}/solution${attemptQuery}`} className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#3378b9] px-4 text-sm font-bold text-white">
-              <BookOpenCheck size={16} /> View Solutions
+            <Link href={`/student/mock-tests/${slug}/solution`} className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#3378b9] px-4 text-sm font-bold text-white">
+              <BookOpenCheck size={16} /> View Answers
             </Link>
           </div>
         </div>

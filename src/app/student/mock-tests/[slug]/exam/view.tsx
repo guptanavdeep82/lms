@@ -11,6 +11,7 @@ import { saveMockResult } from "@/lib/mock-results";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 import { mockTestsApiUrl, mockTestSectionExamUrl, mockExamSessionUrl, nextUnlockedSection, notifyMockExamOpener, toIdFlagMap, toIdNumberMap, toIdStringMap, type MockExamSession, type MockQuestion, type MockTestDetailResponse, type MockTestSection, type MockTestSectionExamResponse } from "@/lib/mock-tests";
 import { decodeHtmlEntities } from "@/lib/html-entities";
+import { RichHtml } from "@/components/student/RichHtml";
 import "./exam-shell.css";
 
 export default function DynamicMockExamPage() {
@@ -603,7 +604,7 @@ export default function DynamicMockExamPage() {
 
         <div className="exam-question-pane">
           <div className="exam-question-scroll border-b border-[#cfd7df] p-3 text-[15px] leading-7 lg:border-b-0 lg:border-r lg:text-[18px] lg:leading-8">
-            <p className="mb-4 font-bold">{decodeHtmlEntities(question.question_text)}</p>
+            <p className="mb-4 font-bold"><RichHtml html={question.question_text} /></p>
           </div>
 
           <div className="exam-question-scroll p-4 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
@@ -622,7 +623,7 @@ export default function DynamicMockExamPage() {
                       }}
                       className="h-5 w-5"
                     />
-                    <span><b>{key}.</b> {decodeHtmlEntities(option)}</span>
+                        <span><b>{key}.</b> <RichHtml html={option} /></span>
                   </label>
                 ) : null
               ))}

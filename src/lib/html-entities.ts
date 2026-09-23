@@ -19,3 +19,7 @@ export function decodeHtmlEntities(input: string | null | undefined): string {
     .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
     .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 }
+
+export function looksLikeHtml(input: string | null | undefined): boolean {
+  return /<\/?[a-z][\s\S]*>/i.test(String(input ?? ""));
+}

@@ -97,6 +97,22 @@ export default function MockResultPage() {
   const isSectionResult = Boolean(sectionSlug || result?.sectionSlug);
   const allSectionsDone = sections.filter((section) => section.questions_count > 0).every((section) => section.status === "passed" || section.status === "completed");
   const overview = !isSectionResult || allSectionsDone ? (combined ?? analysis) : analysis;
+  const report = result ?? (overview
+    ? {
+        slug,
+        testTitle: overview.attempt.test_title,
+        total: overview.summary.total_questions,
+        answered: overview.summary.attempted,
+        correct: overview.summary.correct,
+        score: overview.summary.score,
+        submittedAt: overview.attempt.submitted_at,
+        attemptId: overview.attempt.id,
+        percentage: overview.summary.percentage,
+        maxMarks: overview.summary.total_marks,
+        timeUtilizedSeconds: overview.summary.time_utilized_seconds,
+        durationSeconds: overview.summary.duration_seconds,
+      } as MockResult
+    : null);
   const currentSection = useMemo(
     () => sections.find((section) => section.slug === (sectionSlug || result?.sectionSlug)),
     [sections, sectionSlug, result?.sectionSlug]
@@ -116,7 +132,7 @@ export default function MockResultPage() {
     );
   }
 
-  if (!result) {
+  if (!report) {
     return (
       <main className="grid min-h-screen place-items-center bg-[#eef3f8] px-4 text-center">
         <div className="max-w-md rounded-[24px] border border-[#dfe5ef] bg-white p-8 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
@@ -136,15 +152,15 @@ export default function MockResultPage() {
     );
   }
 
-  const attemptQuery = searchParams.get("attempt") || result.attemptId?.toString() || "";
-  const querySuffix = attemptQuery ? `?attempt=${attemptQuery}` : "";
-  const accuracy = result.total ? Math.round((result.correct / result.total) * 100) : 0;
-  const displayPercentage = result.percentage ?? accuracy;
-  const passingPercentage = result.passingPercentage ?? currentSection?.passing_percentage ?? 0;
-  const passed = result.passed ?? displayPercentage >= passingPercentage;
-  const timeUsed = result.timeUtilizedSeconds ?? 0;
-  const timeLimit = result.durationSeconds ?? 0;
-  const maxMarks = result.maxMarks ?? result.total;
+  const accuracy = overview?.summary.accuracy ?? (report.total ? Math.round((report.correct / report.total) * 100) : 0);
+  const displayPercentage = overview?.summary.percentage ?? report.percentage ?? accuracy;
+  const passingPercentage = report.passingPercentage ?? currentSection?.passing_percentage ?? 0;
+  const passed = report.passed ?? displayPercentage >= passingPercentage;
+  const timeUsed = overview?.summary.time_utilized_seconds ?? report.timeUtilizedSeconds ?? 0;
+  const timeLimit = overview?.summary.duration_seconds ?? report.durationSeconds ?? 0;
+  const maxMarks = overview?.summary.total_marks ?? report.maxMarks ?? report.total;
+  const correctCount = overview?.summary.correct ?? report.correct;
+  const incorrectCount = overview?.summary.incorrect ?? Math.max(0, report.total - report.correct);
 
   return (
     <main
@@ -157,9 +173,9 @@ export default function MockResultPage() {
         {!isSectionResult && (
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#3378b9]">Test Result Analysis</p>
-            <h1 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-[#172a69]">{result.testTitle}</h1>
+            <h1 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-[#172a69]">{report.testTitle}</h1>
             <p className="mt-2 text-sm font-semibold text-[#667085]">
-              {getStudentSession()?.name || "Student"} · {new Date(result.submittedAt).toLocaleString()}
+              {getStudentSession()?.name || "Student"} · {new Date(report.submittedAt).toLocaleString()}
             </p>
           </div>
         )}
@@ -175,10 +191,10 @@ export default function MockResultPage() {
               <div>
                 <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#667085]">Section Result</p>
                 <h1 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-[#172a69]">
-                  {result.sectionName || currentSection?.name || result.testTitle}
+                  {report.sectionName || currentSection?.name || report.testTitle}
                 </h1>
                 <p className="mt-2 text-sm font-semibold text-[#667085]">
-                  {getStudentSession()?.name || "Student"} · {new Date(result.submittedAt).toLocaleString()}
+                  {getStudentSession()?.name || "Student"} · {new Date(report.submittedAt).toLocaleString()}
                 </p>
               </div>
               <div
@@ -192,7 +208,7 @@ export default function MockResultPage() {
             </div>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              <MetricCard label="Score" value={`${result.score}/${maxMarks}`} tone={result.score < 0 ? "pink" : "green"} />
+              <MetricCard label="Score" value={`${report.score}/${maxMarks}`} tone={report.score < 0 ? "pink" : "green"} />
               <MetricCard label="Percentage" value={`${(analysis?.summary.percentage ?? displayPercentage).toFixed(1)}%`} tone="blue" />
               <MetricCard label="Percentile" value={analysis?.summary.percentile != null ? `${analysis.summary.percentile}%ile` : "—"} tone="purple" />
               <MetricCard label="Required" value={`${passingPercentage}%`} tone="purple" />
@@ -230,9 +246,9 @@ export default function MockResultPage() {
               <ResultHighlight
                 icon={<Trophy size={22} />}
                 label="Your Score"
-                value={`${overview?.summary.score ?? result.score} / ${overview?.summary.total_marks ?? result.total}`}
+                value={`${overview?.summary.score ?? report.score} / ${overview?.summary.total_marks ?? report.total}`}
                 hint="Obtained score out of total marks"
-                toneClass={scoreToneClass(overview?.summary.score ?? result.score, overview?.summary.total_marks ?? result.total)}
+                toneClass={scoreToneClass(overview?.summary.score ?? report.score, overview?.summary.total_marks ?? report.total)}
               />
               <ResultHighlight
                 icon={<Award size={22} />}
@@ -266,9 +282,9 @@ export default function MockResultPage() {
                 <Award className="text-[#7c3aed]" size={22} />
                 <p className="mt-3 text-xs font-extrabold uppercase tracking-[0.14em] text-[#667085]">Correct / Incorrect</p>
                 <p className="mt-2 text-3xl font-black">
-                  <span className="text-[#16a34a]">{result.correct}</span>
+                  <span className="text-[#16a34a]">{correctCount}</span>
                   <span className="text-[#98a2b3]"> / </span>
-                  <span className="text-[#dc2626]">{Math.max(0, result.total - result.correct)}</span>
+                  <span className="text-[#dc2626]">{incorrectCount}</span>
                 </p>
                 <p className="mt-1 text-xs font-semibold text-[#667085]">Green = correct · Red = wrong or unattempted</p>
               </div>
@@ -322,7 +338,11 @@ export default function MockResultPage() {
                     <thead className="bg-[#f8fafc] text-left text-xs font-extrabold uppercase tracking-[0.12em] text-[#667085]">
                       <tr>
                         <th className="px-4 py-3">Section</th>
-                        <th className="px-4 py-3">Score / Max Marks</th>
+                        <th className="px-4 py-3">Ques</th>
+                        <th className="px-4 py-3">Correct</th>
+                        <th className="px-4 py-3">Wrong</th>
+                        <th className="px-4 py-3">Skipped</th>
+                        <th className="px-4 py-3">Score / Max</th>
                         <th className="px-4 py-3">Percentage</th>
                         <th className="px-4 py-3">Percentile</th>
                         <th className="px-4 py-3">Accuracy</th>
@@ -332,6 +352,10 @@ export default function MockResultPage() {
                       {(overview?.sections ?? analysis?.sections ?? []).map((section) => (
                         <tr key={section.section_name} className="border-t border-[#eef2f7]">
                           <td className="px-4 py-3 font-bold text-[#172a69]">{section.section_name}</td>
+                          <td className="px-4 py-3 font-bold">{section.total_questions}</td>
+                          <td className="px-4 py-3 font-extrabold text-[#16a34a]">{section.correct}</td>
+                          <td className="px-4 py-3 font-extrabold text-[#dc2626]">{section.incorrect}</td>
+                          <td className="px-4 py-3 font-bold text-[#667085]">{section.skipped + section.unseen}</td>
                           <td className={`px-4 py-3 font-extrabold ${scoreToneClass(section.score, section.total_marks)}`}>
                             {section.score} / {section.total_marks}
                           </td>
@@ -344,8 +368,12 @@ export default function MockResultPage() {
                       ))}
                       <tr className="border-t border-[#dfe5ef] bg-[#f8fafc] font-extrabold">
                         <td className="px-4 py-3 text-[#172a69]">TOTAL</td>
-                        <td className={`px-4 py-3 ${scoreToneClass(overview?.summary.score ?? result.score, overview?.summary.total_marks ?? result.total)}`}>
-                          {overview?.summary.score ?? result.score} / {overview?.summary.total_marks ?? result.total}
+                        <td className="px-4 py-3">{overview?.summary.total_questions ?? report.total}</td>
+                        <td className="px-4 py-3 text-[#16a34a]">{correctCount}</td>
+                        <td className="px-4 py-3 text-[#dc2626]">{incorrectCount}</td>
+                        <td className="px-4 py-3 text-[#667085]">{(overview?.summary.skipped ?? 0) + (overview?.summary.unseen ?? 0)}</td>
+                        <td className={`px-4 py-3 ${scoreToneClass(overview?.summary.score ?? report.score, overview?.summary.total_marks ?? report.total)}`}>
+                          {overview?.summary.score ?? report.score} / {overview?.summary.total_marks ?? report.total}
                         </td>
                         <td className="px-4 py-3 text-[#175cd3]">{(overview?.summary.percentage ?? displayPercentage).toFixed(1)}%</td>
                         <td className={`px-4 py-3 ${accuracyToneClass(overview?.summary.percentile ?? 0)}`}>
@@ -369,9 +397,9 @@ export default function MockResultPage() {
             ?? analysis?.summary.comparison
             ?? analysis?.comparison
             ?? {
-              your_score: overview?.summary.score ?? analysis?.summary.score ?? result.score,
-              topper_score: overview?.summary.topper_score ?? analysis?.summary.topper_score ?? result.score,
-              average_score: overview?.summary.average_score ?? analysis?.summary.average_score ?? result.score,
+              your_score: overview?.summary.score ?? analysis?.summary.score ?? report.score,
+              topper_score: overview?.summary.topper_score ?? analysis?.summary.topper_score ?? report.score,
+              average_score: overview?.summary.average_score ?? analysis?.summary.average_score ?? report.score,
             }
           }
           sections={overview?.sections ?? analysis?.sections ?? []}
@@ -389,7 +417,7 @@ export default function MockResultPage() {
                   <SectionProgressRow
                     key={section.id}
                     section={section}
-                    isCurrent={section.slug === (sectionSlug || result.sectionSlug)}
+                    isCurrent={section.slug === (sectionSlug || report.sectionSlug)}
                   />
                 ))}
             </div>
@@ -399,16 +427,16 @@ export default function MockResultPage() {
         <div className="rounded-[28px] border border-[#dfe5ef] bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:p-8">
           <div className="grid gap-4 sm:grid-cols-2">
             <Link
-              href={`/student/mock-tests/${slug}/analysis${querySuffix}`}
+              href={`/student/mock-tests/${slug}/analysis`}
               className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#d946ef] to-[#ec4899] text-base font-extrabold text-white shadow-lg shadow-fuchsia-200"
             >
               <BarChart3 size={20} /> Detailed Analysis
             </Link>
             <Link
-              href={`/student/mock-tests/${slug}/solution${querySuffix}`}
+              href={`/student/mock-tests/${slug}/solution`}
               className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#6366f1] to-[#3378b9] text-base font-extrabold text-white shadow-lg shadow-blue-200"
             >
-              <BookOpenCheck size={20} /> Solution
+              <BookOpenCheck size={20} /> View Answers
             </Link>
           </div>
 
@@ -432,7 +460,7 @@ export default function MockResultPage() {
                 </Link>
                 {!passed && allowSectionRetry && (
                   <Link
-                    href={`/student/mock-tests/${slug}/exam?section=${encodeURIComponent(sectionSlug || result.sectionSlug || "")}&examWindow=1`}
+                    href={`/student/mock-tests/${slug}/exam?section=${encodeURIComponent(sectionSlug || report.sectionSlug || "")}&examWindow=1`}
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[#cdd6e2] bg-white px-5 text-sm font-bold text-[#172a69]"
                   >
                     <RotateCcw size={16} /> Retry Section

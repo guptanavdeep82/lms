@@ -13,13 +13,13 @@ import {
   fetchMockAttemptBySlug,
   fetchMockAttemptDetail,
   formatMockClock,
-  optionLabel,
   type MockAttemptDetail,
   type MockAttemptQuestion,
 } from "@/lib/mock-attempt-analysis";
 import { getMockResult } from "@/lib/mock-results";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 import { decodeHtmlEntities } from "@/lib/html-entities";
+import { RichHtml } from "@/components/student/RichHtml";
 
 export default function MockSolutionPage() {
   const searchParams = useSearchParams();
@@ -42,9 +42,9 @@ export default function MockSolutionPage() {
     if (!session?.email) return;
 
     const attemptId = searchParams.get("attempt") || getMockResult(slug)?.attemptId;
-    const loader = attemptId
-      ? fetchMockAttemptDetail(session.email, Number(attemptId))
-      : fetchMockAttemptBySlug(session.email, slug);
+    const loader = fetchMockAttemptBySlug(session.email, slug, true).catch(() => (
+      attemptId ? fetchMockAttemptDetail(session.email, Number(attemptId)) : Promise.reject(new Error("missing"))
+    ));
 
     loader
       .then((payload) => {
@@ -131,8 +131,8 @@ export default function MockSolutionPage() {
             <h1 className="text-[13px] font-semibold sm:text-[14px]">SOLUTIONS: {decodeHtmlEntities(detail.attempt.test_title)}</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Link href={`/student/mock-tests/${slug}/analysis${attemptQuery}`} className="rounded bg-white/15 px-3 py-1.5 text-xs font-bold">Analytics</Link>
-            <Link href={`/student/mock-tests/${slug}/result${attemptQuery}`} className="rounded bg-white/15 px-3 py-1.5 text-xs font-bold">Results</Link>
+            <Link href={`/student/mock-tests/${slug}/analysis`} className="rounded bg-white/15 px-3 py-1.5 text-xs font-bold">Analytics</Link>
+            <Link href={`/student/mock-tests/${slug}/result`} className="rounded bg-white px-3 py-1.5 text-xs font-bold text-[#3378b9]">View Result</Link>
             <span className="rounded bg-white/15 px-3 py-1.5 text-xs font-bold">{student?.name || "Student"}</span>
           </div>
         </div>
@@ -176,7 +176,7 @@ export default function MockSolutionPage() {
         <section className="grid grid-rows-[1fr_auto]">
           <div className="grid overflow-hidden lg:grid-cols-2">
             <div className="border-b border-[#cfd7df] p-4 text-[15px] leading-7 lg:border-b-0 lg:border-r lg:overflow-y-auto lg:text-[17px]">
-              <p className="font-bold">{decodeHtmlEntities(question.question_text)}</p>
+              <p className="font-bold"><RichHtml html={question.question_text} /></p>
             </div>
 
             <div className="p-4 lg:overflow-y-auto">
@@ -201,7 +201,7 @@ export default function MockSolutionPage() {
                       <span className={`mt-0.5 grid h-5 w-5 place-items-center rounded-full text-xs font-bold ${isCorrect ? "bg-[#16a34a] text-white" : isSelected ? "bg-[#ef4444] text-white" : "bg-[#eef2f7] text-[#475467]"}`}>
                         {isCorrect ? "✓" : isSelected ? "✕" : key}
                       </span>
-                      <span className="text-sm leading-6">{optionLabel(key, question.options)}</span>
+                      <span className="text-sm leading-6"><RichHtml html={option} /></span>
                     </div>
                   );
                 })}
@@ -210,7 +210,7 @@ export default function MockSolutionPage() {
               <div className="mt-5 rounded-xl border border-[#dbeafe] bg-[#eff6ff] p-4">
                 <p className="text-sm font-extrabold text-[#1d4ed8]">Answer: {question.correct_answer}</p>
                 {question.explanation ? (
-                  <p className="mt-2 text-sm leading-6 text-[#344054]">{decodeHtmlEntities(question.explanation)}</p>
+                  <div className="mt-2 text-sm leading-6 text-[#344054]"><RichHtml html={question.explanation} /></div>
                 ) : (
                   <p className="mt-2 text-sm leading-6 text-[#667085]">Explanation will be updated by admin soon.</p>
                 )}
@@ -283,8 +283,8 @@ export default function MockSolutionPage() {
           </div>
 
           <div className="border-t border-[#cfd7df] px-4 py-3">
-            <Link href={`/student/mock-tests/${slug}/analysis${attemptQuery}`} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#3378b9] text-sm font-bold text-white">
-              <BarChart3 size={16} /> View Result Analysis
+            <Link href={`/student/mock-tests/${slug}/result`} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#3378b9] text-sm font-bold text-white">
+              <BarChart3 size={16} /> View Result
             </Link>
           </div>
         </aside>

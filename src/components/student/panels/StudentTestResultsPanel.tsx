@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { Eye, Loader2 } from "lucide-react";
 import { fetchTestAttempts, type MockTestAttemptRecord } from "@/lib/student-dashboard";
 import { StudentSectionCard } from "@/components/student/StudentSectionCard";
 import { useStudentEmail } from "@/components/student/useStudentEmail";
@@ -65,18 +66,31 @@ export function StudentTestResultsPanel() {
               <th className="px-3 py-3">Score</th>
               <th className="px-3 py-3">Correct</th>
               <th className="px-3 py-3">Submitted</th>
+              <th className="px-3 py-3">Action</th>
             </tr>
           </thead>
           <tbody>
             {activeAttempts.length ? activeAttempts.map((attempt) => (
-              <tr key={attempt.id} className="border-b border-[#f3f6fb]">
+              <tr key={`${attempt.slug}-${attempt.id}`} className="border-b border-[#f3f6fb]">
                 <td className="px-3 py-3 font-semibold text-[#111827]">{attempt.test_title}</td>
                 <td className="px-3 py-3">{attempt.score}</td>
                 <td className="px-3 py-3">{attempt.correct_count}/{attempt.total_questions}</td>
                 <td className="px-3 py-3 text-[#7d8799]">{attempt.submitted_at ? new Date(attempt.submitted_at).toLocaleString() : "-"}</td>
+                <td className="px-3 py-3">
+                  {attempt.slug ? (
+                    <Link
+                      href={`/student/mock-tests/${attempt.slug}/result`}
+                      className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#172a69] px-3 text-xs font-bold text-white"
+                    >
+                      <Eye size={14} /> View
+                    </Link>
+                  ) : (
+                    <span className="text-xs text-[#667085]">—</span>
+                  )}
+                </td>
               </tr>
             )) : (
-              <tr><td colSpan={4} className="px-3 py-8 text-center text-[#667085]">No test results yet. Attempt a mock test to see your scores here.</td></tr>
+              <tr><td colSpan={5} className="px-3 py-8 text-center text-[#667085]">No test results yet. Attempt a mock test to see your scores here.</td></tr>
             )}
           </tbody>
         </table>

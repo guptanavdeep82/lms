@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { staticReplace } from "@/lib/static-nav";
 import { CoursePromoCard } from "@/components/courses/CoursePromoCard";
 import { fetchCourses, mapApiCourseToListingCourse, type ListingCourse } from "@/lib/courses";
+import { fetchHomePageData, type HomePageCategory } from "@/lib/home-page";
 
 type Filters = {
   type: "all" | "video" | "pdf" | "live";
@@ -29,14 +30,25 @@ export function CoursesCatalog() {
   const [courses, setCourses] = useState<ListingCourse[]>([]);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<HomePageCategory[]>([]);
 
   useEffect(() => {
     const type = searchParams.get("type");
     const apiType = type === "video" || type === "pdf" || type === "live" ? type : undefined;
+    const category = searchParams.get("category");
 
     setLoading(true);
-    fetchCourses(apiType)
-      .then((items) => setCourses(items.map(mapApiCourseToListingCourse)))
+    Promise.all([
+      fetchCourses(apiType),
+      fetchHomePageData().catch(() => null),
+    ])
+      .then(([items, home]) => {
+        setCourses(items.map(mapApiCourseToListingCourse));
+        setCategories(home?.categories ?? []);
+        if (category) {
+          setFilters((current) => ({ ...current, cat: category }));
+        }
+      })
       .finally(() => setLoading(false));
   }, [searchParams]);
 
@@ -150,8 +162,8 @@ export function CoursesCatalog() {
           <FilterSection title="Category">
             <ChipGroup
               options={[
-                ["all", "All"], ["ibps", "IBPS"], ["sbi", "SBI"], ["rbi", "RBI"], ["insurance", "Insurance"],
-                ["aptitude", "Aptitude"], ["english", "English"], ["gk", "GK / Affairs"], ["ssc", "SSC / Railway"],
+                ["all", "All"],
+                ...categories.map((category) => [category.slug, category.name] as [string, string]),
               ]}
               value={filters.cat}
               onChange={(value) => setFilters((current) => ({ ...current, cat: value }))}
