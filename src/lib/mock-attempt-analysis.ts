@@ -39,6 +39,22 @@ export type MockAttemptComparison = {
   average_score: number;
 };
 
+export type MockScoringBreakdown = {
+  marks_per_correct: number | null;
+  negative_per_wrong: number | null;
+  correct: number;
+  incorrect: number;
+  skipped: number;
+  positive_marks: number;
+  negative_marks: number;
+  net_score: number;
+  total_marks: number;
+  formula: string;
+  correct_line: string;
+  wrong_line: string;
+  skipped_line: string;
+};
+
 export type MockAttemptSectionSummary = {
   section_name: string;
   total_questions: number;
@@ -50,12 +66,15 @@ export type MockAttemptSectionSummary = {
   accuracy: number;
   score: number;
   total_marks: number;
+  positive_marks?: number;
+  negative_marks?: number;
   time_spent_seconds: number;
   percentage?: number;
   percentile?: number;
   rank?: number;
   total_participants?: number;
   comparison?: MockAttemptComparison;
+  scoring?: MockScoringBreakdown;
 };
 
 export type MockAttemptTopicSummary = {
@@ -92,6 +111,7 @@ export type MockAttemptDetail = {
     time_utilized_seconds: number;
     duration_seconds: number;
     wasted_time_seconds: number;
+    scoring?: MockScoringBreakdown;
     rank?: number;
     total_participants?: number;
     percentile?: number;

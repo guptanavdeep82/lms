@@ -15,6 +15,7 @@ import {
   type MockAttemptTopicSummary,
 } from "@/lib/mock-attempt-analysis";
 import { accuracyToneClass, scoreToneClass } from "@/components/student/mock-exam-status";
+import { MarksCalculationCard, SubjectMarksTable } from "@/components/student/MarksCalculation";
 import { getMockResult } from "@/lib/mock-results";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 
@@ -139,6 +140,9 @@ export default function MockAnalysisPage() {
           </div>
         </section>
 
+        <MarksCalculationCard scoring={summary.scoring} />
+        <SubjectMarksTable sections={sections} overall={summary.scoring} />
+
         <section className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
           <StatCard label="Attempted" value={`${summary.attempted}/${summary.total_questions}`} className="bg-[#fff1f3] text-[#c01048]" />
           <StatCard label="Correct" value={`${summary.correct}/${summary.total_questions}`} className="bg-[#ecfdf3] text-[#027a48]" />
@@ -199,7 +203,7 @@ export default function MockAnalysisPage() {
             <table className="min-w-full text-sm">
               <thead className="bg-[#f8fafc] text-left text-xs font-extrabold uppercase tracking-[0.12em] text-[#667085]">
                 <tr>
-                  {["Section", "Attempted", "Correct", "Incorrect", "Skipped", "Unseen", "Accuracy", "Score", "%", "Percentile", "Time"].map((head) => (
+                  {["Section", "Attempted", "Correct", "Incorrect", "Skipped", "Unseen", "Accuracy", "+ Marks", "− Marks", "Score", "%", "Percentile", "Time"].map((head) => (
                     <th key={head} className="px-4 py-3">{head}</th>
                   ))}
                 </tr>
@@ -214,6 +218,8 @@ export default function MockAnalysisPage() {
                     <td className="px-4 py-3">{section.skipped}</td>
                     <td className="px-4 py-3">{section.unseen}</td>
                     <td className={`px-4 py-3 font-bold ${accuracyToneClass(section.accuracy)}`}>{section.accuracy}%</td>
+                    <td className="px-4 py-3 font-extrabold text-[#16a34a]">+{section.scoring?.positive_marks ?? section.positive_marks ?? 0}</td>
+                    <td className="px-4 py-3 font-extrabold text-[#dc2626]">−{section.scoring?.negative_marks ?? section.negative_marks ?? 0}</td>
                     <td className={`px-4 py-3 font-extrabold ${scoreToneClass(section.score, section.total_marks)}`}>{section.score}/{section.total_marks}</td>
                     <td className="px-4 py-3 font-bold text-[#175cd3]">{(section.percentage ?? 0).toFixed(1)}%</td>
                     <td className={`px-4 py-3 font-bold ${accuracyToneClass(section.percentile ?? 0)}`}>{section.percentile != null ? `${section.percentile}%ile` : "—"}</td>
@@ -228,6 +234,8 @@ export default function MockAnalysisPage() {
                   <td className="px-4 py-3">{summary.skipped}</td>
                   <td className="px-4 py-3">{summary.unseen}</td>
                   <td className={accuracyToneClass(summary.accuracy)}>{summary.accuracy}%</td>
+                  <td className="text-[#16a34a]">+{summary.scoring?.positive_marks ?? 0}</td>
+                  <td className="text-[#dc2626]">−{summary.scoring?.negative_marks ?? 0}</td>
                   <td className={scoreToneClass(summary.score, summary.total_marks)}>{summary.score}/{summary.total_marks}</td>
                   <td className="px-4 py-3 text-[#175cd3]">{(summary.percentage ?? 0).toFixed(1)}%</td>
                   <td className={accuracyToneClass(summary.percentile ?? 0)}>{summary.percentile != null ? `${summary.percentile}%ile` : "—"}</td>

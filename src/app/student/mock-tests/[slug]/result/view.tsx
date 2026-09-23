@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { fetchMockAttemptBySlug, fetchMockAttemptDetail, type MockAttemptDetail } from "@/lib/mock-attempt-analysis";
 import { accuracyToneClass, scoreToneClass } from "@/components/student/mock-exam-status";
+import { MarksCalculationCard, SubjectMarksTable } from "@/components/student/MarksCalculation";
 import { getMockResult, type MockResult } from "@/lib/mock-results";
 import { isStudentLoggedIn, getStudentSession } from "@/lib/student-auth";
 import {
@@ -208,7 +209,7 @@ export default function MockResultPage() {
             </div>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              <MetricCard label="Score" value={`${report.score}/${maxMarks}`} tone={report.score < 0 ? "pink" : "green"} />
+              <MetricCard label="Score" value={`${analysis?.summary.score ?? report.score}/${maxMarks}`} tone={(analysis?.summary.score ?? report.score) < 0 ? "pink" : "green"} />
               <MetricCard label="Percentage" value={`${(analysis?.summary.percentage ?? displayPercentage).toFixed(1)}%`} tone="blue" />
               <MetricCard label="Percentile" value={analysis?.summary.percentile != null ? `${analysis.summary.percentile}%ile` : "—"} tone="purple" />
               <MetricCard label="Required" value={`${passingPercentage}%`} tone="purple" />
@@ -217,6 +218,10 @@ export default function MockResultPage() {
                 value={`${formatDuration(timeUsed)} / ${formatDuration(timeLimit)}`}
                 tone="pink"
               />
+            </div>
+
+            <div className="mt-6">
+              <MarksCalculationCard scoring={analysis?.summary.scoring} title={`${report.sectionName || currentSection?.name || "Section"} Marks`} />
             </div>
 
             <div className="mt-6 rounded-2xl border border-[#dfe5ef] bg-white/80 p-4">
@@ -286,7 +291,7 @@ export default function MockResultPage() {
                   <span className="text-[#98a2b3]"> / </span>
                   <span className="text-[#dc2626]">{incorrectCount}</span>
                 </p>
-                <p className="mt-1 text-xs font-semibold text-[#667085]">Green = correct · Red = wrong or unattempted</p>
+                <p className="mt-1 text-xs font-semibold text-[#667085]">Green = correct · Red = wrong</p>
               </div>
               <ResultHighlight
                 icon={<Clock3 size={22} />}
@@ -296,6 +301,10 @@ export default function MockResultPage() {
                 toneClass="text-[#175cd3]"
               />
             </div>
+
+            <MarksCalculationCard scoring={overview?.summary.scoring} />
+
+            <SubjectMarksTable sections={overview?.sections ?? analysis?.sections ?? []} overall={overview?.summary.scoring} />
 
             <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="rounded-[24px] border border-[#dfe5ef] bg-white p-5 shadow-sm sm:p-6">
@@ -342,6 +351,8 @@ export default function MockResultPage() {
                         <th className="px-4 py-3">Correct</th>
                         <th className="px-4 py-3">Wrong</th>
                         <th className="px-4 py-3">Skipped</th>
+                        <th className="px-4 py-3">+ Marks</th>
+                        <th className="px-4 py-3">− Marks</th>
                         <th className="px-4 py-3">Score / Max</th>
                         <th className="px-4 py-3">Percentage</th>
                         <th className="px-4 py-3">Percentile</th>
@@ -356,6 +367,8 @@ export default function MockResultPage() {
                           <td className="px-4 py-3 font-extrabold text-[#16a34a]">{section.correct}</td>
                           <td className="px-4 py-3 font-extrabold text-[#dc2626]">{section.incorrect}</td>
                           <td className="px-4 py-3 font-bold text-[#667085]">{section.skipped + section.unseen}</td>
+                          <td className="px-4 py-3 font-extrabold text-[#16a34a]">+{section.scoring?.positive_marks ?? section.positive_marks ?? 0}</td>
+                          <td className="px-4 py-3 font-extrabold text-[#dc2626]">−{section.scoring?.negative_marks ?? section.negative_marks ?? 0}</td>
                           <td className={`px-4 py-3 font-extrabold ${scoreToneClass(section.score, section.total_marks)}`}>
                             {section.score} / {section.total_marks}
                           </td>
@@ -372,6 +385,8 @@ export default function MockResultPage() {
                         <td className="px-4 py-3 text-[#16a34a]">{correctCount}</td>
                         <td className="px-4 py-3 text-[#dc2626]">{incorrectCount}</td>
                         <td className="px-4 py-3 text-[#667085]">{(overview?.summary.skipped ?? 0) + (overview?.summary.unseen ?? 0)}</td>
+                        <td className="px-4 py-3 text-[#16a34a]">+{overview?.summary.scoring?.positive_marks ?? 0}</td>
+                        <td className="px-4 py-3 text-[#dc2626]">−{overview?.summary.scoring?.negative_marks ?? 0}</td>
                         <td className={`px-4 py-3 ${scoreToneClass(overview?.summary.score ?? report.score, overview?.summary.total_marks ?? report.total)}`}>
                           {overview?.summary.score ?? report.score} / {overview?.summary.total_marks ?? report.total}
                         </td>
