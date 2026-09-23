@@ -191,34 +191,7 @@ export function buildAchieveOfferMarkup(settings: HomePageSettings): string {
     )
     .join("");
 
-  const achieveStrip = stats
-    ? `<section class="achieve-strip">${stats}</section>`
-    : "";
-
-  if (!settings.offer_bar?.enabled) {
-    return achieveStrip;
-  }
-
-  const offer = settings.offer_bar;
-  const offerBar = `<section class="offer-bar">
-  <div class="offer-left">
-    <span class="offer-flame"><i class="fa fa-fire"></i> Limited Time Offer</span>
-    <h3>${escapeHtml(offer.title)} <em>${escapeHtml(offer.highlight)}</em> ${escapeHtml(offer.suffix)}</h3>
-    <p><i class="fa fa-clock"></i> ${escapeHtml(offer.description)}</p>
-  </div>
-  <div class="offer-timer">
-    <div class="otile"><strong>02</strong><small>Days</small></div>
-    <div class="otile"><strong>14</strong><small>Hours</small></div>
-    <div class="otile"><strong>36</strong><small>Mins</small></div>
-    <div class="otile"><strong>49</strong><small>Secs</small></div>
-  </div>
-  <div class="offer-right">
-    <div class="offer-code"><small>Use Code:</small><b>${escapeHtml(offer.code)}</b></div>
-    <a href="${escapeHtml(offer.btn_url)}" class="offer-btn">${escapeHtml(offer.btn_text)} <i class="fa fa-arrow-right"></i></a>
-  </div>
-</section>`;
-
-  return `${achieveStrip}\n\n${offerBar}`;
+  return stats ? `<section class="achieve-strip">${stats}</section>` : "";
 }
 
 function buildHeroLeftContentMarkup(settings: HomePageSettings): string {

@@ -26,6 +26,7 @@ export type ApiCourse = {
   category_slug: string | null;
   exam_type: string | null;
   exam_type_slug: string | null;
+  exam_types?: { id: number; name: string; slug: string }[];
   subjects: CourseSubject[];
   lessons_count: number;
   has_live_classes?: boolean;
@@ -64,6 +65,7 @@ export type ListingCourse = {
   desc: string;
   category: string;
   exam: string;
+  examSlugs: string[];
   level: string;
   price: number;
   original: number;
@@ -197,13 +199,17 @@ function normalizeCategorySlug(slug: string | null): string {
   return value.replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "ibps";
 }
 
-function normalizeExamSlug(slug: string | null, name: string | null): string {
-  const source = `${slug ?? ""} ${name ?? ""}`.toLowerCase();
-  if (source.includes("clerk")) return "clerk";
-  if (source.includes("grade b") || source.includes("grade-b")) return "grade-b";
-  if (source.includes("aao") || source.includes("so")) return "aao";
-  if (source.includes("po") || source.includes("officer")) return "po";
-  return "all";
+function courseExamSlugs(course: ApiCourse): string[] {
+  return Array.from(
+    new Set(
+      [
+        course.exam_type_slug,
+        ...(course.exam_types ?? []).map((examType) => examType.slug),
+      ]
+        .filter((slug): slug is string => Boolean(slug && slug.trim()))
+        .map((slug) => slug.toLowerCase()),
+    ),
+  );
 }
 
 function courseVisuals(course: ApiCourse) {
@@ -254,13 +260,16 @@ export function mapApiCourseToListingCourse(course: ApiCourse): ListingCourse {
   const effectivePrice = course.sale_price ?? course.price;
   const original = course.sale_price !== null && course.sale_price < course.price ? course.price : 0;
 
+  const examSlugs = courseExamSlugs(course);
+
   return {
     id: course.id,
     slug: course.slug,
     title: course.title,
     desc: course.short_description || course.description || "Expert-designed course for banking exam preparation.",
     category: (course.category_slug || course.category || "").toLowerCase() || "all",
-    exam: normalizeExamSlug(course.exam_type_slug, course.exam_type),
+    exam: examSlugs[0] || "all",
+    examSlugs,
     level: course.level || "beginner",
     price: effectivePrice,
     original,

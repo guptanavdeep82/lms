@@ -817,7 +817,7 @@ body {
   margin: -30px auto 0;
   padding: 14px;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
   background: #ffffff;
   border: 1px solid var(--kr-border);
@@ -832,7 +832,8 @@ body {
   align-items: center;
   gap: 10px;
   min-width: 0;
-  padding: 11px;
+  min-height: 64px;
+  padding: 11px 12px;
   border-radius: 13px;
   background: #f5f8fc;
   border: 1px solid transparent;
@@ -878,8 +879,8 @@ body {
   font-weight: 800;
   color: var(--kr-ink);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
 }
 .kr-logics-reference-home .cat-chip-meta small {
   font-size: 11px;
@@ -888,7 +889,15 @@ body {
 }
 @media (max-width: 1000px) {
   .kr-logics-reference-home .cat-strip {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+@media (max-width: 860px) {
+  .kr-logics-reference-home .cat-strip {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .kr-logics-reference-home .cat-chip-meta b {
+    white-space: normal;
   }
 }
 @media (max-width: 560px) {

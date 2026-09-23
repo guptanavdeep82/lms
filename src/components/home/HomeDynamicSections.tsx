@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { defaultHomePageSettings, type HomePageFaculty, type HomePageFaq, type HomePageReview, type HomePageSettings } from "@/lib/home-page";
 
 const facultyColors = ["#1B2E6B", "#15803D", "#185FA5", "#D85A30", "#7F77DD", "#BA7517"];
@@ -196,10 +197,12 @@ export function HomeTopCourseTiles({
     const tile = source[index] ?? defaultTile;
     const items = defaultTile.items.map((defaultItem, itemIndex) => {
       const item = tile.items?.[itemIndex] ?? defaultItem;
+      const resolved = resolveTileUrl(item.url || defaultItem.url, settings, item.icon || defaultItem.icon);
       return {
         ...defaultItem,
         ...item,
-        external: /^https?:\/\//i.test(item.url || defaultItem.url),
+        url: resolved,
+        external: /^https?:\/\//i.test(resolved),
       };
     });
 
@@ -248,4 +251,89 @@ export function HomeTopCourseTiles({
       <div className="divider" />
     </>
   );
+}
+
+export function HomeOfferBar({ settings }: { settings?: HomePageSettings | null }) {
+  const offer = settings?.offer_bar;
+  const remaining = useOfferCountdown(offer?.ends_at ?? null);
+
+  if (!offer?.enabled) return null;
+  if (offer.ends_at && remaining && remaining.total <= 0) return null;
+
+  const href = offer.btn_url?.trim() || "/courses";
+  const isExternal = /^https?:\/\//i.test(href);
+
+  return (
+    <section className="offer-bar">
+      <div className="offer-left">
+        <span className="offer-flame"><i className="fa fa-fire" /> Limited Time Offer</span>
+        <h3>
+          {offer.title} <em>{offer.highlight}</em> {offer.suffix}
+        </h3>
+        {offer.description ? (
+          <p><i className="fa fa-clock" /> {offer.description}</p>
+        ) : null}
+      </div>
+      {remaining ? (
+        <div className="offer-timer">
+          <div className="otile"><strong>{String(remaining.days).padStart(2, "0")}</strong><small>Days</small></div>
+          <div className="otile"><strong>{String(remaining.hours).padStart(2, "0")}</strong><small>Hours</small></div>
+          <div className="otile"><strong>{String(remaining.mins).padStart(2, "0")}</strong><small>Mins</small></div>
+          <div className="otile"><strong>{String(remaining.secs).padStart(2, "0")}</strong><small>Secs</small></div>
+        </div>
+      ) : null}
+      <div className="offer-right">
+        {offer.code ? (
+          <div className="offer-code"><small>Use Code:</small><b>{offer.code}</b></div>
+        ) : null}
+        <a
+          href={href}
+          className="offer-btn"
+          {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        >
+          {offer.btn_text || "Grab The Offer"} <i className="fa fa-arrow-right" />
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function resolveTileUrl(url: string, settings?: HomePageSettings | null, icon = "") {
+  const key = url.trim().toLowerCase();
+  const iconKey = icon.toLowerCase();
+
+  if (key === "whatsapp" || key.includes("wa.me") || key.includes("whatsapp") || iconKey.includes("whatsapp")) {
+    const digits = (settings?.whatsapp_number || "").replace(/\D/g, "");
+    return digits ? `https://wa.me/${digits}` : "/contact";
+  }
+  if (key === "youtube" || key.includes("youtube.com") || iconKey.includes("youtube")) {
+    return settings?.youtube_link || "/contact";
+  }
+  if (key === "instagram" || key.includes("instagram.com") || iconKey.includes("instagram")) {
+    return settings?.instagram_link || "/contact";
+  }
+  if (key === "facebook" || key.includes("facebook.com") || iconKey.includes("facebook")) {
+    return settings?.facebook_link || "/contact";
+  }
+  return url.trim() || "/courses";
+}
+
+function useOfferCountdown(endsAt: string | null) {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!endsAt) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [endsAt]);
+
+  if (!endsAt) return null;
+  const end = new Date(endsAt).getTime();
+  if (Number.isNaN(end)) return null;
+  const total = Math.max(0, end - now);
+  const days = Math.floor(total / 86400000);
+  const hours = Math.floor((total % 86400000) / 3600000);
+  const mins = Math.floor((total % 3600000) / 60000);
+  const secs = Math.floor((total % 60000) / 1000);
+  return { total, days, hours, mins, secs };
 }

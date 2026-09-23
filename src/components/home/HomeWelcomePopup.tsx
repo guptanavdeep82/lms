@@ -5,6 +5,8 @@ import { X } from "lucide-react";
 import type { HomePageSettings } from "@/lib/home-page";
 import "./home-welcome-popup.css";
 
+const WELCOME_POPUP_SEEN_KEY = "kr-logics-welcome-popup-seen";
+
 type HomeWelcomePopupProps = {
   settings?: HomePageSettings | null;
 };
@@ -17,6 +19,16 @@ export function HomeWelcomePopup({ settings = null }: HomeWelcomePopupProps) {
     if (!popup?.enabled) {
       setOpen(false);
       return;
+    }
+
+    try {
+      if (window.localStorage.getItem(WELCOME_POPUP_SEEN_KEY) === "1") {
+        setOpen(false);
+        return;
+      }
+      window.localStorage.setItem(WELCOME_POPUP_SEEN_KEY, "1");
+    } catch {
+      // If storage is blocked, still show once for this page load.
     }
 
     const timer = window.setTimeout(() => setOpen(true), 280);

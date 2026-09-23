@@ -50,6 +50,7 @@ export type HomeOfferBar = {
   code: string;
   btn_text: string;
   btn_url: string;
+  ends_at: string | null;
 };
 
 export type HomeWelcomePopup = {
@@ -129,6 +130,12 @@ export type HomePageCategory = {
   courses_count: number;
 };
 
+export type HomePageExamType = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 export type HomePageReview = {
   id: number | string;
   name: string;
@@ -173,6 +180,7 @@ export type HomeTopCourse = {
 export type HomePageResponse = {
   settings: HomePageSettings;
   categories: HomePageCategory[];
+  exam_types: HomePageExamType[];
   reviews: HomePageReview[];
   faculties: HomePageFaculty[];
   faqs: HomePageFaq[];
@@ -324,10 +332,10 @@ export const defaultHomePageSettings: HomePageSettings = {
       title: "Follow Us",
       tone: "rose",
       items: [
-        { label: "WhatsApp", url: "/contact", icon: "fa-whatsapp" },
-        { label: "YouTube", url: "https://www.youtube.com", icon: "fa-youtube" },
-        { label: "Instagram", url: "https://www.instagram.com", icon: "fa-instagram" },
-        { label: "Facebook", url: "https://www.facebook.com", icon: "fa-facebook-f" },
+        { label: "WhatsApp", url: "whatsapp", icon: "fa-whatsapp" },
+        { label: "YouTube", url: "youtube", icon: "fa-youtube" },
+        { label: "Instagram", url: "instagram", icon: "fa-instagram" },
+        { label: "Facebook", url: "facebook", icon: "fa-facebook-f" },
       ],
     },
   ],
@@ -353,7 +361,7 @@ export const defaultHomePageSettings: HomePageSettings = {
     { value: "24/7", label: "AI Support", icon: "fa-headset" },
   ],
   offer_bar: {
-    enabled: true,
+    enabled: false,
     title: "Get",
     highlight: "50% OFF",
     suffix: "on All Courses",
@@ -361,6 +369,7 @@ export const defaultHomePageSettings: HomePageSettings = {
     code: "LEARN50",
     btn_text: "Grab The Offer",
     btn_url: "/courses",
+    ends_at: null,
   },
   welcome_popup: {
     enabled: false,
@@ -424,7 +433,12 @@ export function normalizeHomePageSettings(settings?: Partial<HomePageSettings> |
   return {
     ...defaultHomePageSettings,
     ...source,
-    offer_bar: { ...defaultHomePageSettings.offer_bar, ...(source.offer_bar ?? {}) },
+    offer_bar: {
+      ...defaultHomePageSettings.offer_bar,
+      ...(source.offer_bar ?? {}),
+      enabled: Boolean((source.offer_bar ?? defaultHomePageSettings.offer_bar).enabled),
+      ends_at: source.offer_bar?.ends_at ?? defaultHomePageSettings.offer_bar.ends_at,
+    },
     welcome_popup: {
       ...defaultHomePageSettings.welcome_popup,
       ...(source.welcome_popup ?? {}),
@@ -473,6 +487,7 @@ export async function fetchHomePageData(): Promise<HomePageResponse | null> {
     return {
       settings: normalizeHomePageSettings(payload.settings),
       categories: payload.categories ?? [],
+      exam_types: payload.exam_types ?? [],
       reviews: payload.reviews ?? [],
       faculties: payload.faculties ?? [],
       faqs: payload.faqs ?? [],

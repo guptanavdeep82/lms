@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { staticReplace } from "@/lib/static-nav";
 import { CoursePromoCard } from "@/components/courses/CoursePromoCard";
-import { fetchCourses, mapApiCourseToListingCourse, type ListingCourse } from "@/lib/courses";
-import { fetchHomePageData, type HomePageCategory } from "@/lib/home-page";
+import { fetchCourses, mapApiCourseToListingCourse, type ApiCourse, type ListingCourse } from "@/lib/courses";
+import { fetchHomePageData, type HomePageCategory, type HomePageExamType } from "@/lib/home-page";
 
 type Filters = {
   type: "all" | "video" | "pdf" | "live";
@@ -31,6 +31,7 @@ export function CoursesCatalog() {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<HomePageCategory[]>([]);
+  const [examTypes, setExamTypes] = useState<HomePageExamType[]>([]);
 
   useEffect(() => {
     const type = searchParams.get("type");
@@ -45,6 +46,8 @@ export function CoursesCatalog() {
       .then(([items, home]) => {
         setCourses(items.map(mapApiCourseToListingCourse));
         setCategories(home?.categories ?? []);
+        const fromHome = home?.exam_types ?? [];
+        setExamTypes(fromHome.length ? fromHome : uniqueExamTypesFromCourses(items));
         if (category) {
           setFilters((current) => ({ ...current, cat: category }));
         }
@@ -72,7 +75,9 @@ export function CoursesCatalog() {
       list = list.filter((course) => course.offersLive);
     }
     if (filters.cat !== "all") list = list.filter((course) => course.category === filters.cat);
-    if (filters.exam !== "all") list = list.filter((course) => course.exam === filters.exam || course.exam === "all");
+    if (filters.exam !== "all") {
+      list = list.filter((course) => course.examSlugs.includes(filters.exam) || course.exam === filters.exam);
+    }
     if (filters.rating > 0) list = list.filter((course) => course.rating >= filters.rating);
     if (filters.search) {
       const query = filters.search.toLowerCase();
@@ -173,7 +178,8 @@ export function CoursesCatalog() {
           <FilterSection title="Exam Type">
             <ChipGroup
               options={[
-                ["all", "All Exams"], ["po", "PO / Officer"], ["clerk", "Clerk"], ["grade-b", "Grade B"], ["aao", "AAO / SO"],
+                ["all", "All Exams"],
+                ...examTypes.map((examType) => [examType.slug, examType.name] as [string, string]),
               ]}
               value={filters.exam}
               onChange={(value) => setFilters((current) => ({ ...current, exam: value }))}
@@ -222,6 +228,25 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
       {children}
     </div>
   );
+}
+
+function uniqueExamTypesFromCourses(courses: ApiCourse[]): HomePageExamType[] {
+  const examTypes = new Map<string, HomePageExamType>();
+
+  for (const course of courses) {
+    if (course.exam_type_slug && course.exam_type) {
+      examTypes.set(course.exam_type_slug, {
+        id: 0,
+        name: course.exam_type,
+        slug: course.exam_type_slug,
+      });
+    }
+    for (const examType of course.exam_types ?? []) {
+      examTypes.set(examType.slug, examType);
+    }
+  }
+
+  return Array.from(examTypes.values()).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function ChipGroup({
