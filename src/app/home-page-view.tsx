@@ -51,23 +51,23 @@ const trendingStripMarkup = `<section class="trending-strip" aria-label="Trendin
 </section>`;
 
 const categoryStripMarkup = `<section class="cat-strip" id="categories" aria-label="Explore exam categories">
-  <a href="/courses" class="cat-chip">
+  <a href="/courses/elite-pass" class="cat-chip">
     <span class="cat-ic c1"><i class="fa fa-building-columns"></i></span>
     <span class="cat-chip-meta"><b>Elite pass</b><small>220+ Courses</small></span>
   </a>
-  <a href="/courses" class="cat-chip">
+  <a href="/courses/reena-mams-advanced-english-batch-one-stop-solution-for-english-mains" class="cat-chip">
     <span class="cat-ic c2"><i class="fa fa-xmark"></i></span>
     <span class="cat-chip-meta"><b>English</b><small>180+ Courses</small></span>
   </a>
-  <a href="/courses" class="cat-chip">
-    <span class="cat-ic c3"><i class="fa fa-bus"></i></span>
-    <span class="cat-chip-meta"><b>Aptitude</b><small>150+ Courses</small></span>
+  <a href="/courses/jaiib-tamil" class="cat-chip">
+    <span class="cat-ic c3"><i class="fa fa-language"></i></span>
+    <span class="cat-chip-meta"><b>JAIIB Tamil</b><small>150+ Courses</small></span>
   </a>
-  <a href="/courses" class="cat-chip">
+  <a href="/courses/reasoning-course" class="cat-chip">
     <span class="cat-ic c4"><i class="fa fa-desktop"></i></span>
     <span class="cat-chip-meta"><b>Reasoning</b><small>120+ Courses</small></span>
   </a>
-  <a href="/courses" class="cat-chip">
+  <a href="/courses/banking-awareness-course" class="cat-chip">
     <span class="cat-ic c5"><i class="fa fa-landmark-dome"></i></span>
     <span class="cat-chip-meta"><b>Banking Awareness</b><small>100+ Courses</small></span>
   </a>
