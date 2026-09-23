@@ -74,7 +74,7 @@ export function PaletteIcon({
 
   if (status === "review") {
     return (
-      <span className={`relative inline-grid ${box} place-items-center rounded-full bg-[#7e22ce] font-bold text-white`}>
+      <span className={`relative inline-grid shrink-0 ${box} place-items-center rounded-full bg-[#7e22ce] font-bold text-white`}>
         {number}
       </span>
     );
@@ -82,7 +82,7 @@ export function PaletteIcon({
 
   if (status === "answered-review") {
     return (
-      <span className={`relative inline-grid ${box} place-items-center rounded-full bg-[#7e22ce] font-bold text-white`}>
+      <span className={`relative inline-grid shrink-0 ${box} place-items-center rounded-full bg-[#7e22ce] font-bold text-white`}>
         {number}
         <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-sm bg-[#22c55e]" />
       </span>

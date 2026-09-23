@@ -4,13 +4,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { staticPush, staticReplace } from "@/lib/static-nav";
 import { useLiveParam } from "@/lib/use-live-param";
-import { ChevronRight, Clock3, Expand, HelpCircle, Loader2, Pause, Play, UserRound, X } from "lucide-react";
+import { Clock3, Expand, HelpCircle, Loader2, Pause, Play, UserRound, X } from "lucide-react";
 import { PaletteIcon, formatExamClock, formatMmSs } from "@/components/student/mock-exam-status";
 import type { MockAttemptAnswerInput } from "@/lib/mock-attempt-analysis";
 import { saveMockResult } from "@/lib/mock-results";
 import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 import { mockTestsApiUrl, mockTestSectionExamUrl, mockExamSessionUrl, nextUnlockedSection, notifyMockExamOpener, toIdFlagMap, toIdNumberMap, toIdStringMap, type MockExamSession, type MockQuestion, type MockTestDetailResponse, type MockTestSection, type MockTestSectionExamResponse } from "@/lib/mock-tests";
 import { decodeHtmlEntities } from "@/lib/html-entities";
+import "./exam-shell.css";
 
 export default function DynamicMockExamPage() {
   const slug = useLiveParam("slug", 2);
@@ -423,9 +424,39 @@ export default function DynamicMockExamPage() {
     }
   }, [data, pendingNextSection, questions.length, remainingSeconds, submitTest, submitting]);
 
-  const enterFullscreen = () => {
-    document.documentElement.requestFullscreen?.().catch(() => undefined);
-  };
+  const enterFullscreen = useCallback(() => {
+    try {
+      window.moveTo(0, 0);
+      window.resizeTo(window.screen.availWidth, window.screen.availHeight);
+    } catch {
+      // Popup move/resize can be blocked by the browser.
+    }
+    if (!document.fullscreenElement) {
+      void document.documentElement.requestFullscreen?.().catch(() => undefined);
+    }
+  }, []);
+
+  useEffect(() => {
+    enterFullscreen();
+    const retry = () => enterFullscreen();
+    window.addEventListener("pointerdown", retry, { once: true });
+    window.addEventListener("keydown", retry, { once: true });
+    return () => {
+      window.removeEventListener("pointerdown", retry);
+      window.removeEventListener("keydown", retry);
+    };
+  }, [enterFullscreen]);
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    html.classList.add("exam-lock");
+    body.classList.add("exam-lock");
+    return () => {
+      html.classList.remove("exam-lock");
+      body.classList.remove("exam-lock");
+    };
+  }, []);
 
   if (loadError) {
     return (
@@ -505,8 +536,10 @@ export default function DynamicMockExamPage() {
   };
 
   return (
-    <main className="h-screen overflow-hidden bg-white text-[#111827]" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
-      <header className="flex min-h-[50px] flex-col gap-2 bg-[#3378b9] px-3 py-2 text-white sm:px-5">
+    <>
+    <main className="exam-shell" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+      <header className="bg-[#3378b9] px-3 py-2 text-white sm:px-5">
+        <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-3">
             <Image src="/kr-logics-logo.png" alt="KR Logics logo" width={36} height={36} className="h-9 w-9 rounded-full border border-[#0957D3] object-cover shadow-lg shadow-black/20" />
@@ -545,147 +578,143 @@ export default function DynamicMockExamPage() {
             </span>
           </div>
         )}
+        </div>
       </header>
 
-      <div className="h-[calc(100vh-50px)] overflow-y-auto lg:grid lg:grid-cols-[1fr_260px] lg:overflow-hidden">
-        <section className="grid h-[calc(100vh-50px)] grid-rows-[auto_1fr_auto] overflow-hidden">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] bg-[#f6f6f6] px-2 py-2 text-sm">
-            <span className="font-bold text-[#0f60b5] underline">{decodeHtmlEntities(question.section_name)}</span>
-            <span className="inline-flex items-center rounded border border-[#111827] bg-white px-3 py-1 text-base">
-              English
+      <section className="exam-main">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] bg-[#f6f6f6] px-2 py-2 text-sm">
+          <span className="font-bold text-[#0f60b5] underline">{decodeHtmlEntities(question.section_name)}</span>
+          <span className="inline-flex items-center rounded border border-[#111827] bg-white px-3 py-1 text-base">
+            English
+          </span>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] px-2 py-2 text-sm">
+          <span className="min-w-0 truncate font-bold text-[#111827]">{test.title}</span>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-5">
+            <span className="rounded border border-[#cfd7df] bg-white px-3 py-1 font-bold text-[#175cd3]">
+              Attempted {answeredCount}/{questions.length}
             </span>
+            <span className="text-[#667085]">Q {currentIndex + 1} / {questions.length}</span>
+            <span className="rounded border border-[#cfd7df] px-3 py-1">Qn. Time : <Clock3 size={12} className="inline" /></span>
+            <span><b>Marks :</b> <span className="text-[#00a651]">+{question.marks}</span> | <span className="text-[#ff3950]">-{question.negative_marks}</span></span>
+          </div>
+        </div>
+
+        <div className="exam-question-pane">
+          <div className="exam-question-scroll border-b border-[#cfd7df] p-3 text-[15px] leading-7 lg:border-b-0 lg:border-r lg:text-[18px] lg:leading-8">
+            <p className="mb-4 font-bold">{decodeHtmlEntities(question.question_text)}</p>
           </div>
 
-          <div className="grid grid-rows-[auto_1fr] overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] px-2 py-2 text-sm">
-              <span className="min-w-0 truncate font-bold text-[#111827]">{test.title}</span>
-              <div className="flex flex-wrap items-center gap-2 sm:gap-5">
-                <span className="rounded border border-[#cfd7df] bg-white px-3 py-1 font-bold text-[#175cd3]">
-                  Attempted {answeredCount}/{questions.length}
-                </span>
-                <span className="text-[#667085]">Q {currentIndex + 1} / {questions.length}</span>
-                <span className="rounded border border-[#cfd7df] px-3 py-1">Qn. Time : <Clock3 size={12} className="inline" /></span>
-                <span><b>Marks :</b> <span className="text-[#00a651]">+{question.marks}</span> | <span className="text-[#ff3950]">-{question.negative_marks}</span></span>
-              </div>
-            </div>
-
-            <div className="grid min-h-0 overflow-hidden lg:grid-cols-2">
-              <div className="min-h-0 overflow-y-auto border-b border-[#cfd7df] p-3 text-[15px] leading-7 lg:border-b-0 lg:border-r lg:text-[18px] lg:leading-8">
-                <p className="mb-4 font-bold">{decodeHtmlEntities(question.question_text)}</p>
-              </div>
-
-              <div className="min-h-0 overflow-y-auto p-4 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
-                <h2 className="mb-3 font-bold">Choose the correct answer.</h2>
-                <div className="mt-4 space-y-4" key={`${question.id}-${optionResetKey}-${answers[question.id] ?? "none"}`}>
-                  {(Object.entries(question.options) as Array<[keyof MockQuestion["options"], string | null]>).map(([key, option]) => (
-                    option ? (
-                      <label key={key} className="flex cursor-pointer items-center gap-3">
-                        <input
-                          type="radio"
-                          name={`question-${question.id}-${optionResetKey}`}
-                          checked={answers[question.id] === key}
-                          onChange={() => {
-                            setValidationMessage("");
-                            setAnswers((previous) => ({ ...previous, [question.id]: key }));
-                          }}
-                          className="h-5 w-5"
-                        />
-                        <span><b>{key}.</b> {decodeHtmlEntities(option)}</span>
-                      </label>
-                    ) : null
-                  ))}
-                </div>
-              </div>
+          <div className="exam-question-scroll p-4 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
+            <h2 className="mb-3 font-bold">Choose the correct answer.</h2>
+            <div className="mt-4 space-y-4" key={`${question.id}-${optionResetKey}-${answers[question.id] ?? "none"}`}>
+              {(Object.entries(question.options) as Array<[keyof MockQuestion["options"], string | null]>).map(([key, option]) => (
+                option ? (
+                  <label key={key} className="flex cursor-pointer items-center gap-3">
+                    <input
+                      type="radio"
+                      name={`question-${question.id}-${optionResetKey}`}
+                      checked={answers[question.id] === key}
+                      onChange={() => {
+                        setValidationMessage("");
+                        setAnswers((previous) => ({ ...previous, [question.id]: key }));
+                      }}
+                      className="h-5 w-5"
+                    />
+                    <span><b>{key}.</b> {decodeHtmlEntities(option)}</span>
+                  </label>
+                ) : null
+              ))}
             </div>
           </div>
+        </div>
 
-          <footer className="flex flex-col items-stretch justify-between gap-3 border-t border-[#cfd7df] bg-[#efefef] px-4 py-3">
-            <div className="grid gap-3">
-              {validationMessage && (
-                <div className="rounded-lg border border-[#ffd4a3] bg-[#fff7ed] px-3 py-2 text-xs font-bold text-[#9a3412]">
-                  {validationMessage}
-                </div>
-              )}
-              <div className="flex flex-wrap items-center gap-2">
-                <button type="button" onClick={saveCurrent} className="rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm font-bold text-[#174b82]">Save</button>
-                <button type="button" onClick={goToNext} disabled={currentIndex >= questions.length - 1} className="rounded-lg bg-[#2f78bf] px-4 py-2 text-sm font-bold text-white shadow disabled:opacity-50">Next</button>
-                <button type="button" onClick={markForReview} className={`rounded-lg border px-4 py-2 text-sm font-bold ${reviewMarked[question.id] ? "border-[#6b21a8] bg-[#7e22ce] text-white" : "border-[#8dc8ff] bg-[#cae7ff] text-[#174b82]"}`}>
-                  {reviewMarked[question.id] ? "Marked for Review" : "Mark for Review"}
-                </button>
-                <button type="button" onClick={clearResponse} className="rounded-lg border border-[#b9bec8] bg-white px-4 py-2 text-sm font-bold text-[#344054]">Clear Response</button>
-                <button type="button" onClick={() => setShowSubmitSummary(true)} disabled={submitting} className="rounded-lg bg-[#be123c] px-4 py-2 text-sm font-bold text-white shadow disabled:opacity-60">
-                  {submitting ? "Submitting..." : sectionMeta ? "Submit Section" : "Submit Test"}
-                </button>
-                {saveNotice ? <span className="text-sm font-bold text-[#027a48]">{saveNotice}</span> : null}
-              </div>
+        <footer className="exam-actions flex flex-col items-stretch justify-between gap-2 border-t border-[#cfd7df] px-3 py-2">
+          {validationMessage && (
+            <div className="rounded-lg border border-[#ffd4a3] bg-[#fff7ed] px-3 py-2 text-xs font-bold text-[#9a3412]">
+              {validationMessage}
             </div>
-          </footer>
-        </section>
-
-        <aside className="grid border-t border-[#cfd7df] bg-[#eef9ff] lg:grid-rows-[50px_88px_1fr_58px] lg:border-l lg:border-t-0">
-          <div className="flex items-center gap-3 bg-[#dff5ff] px-4">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-white text-[#607d8b]"><UserRound size={24} /></div>
-            <span className="text-sm">{student?.name || "Student"}</span>
-          </div>
-
-          <div className="bg-[#f2f2f2] px-4 py-2 text-sm">
-            <p className="mb-2 flex items-center justify-between gap-2">
-              <span className="font-bold text-[#175cd3]">Attempted {answeredCount}/{questions.length}</span>
-              <span>
-                {sectionMeta ? "Section Time:" : "Time Left:"}{" "}
-                <b className={`ml-2 rounded px-2 py-1 font-mono ${timerWarning ? "bg-[#ffe4e6] text-[#be123c]" : "bg-white"}`}>
-                  {formatExamClock(remainingSeconds)}
-                </b>
-              </span>
-            </p>
-            <div className="grid grid-cols-1 gap-x-5 gap-y-2 text-xs sm:grid-cols-2">
-              <span className="flex items-center gap-2"><PaletteIcon status="answered" number={submitSummary.totals.answered} size="sm" /> Answered</span>
-              <span className="flex items-center gap-2"><PaletteIcon status="not-answered" number={submitSummary.totals.notAnswered} size="sm" /> Not Answered</span>
-              <span className="flex items-center gap-2"><PaletteIcon status="not-visited" number={submitSummary.totals.notVisited} size="sm" /> Not Visited</span>
-              <span className="flex items-center gap-2"><PaletteIcon status="review" number={submitSummary.totals.markedReview + submitSummary.totals.answeredReview} size="sm" /> Review</span>
-            </div>
-          </div>
-
-          <div className="overflow-y-auto p-4">
-            <h3 className="mb-4 bg-[#e8e8e8] py-2 text-center text-sm font-bold">{test.title}</h3>
-            <div className="grid grid-cols-5 gap-2 sm:grid-cols-7 lg:grid-cols-4 lg:gap-3">
-              {questions.map((item, index) => {
-                const hasAnswer = Boolean(answers[item.id]);
-                const isReview = Boolean(reviewMarked[item.id]);
-                const isVisited = Boolean(visited[item.id]);
-                const paletteClass = (() => {
-                  if (index === currentIndex) return "border-[#174b82] bg-[#3378b9] font-bold text-white";
-                  if (hasAnswer && isReview) return "rounded-full border-[#6b21a8] bg-[#7e22ce] font-bold text-white";
-                  if (isReview) return "rounded-full border-[#6b21a8] bg-[#7e22ce] font-bold text-white";
-                  if (hasAnswer) return "border-[#15803d] bg-[#22c55e] font-bold text-white";
-                  if (isVisited) return "border-[#b91c1c] bg-[#ef4444] font-bold text-white";
-                  return "border-[#9d9d9d] bg-gradient-to-b from-white to-[#d9d9d9] text-[#333]";
-                })();
-
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => jumpToQuestion(index)}
-                    className={`relative h-11 rounded border text-sm ${paletteClass}`}
-                  >
-                    {index + 1}
-                    {hasAnswer && isReview ? <span className="absolute bottom-0.5 right-0.5 h-2 w-2 rounded-sm bg-[#22c55e]" /> : null}
-                  </button>
-                );
-              })}
-            </div>
-            <button className="absolute right-[252px] top-[386px] hidden h-14 w-7 place-items-center rounded-l bg-[#444] text-white xl:grid">
-              <ChevronRight size={22} />
+          )}
+          <div className="flex flex-wrap items-center gap-2">
+            <button type="button" onClick={saveCurrent} className="shrink-0 rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm font-bold text-[#174b82]">Save</button>
+            <button type="button" onClick={goToNext} disabled={currentIndex >= questions.length - 1} className="shrink-0 rounded-lg bg-[#2f78bf] px-4 py-2 text-sm font-bold text-white shadow disabled:opacity-50">Next</button>
+            <button type="button" onClick={markForReview} className={`shrink-0 rounded-lg border px-4 py-2 text-sm font-bold ${reviewMarked[question.id] ? "border-[#6b21a8] bg-[#7e22ce] text-white" : "border-[#8dc8ff] bg-[#cae7ff] text-[#174b82]"}`}>
+              {reviewMarked[question.id] ? "Marked for Review" : "Mark for Review"}
             </button>
-          </div>
-
-          <div className="flex items-center justify-center border-t border-[#cfd7df] bg-[#efefef] px-4">
-            <button onClick={() => setShowSubmitSummary(true)} disabled={submitting} className="h-10 w-full rounded bg-[#2f78bf] text-sm font-bold text-white shadow disabled:opacity-60">
+            <button type="button" onClick={clearResponse} className="shrink-0 rounded-lg border border-[#b9bec8] bg-white px-4 py-2 text-sm font-bold text-[#344054]">Clear Response</button>
+            <button type="button" onClick={() => setShowSubmitSummary(true)} disabled={submitting} className="shrink-0 rounded-lg bg-[#be123c] px-4 py-2 text-sm font-bold text-white shadow disabled:opacity-60">
               {submitting ? "Submitting..." : sectionMeta ? "Submit Section" : "Submit Test"}
             </button>
+            {saveNotice ? <span className="text-sm font-bold text-[#027a48]">{saveNotice}</span> : null}
           </div>
-        </aside>
-      </div>
+        </footer>
+      </section>
+
+      <aside className="exam-palette border-t border-[#cfd7df] bg-[#eef9ff] lg:border-l lg:border-t-0">
+        <div className="flex items-center gap-3 bg-[#dff5ff] px-4 py-2">
+          <div className="grid h-10 w-10 place-items-center rounded-full bg-white text-[#607d8b]"><UserRound size={24} /></div>
+          <span className="text-sm">{student?.name || "Student"}</span>
+        </div>
+
+        <div className="exam-palette-legend bg-[#f2f2f2] px-4 py-2 text-sm">
+          <p className="mb-2 flex items-center justify-between gap-2">
+            <span className="font-bold text-[#175cd3]">Attempted {answeredCount}/{questions.length}</span>
+            <span>
+              {sectionMeta ? "Section Time:" : "Time Left:"}{" "}
+              <b className={`ml-2 rounded px-2 py-1 font-mono ${timerWarning ? "bg-[#ffe4e6] text-[#be123c]" : "bg-white"}`}>
+                {formatExamClock(remainingSeconds)}
+              </b>
+            </span>
+          </p>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+            <span className="flex min-w-0 items-center gap-2"><PaletteIcon status="answered" number={submitSummary.totals.answered} size="sm" /> Answered</span>
+            <span className="flex min-w-0 items-center gap-2"><PaletteIcon status="not-answered" number={submitSummary.totals.notAnswered} size="sm" /> Not Answered</span>
+            <span className="flex min-w-0 items-center gap-2"><PaletteIcon status="not-visited" number={submitSummary.totals.notVisited} size="sm" /> Not Visited</span>
+            <span className="flex min-w-0 items-center gap-2"><PaletteIcon status="review" number={submitSummary.totals.markedReview + submitSummary.totals.answeredReview} size="sm" /> Review</span>
+          </div>
+        </div>
+
+        <h3 className="bg-[#e8e8e8] px-2 py-2 text-center text-sm font-bold leading-5">{test.title}</h3>
+
+        <div className="exam-palette-numbers">
+          <div className="exam-palette-scroll">
+          <div className="grid grid-cols-4 gap-3">
+            {questions.map((item, index) => {
+              const hasAnswer = Boolean(answers[item.id]);
+              const isReview = Boolean(reviewMarked[item.id]);
+              const isVisited = Boolean(visited[item.id]);
+              const paletteClass = (() => {
+                if (index === currentIndex) return "border-[#174b82] bg-[#3378b9] font-bold text-white";
+                if (hasAnswer && isReview) return "rounded-full border-[#6b21a8] bg-[#7e22ce] font-bold text-white";
+                if (isReview) return "rounded-full border-[#6b21a8] bg-[#7e22ce] font-bold text-white";
+                if (hasAnswer) return "border-[#15803d] bg-[#22c55e] font-bold text-white";
+                if (isVisited) return "border-[#b91c1c] bg-[#ef4444] font-bold text-white";
+                return "border-[#9d9d9d] bg-gradient-to-b from-white to-[#d9d9d9] text-[#333]";
+              })();
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => jumpToQuestion(index)}
+                  className={`relative h-11 rounded border text-sm ${paletteClass}`}
+                >
+                  {index + 1}
+                  {hasAnswer && isReview ? <span className="absolute bottom-0.5 right-0.5 h-2 w-2 rounded-sm bg-[#22c55e]" /> : null}
+                </button>
+              );
+            })}
+          </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center border-t border-[#cfd7df] bg-[#efefef] px-4 py-2">
+          <button onClick={() => setShowSubmitSummary(true)} disabled={submitting} className="h-10 w-full rounded bg-[#2f78bf] text-sm font-bold text-white shadow disabled:opacity-60">
+            {submitting ? "Submitting..." : sectionMeta ? "Submit Section" : "Submit Test"}
+          </button>
+        </div>
+      </aside>
+    </main>
 
       {showSubmitSummary ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(15,23,42,0.55)] p-3">
@@ -797,13 +826,10 @@ export default function DynamicMockExamPage() {
         </div>
       ) : null}
 
-      <div className="pointer-events-none absolute left-1/2 top-[45px] grid h-12 w-12 -translate-x-1/2 place-items-center rounded-full bg-[#3f3f3f] text-white">
-        <X size={24} />
-      </div>
-      <div className="fixed bottom-4 right-4 hidden rounded-full bg-[#3378b9] p-3 text-white shadow-lg md:block">
+      <div className="pointer-events-none fixed bottom-20 right-4 z-[45] hidden rounded-full bg-[#3378b9] p-3 text-white shadow-lg md:block">
         <HelpCircle size={20} />
       </div>
-    </main>
+    </>
   );
 }
 

@@ -117,17 +117,31 @@ export default function DynamicMockSetupPage() {
   const openExamWindow = (section?: MockTestSection) => {
     const sectionQuery = section ? `&section=${encodeURIComponent(section.slug)}` : "";
     const examUrl = `/student/mock-tests/${slug}/exam?examWindow=1${sectionQuery}`;
+    const width = window.screen.availWidth;
+    const height = window.screen.availHeight;
     const popup = window.open(
       examUrl,
       "mockExamWindow",
-      `popup=yes,fullscreen=yes,width=${window.screen.availWidth},height=${window.screen.availHeight},left=0,top=0,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+      `popup=yes,fullscreen=yes,width=${width},height=${height},left=0,top=0,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes`
     );
 
     if (popup) {
+      try {
+        popup.moveTo(0, 0);
+        popup.resizeTo(width, height);
+      } catch {
+        // Some browsers block move/resize.
+      }
+      const enterFs = () => {
+        void popup.document.documentElement.requestFullscreen?.().catch(() => undefined);
+      };
+      enterFs();
+      popup.addEventListener("load", enterFs);
       popup.focus();
       return;
     }
 
+    void document.documentElement.requestFullscreen?.().catch(() => undefined);
     staticPush(examUrl);
   };
 

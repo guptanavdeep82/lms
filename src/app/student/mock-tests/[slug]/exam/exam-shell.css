@@ -1,0 +1,104 @@
+html.exam-lock,
+body.exam-lock {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+.exam-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1.15fr) minmax(220px, 1fr);
+  overflow: hidden;
+  background: #fff;
+  color: #111827;
+}
+
+.exam-shell > header {
+  min-height: 0;
+}
+
+.exam-main,
+.exam-palette {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.exam-main {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+.exam-question-pane {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.exam-question-scroll {
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.exam-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+  background: #efefef;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+.exam-palette {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+}
+
+.exam-palette-legend {
+  overflow: hidden;
+}
+
+.exam-palette-numbers {
+  position: relative;
+  min-height: 0;
+}
+
+.exam-palette-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #3378b9 #dfeaf3;
+}
+
+.exam-palette-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.exam-palette-scroll::-webkit-scrollbar-thumb {
+  background: #3378b9;
+  border-radius: 8px;
+}
+
+@media (min-width: 1024px) {
+  .exam-shell {
+    grid-template-columns: minmax(0, 1fr) 260px;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .exam-shell > header {
+    grid-column: 1 / -1;
+  }
+
+  .exam-question-pane {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
