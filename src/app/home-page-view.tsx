@@ -1210,8 +1210,8 @@ const brandStyles = `
 }
 @media (max-width: 640px) {
   .kr-logics-reference-home .hero {
-    padding-top: 44px;
-    padding-bottom: 34px;
+    padding-top: 16px;
+    padding-bottom: 8px;
   }
   .kr-logics-reference-home .hero-quick-grid,
   .kr-logics-reference-home .hero-bottom-grid {
@@ -1388,7 +1388,6 @@ footer.public-site-footer .public-site-footer-inner {
   display: flex !important;
   flex-direction: column !important;
   height: 100% !important;
-  min-height: 248px !important;
 }
 @media (max-width: 900px) {
   header.public-home-header .hdr-btns {
@@ -1413,6 +1412,24 @@ footer.public-site-footer .public-site-footer-inner {
   }
   .kr-logics-reference-home .hero-inner {
     grid-template-columns: minmax(0, 1fr) !important;
+    gap: 14px !important;
+  }
+  .kr-logics-reference-home .hero {
+    padding: 16px 16px 8px !important;
+    min-height: 0 !important;
+  }
+  .kr-logics-reference-home .hero-right,
+  .kr-logics-reference-home .hero-ref-wrap {
+    padding-bottom: 0 !important;
+    min-height: 0 !important;
+  }
+  .kr-logics-reference-home .hero-stats,
+  .kr-logics-reference-home .hero-ref-wrap .hero-ref-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 12px 0 0 !important;
+    flex: none !important;
   }
   .kr-logics-reference-home .hero-badge {
     max-width: 100% !important;
@@ -1445,33 +1462,40 @@ footer.public-site-footer .public-site-footer-inner {
     overflow: hidden !important;
   }
   .kr-logics-reference-home .cat-strip {
-    width: auto !important;
+    width: calc(100% - 32px) !important;
     max-width: none !important;
-    margin-left: 16px !important;
-    margin-right: 16px !important;
+    margin: 0 auto 12px !important;
+    padding: 8px !important;
+    gap: 8px !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .kr-logics-reference-home .cat-chip {
+    min-height: 54px !important;
   }
   .kr-logics-reference-home .cat-strip .cat-chip:last-child {
     grid-column: 1 / -1 !important;
   }
   .kr-logics-reference-home section.achieve-strip {
-    display: flex !important;
-    flex-direction: column !important;
-    flex-wrap: nowrap !important;
-    justify-content: flex-start !important;
-    align-content: flex-start !important;
-    align-items: stretch !important;
-    gap: 10px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
     height: auto !important;
     min-height: 0 !important;
-    padding: 14px 16px !important;
-    margin-top: 16px !important;
-    margin-bottom: 16px !important;
+    padding: 12px !important;
+    margin: 0 auto 12px !important;
+    width: calc(100% - 32px) !important;
+    align-content: start !important;
   }
   .kr-logics-reference-home .achieve-item {
-    flex: 0 0 auto !important;
-    width: 100% !important;
+    flex: none !important;
+    width: auto !important;
     min-width: 0 !important;
+  }
+  .kr-logics-reference-home .achieve-item:last-child {
+    grid-column: 1 / -1 !important;
+  }
+  .kr-logics-reference-home .course-tone-tile {
+    min-height: 0 !important;
   }
 }
 @media (max-width: 560px) {

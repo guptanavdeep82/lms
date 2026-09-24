@@ -895,9 +895,15 @@ body {
 @media (max-width: 860px) {
   .kr-logics-reference-home .cat-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 8px;
   }
   .kr-logics-reference-home .cat-strip .cat-chip:last-child {
     grid-column: 1 / -1;
+  }
+  .kr-logics-reference-home .cat-chip {
+    min-height: 56px;
+    padding: 10px;
   }
   .kr-logics-reference-home .cat-chip-meta b {
     white-space: normal;
@@ -906,9 +912,10 @@ body {
 @media (max-width: 560px) {
   .kr-logics-reference-home .cat-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: auto;
-    margin: 18px 16px 0;
-    padding: 12px !important;
+    width: calc(100% - 32px);
+    margin: 0 auto 12px;
+    padding: 8px !important;
+    gap: 8px;
   }
   .kr-logics-reference-home .cat-strip .cat-chip:last-child {
     grid-column: 1 / -1;
@@ -1064,30 +1071,6 @@ body {
 
 @media (max-width: 900px) {
   .kr-logics-reference-home .cat-grid { grid-template-columns: 1fr; }
-  .kr-logics-reference-home .achieve-strip {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-content: flex-start;
-    align-items: stretch;
-    gap: 10px;
-    height: auto;
-    min-height: 0;
-    padding: 14px 16px;
-  }
-  .kr-logics-reference-home .achieve-item {
-    flex: 0 0 auto;
-    width: 100%;
-  }
-  .kr-logics-reference-home .achieve-ic {
-    width: 42px;
-    height: 42px;
-    font-size: 17px;
-  }
-  .kr-logics-reference-home .achieve-item strong {
-    font-size: 20px;
-  }
 }
 
 /* ════════════════════════════════════════════════
@@ -1226,7 +1209,7 @@ body {
 /* ════════ RESPONSIVE — tablet & mobile ════════ */
 @media (max-width: 992px) {
   .kr-logics-reference-home .hero {
-    padding: 26px 16px 30px !important;
+    padding: 20px 16px 12px !important;
   }
   .kr-logics-reference-home .hero-inner {
     grid-template-columns: minmax(0, 1fr) !important;
@@ -1253,7 +1236,7 @@ body {
 
 @media (max-width: 600px) {
   .kr-logics-reference-home .hero {
-    padding: 18px 16px 24px !important;
+    padding: 16px 16px 8px !important;
   }
   .kr-logics-reference-home .hero h1 {
     font-size: clamp(26px, 7.4vw, 34px) !important;
@@ -1264,15 +1247,19 @@ body {
     padding: 7px 12px;
     border-radius: 14px;
   }
-  .kr-logics-reference-home .hero-stats {
+  .kr-logics-reference-home .hero-stats,
+  .kr-logics-reference-home .hero-ref-wrap .hero-ref-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px !important;
+    gap: 8px !important;
+    margin-top: 12px !important;
+    margin-bottom: 0 !important;
   }
   .kr-logics-reference-home .hero-btns {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
+    margin-top: 14px;
   }
   .kr-logics-reference-home .hero-btn-main,
   .kr-logics-reference-home .hero-btn-sec {
@@ -1291,11 +1278,6 @@ body {
   }
 }
 
-@media (max-width: 360px) {
-  .kr-logics-reference-home .hero-stats {
-    grid-template-columns: 1fr !important;
-  }
-}
 
 /* ════════════════════════════════════════════════
    FIX: invisible "blue on blue" text
@@ -1483,7 +1465,7 @@ body {
   }
 
   .kr-logics-reference-home .course-tone-tile {
-    min-height: 248px;
+    min-height: 0;
   }
 
   .kr-logics-reference-home .courses-header {
@@ -1505,32 +1487,16 @@ body {
 
   .kr-logics-reference-home .achieve-strip,
   .kr-logics-reference-home .offer-bar {
-    width: auto !important;
+    width: calc(100% - 32px) !important;
     max-width: none !important;
     margin-left: 16px !important;
     margin-right: 16px !important;
     box-sizing: border-box;
   }
 
-  .kr-logics-reference-home .achieve-strip {
-    flex-direction: column !important;
-    flex-wrap: nowrap !important;
-    justify-content: flex-start !important;
-    align-content: flex-start !important;
-    gap: 10px !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 14px 16px !important;
-  }
-
   .kr-logics-reference-home .offer-bar {
-    padding: 20px 16px !important;
-  }
-
-  .kr-logics-reference-home .achieve-item {
-    min-width: 0;
-    flex: 0 0 auto !important;
-    width: 100%;
+    padding: 16px !important;
+    margin-bottom: 20px !important;
   }
 
   .kr-logics-reference-home .hstat {
@@ -1545,4 +1511,102 @@ body {
 .kr-logics-reference-home {
   overflow-x: clip;
   max-width: 100%;
+}
+
+@media (max-width: 900px) {
+  .kr-logics-reference-home .hero {
+    padding: 16px 16px 8px !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+  .kr-logics-reference-home .hero-inner {
+    gap: 14px !important;
+    align-items: start !important;
+  }
+  .kr-logics-reference-home .hero-right,
+  .kr-logics-reference-home .hero-ref-wrap {
+    padding-bottom: 0 !important;
+    min-height: 0 !important;
+    flex: none !important;
+    justify-content: flex-start !important;
+  }
+  .kr-logics-reference-home .hero-ref-wrap .hero-ref-stats,
+  .kr-logics-reference-home .hero-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 12px 0 0 !important;
+    padding: 0 !important;
+    flex: none !important;
+    align-content: start !important;
+    height: auto !important;
+  }
+  .kr-logics-reference-home .hstat {
+    width: auto !important;
+    min-height: 0 !important;
+    padding: 10px 12px !important;
+  }
+  .kr-logics-reference-home .cat-strip {
+    width: calc(100% - 32px) !important;
+    margin: 0 auto 12px !important;
+    padding: 8px !important;
+    gap: 8px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .kr-logics-reference-home .cat-chip {
+    min-height: 54px;
+    padding: 10px;
+  }
+  .kr-logics-reference-home .cat-strip .cat-chip:last-child {
+    grid-column: 1 / -1 !important;
+  }
+  .kr-logics-reference-home .achieve-strip {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    width: calc(100% - 32px) !important;
+    margin: 0 auto 12px !important;
+    padding: 12px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    align-content: start !important;
+    justify-content: start !important;
+  }
+  .kr-logics-reference-home .achieve-item {
+    width: auto !important;
+    min-width: 0 !important;
+    flex: none !important;
+    gap: 10px;
+  }
+  .kr-logics-reference-home .achieve-item:last-child {
+    grid-column: 1 / -1;
+  }
+  .kr-logics-reference-home .achieve-ic {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+  .kr-logics-reference-home .achieve-item strong {
+    font-size: 18px;
+  }
+  .kr-logics-reference-home .achieve-item small {
+    font-size: 11px;
+  }
+  .kr-logics-reference-home .offer-bar {
+    width: calc(100% - 32px) !important;
+    margin: 0 auto 20px !important;
+    padding: 16px !important;
+    gap: 14px;
+  }
+  .kr-logics-reference-home .offer-left h3 {
+    font-size: 20px;
+    margin: 6px 0 4px;
+  }
+  .kr-logics-reference-home .divider {
+    margin: 8px 16px !important;
+  }
+  .kr-logics-reference-home .course-tone-tile {
+    min-height: 0 !important;
+  }
 }

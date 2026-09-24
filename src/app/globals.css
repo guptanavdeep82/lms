@@ -368,7 +368,6 @@ canvas {
 
   .kr-logics-reference-home .hero {
     min-height: auto !important;
-    padding-bottom: 56px !important;
   }
 
   .courses-grid,
@@ -516,16 +515,15 @@ canvas {
     font-size: 11px !important;
   }
 
-  .kr-logics-reference-home .hero,
-  .kr-logics-reference-home section {
-    padding-block: 48px !important;
+  .kr-logics-reference-home section:not(.hero):not(.cat-strip):not(.achieve-strip):not(.offer-bar) {
+    padding-block: 36px !important;
   }
 
   .kr-logics-reference-home .hero-inner,
   .about-grid,
   .mock-layout,
   .contact-grid {
-    gap: 28px !important;
+    gap: 16px !important;
   }
 
   .courses-grid,
