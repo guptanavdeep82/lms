@@ -147,7 +147,7 @@ export default function MockAnalysisPage() {
           <StatCard label="Attempted" value={`${summary.attempted}/${summary.total_questions}`} className="bg-[#fff1f3] text-[#c01048]" />
           <StatCard label="Correct" value={`${summary.correct}/${summary.total_questions}`} className="bg-[#ecfdf3] text-[#027a48]" />
           <StatCard label="Incorrect" value={`${summary.incorrect}/${summary.total_questions}`} className="bg-[#fef2f2] text-[#dc2626]" />
-          <StatCard label="Skipped" value={`${summary.skipped}/${summary.total_questions}`} className="bg-[#f2f4f7] text-[#344054]" />
+          <StatCard label="Unattempted" value={`${summary.skipped + summary.unseen}/${summary.total_questions}`} className="bg-[#f2f4f7] text-[#344054]" />
           <StatCard label="Total Time" value={formatMockDuration(summary.duration_seconds)} className="bg-[#fdf2fa] text-[#c11574]" />
           <StatCard label="Utilized Time" value={formatMockDuration(summary.time_utilized_seconds)} className="bg-[#ecfdf3] text-[#027a48]" />
         </section>
@@ -203,7 +203,7 @@ export default function MockAnalysisPage() {
             <table className="min-w-full text-sm">
               <thead className="bg-[#f8fafc] text-left text-xs font-extrabold uppercase tracking-[0.12em] text-[#667085]">
                 <tr>
-                  {["Section", "Attempted", "Correct", "Incorrect", "Skipped", "Unseen", "Accuracy", "+ Marks", "− Marks", "Score", "%", "Percentile", "Time"].map((head) => (
+                  {["Section", "Attempted", "Correct", "Incorrect", "Unattempted", "Unseen", "Accuracy", "+ Marks", "− Marks", "Score", "%", "Percentile", "Time"].map((head) => (
                     <th key={head} className="px-4 py-3">{head}</th>
                   ))}
                 </tr>
@@ -330,7 +330,7 @@ export default function MockAnalysisPage() {
           <div className="mt-4 flex flex-wrap gap-3 text-xs font-bold">
             <span className="inline-flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded bg-[#22c55e] text-white">1</span> Correct</span>
             <span className="inline-flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded bg-[#ef4444] text-white">2</span> Incorrect</span>
-            <span className="inline-flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded bg-[#e4e7ec] text-[#475467]">3</span> Skipped</span>
+            <span className="inline-flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded bg-[#e4e7ec] text-[#475467]">3</span> Unattempted</span>
             <span className="inline-flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded bg-[#ffedd5] text-[#9a3412]">4</span> Unseen</span>
           </div>
           <div className="mt-5 overflow-x-auto">
@@ -380,7 +380,7 @@ export default function MockAnalysisPage() {
             <table className="min-w-full text-sm">
               <thead className="bg-[#f8fafc] text-left text-xs font-extrabold uppercase tracking-[0.12em] text-[#667085]">
                 <tr>
-                  {["Section Name", "Correct Answer Time", "Wrong Answer Time", "Skipped Question Time"].map((head) => (
+                  {["Section Name", "Correct Answer Time", "Wrong Answer Time", "Unattempted Question Time"].map((head) => (
                     <th key={head} className="px-4 py-3">{head}</th>
                   ))}
                 </tr>
@@ -412,7 +412,7 @@ export default function MockAnalysisPage() {
             <table className="min-w-full text-sm">
               <thead className="text-left text-xs font-extrabold uppercase tracking-[0.12em] text-[#667085]">
                 <tr>
-                  {["Topic Name", "Correct Answer Time", "Wrong Answer Time", "Skipped Question Time"].map((head) => (
+                  {["Topic Name", "Correct Answer Time", "Wrong Answer Time", "Unattempted Question Time"].map((head) => (
                     <th key={head} className="px-4 py-3">{head}</th>
                   ))}
                 </tr>

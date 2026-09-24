@@ -503,6 +503,7 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
                   qualities={activeVideo.qualities ?? []}
                   autoPlay
                   title={activeVideo.title}
+                  progressKey={`media-${activeVideo.id}`}
                 />
               </div>
             </div>

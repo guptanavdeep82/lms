@@ -12,6 +12,7 @@ import {
   BookOpenCheck,
   CheckCircle2,
   Clock3,
+  HelpCircle,
   Loader2,
   Lock,
   RotateCcw,
@@ -162,6 +163,10 @@ export default function MockResultPage() {
   const maxMarks = overview?.summary.total_marks ?? report.maxMarks ?? report.total;
   const correctCount = overview?.summary.correct ?? report.correct;
   const incorrectCount = overview?.summary.incorrect ?? Math.max(0, report.total - report.correct);
+  const attemptedCount = overview?.summary.attempted ?? report.answered ?? correctCount + incorrectCount;
+  const unattemptedCount = overview
+    ? (overview.summary.skipped ?? 0) + (overview.summary.unseen ?? 0)
+    : Math.max(0, report.total - attemptedCount);
 
   return (
     <main
@@ -294,6 +299,20 @@ export default function MockResultPage() {
                 <p className="mt-1 text-xs font-semibold text-[#667085]">Green = correct · Red = wrong</p>
               </div>
               <ResultHighlight
+                icon={<BarChart3 size={22} />}
+                label="Attempted"
+                value={`${attemptedCount} / ${overview?.summary.total_questions ?? report.total}`}
+                hint="Questions you answered"
+                toneClass="text-[#175cd3]"
+              />
+              <ResultHighlight
+                icon={<HelpCircle size={22} />}
+                label="Unattempted"
+                value={`${unattemptedCount}`}
+                hint="Questions left unanswered"
+                toneClass="text-[#667085]"
+              />
+              <ResultHighlight
                 icon={<Clock3 size={22} />}
                 label="Time Used"
                 value={formatDuration(timeUsed)}
@@ -348,9 +367,10 @@ export default function MockResultPage() {
                       <tr>
                         <th className="px-4 py-3">Section</th>
                         <th className="px-4 py-3">Ques</th>
+                        <th className="px-4 py-3">Attempted</th>
                         <th className="px-4 py-3">Correct</th>
                         <th className="px-4 py-3">Wrong</th>
-                        <th className="px-4 py-3">Skipped</th>
+                        <th className="px-4 py-3">Unattempted</th>
                         <th className="px-4 py-3">+ Marks</th>
                         <th className="px-4 py-3">− Marks</th>
                         <th className="px-4 py-3">Score / Max</th>
@@ -364,6 +384,7 @@ export default function MockResultPage() {
                         <tr key={section.section_name} className="border-t border-[#eef2f7]">
                           <td className="px-4 py-3 font-bold text-[#172a69]">{section.section_name}</td>
                           <td className="px-4 py-3 font-bold">{section.total_questions}</td>
+                          <td className="px-4 py-3 font-extrabold text-[#175cd3]">{section.attempted}</td>
                           <td className="px-4 py-3 font-extrabold text-[#16a34a]">{section.correct}</td>
                           <td className="px-4 py-3 font-extrabold text-[#dc2626]">{section.incorrect}</td>
                           <td className="px-4 py-3 font-bold text-[#667085]">{section.skipped + section.unseen}</td>
@@ -382,9 +403,10 @@ export default function MockResultPage() {
                       <tr className="border-t border-[#dfe5ef] bg-[#f8fafc] font-extrabold">
                         <td className="px-4 py-3 text-[#172a69]">TOTAL</td>
                         <td className="px-4 py-3">{overview?.summary.total_questions ?? report.total}</td>
+                        <td className="px-4 py-3 text-[#175cd3]">{attemptedCount}</td>
                         <td className="px-4 py-3 text-[#16a34a]">{correctCount}</td>
                         <td className="px-4 py-3 text-[#dc2626]">{incorrectCount}</td>
-                        <td className="px-4 py-3 text-[#667085]">{(overview?.summary.skipped ?? 0) + (overview?.summary.unseen ?? 0)}</td>
+                        <td className="px-4 py-3 text-[#667085]">{unattemptedCount}</td>
                         <td className="px-4 py-3 text-[#16a34a]">+{overview?.summary.scoring?.positive_marks ?? 0}</td>
                         <td className="px-4 py-3 text-[#dc2626]">−{overview?.summary.scoring?.negative_marks ?? 0}</td>
                         <td className={`px-4 py-3 ${scoreToneClass(overview?.summary.score ?? report.score, overview?.summary.total_marks ?? report.total)}`}>

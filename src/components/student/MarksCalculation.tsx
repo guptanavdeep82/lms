@@ -19,7 +19,7 @@ export function MarksCalculationCard({
     <div className="rounded-[24px] border border-[#dfe5ef] bg-white p-5 shadow-sm sm:p-6">
       <h2 className="text-lg font-extrabold text-[#172a69]">{title}</h2>
       <p className="mt-1 text-sm font-semibold text-[#667085]">
-        Correct answers add marks. Wrong answers deduct negative marks. Skipped questions get 0.
+        Correct answers add marks. Wrong answers deduct negative marks. Unattempted questions get 0.
       </p>
       <div className="mt-4 overflow-hidden rounded-2xl border border-[#e5eaf2]">
         <table className="min-w-full text-sm">
@@ -35,7 +35,7 @@ export function MarksCalculationCard({
               <td className="px-4 py-3 text-right font-extrabold text-[#dc2626]">−{formatMarks(scoring.negative_marks)}</td>
             </tr>
             <tr className="border-b border-[#eef2f7]">
-              <td className="px-4 py-3 font-bold text-[#667085]">Skipped</td>
+              <td className="px-4 py-3 font-bold text-[#667085]">Unattempted</td>
               <td className="px-4 py-3 font-semibold text-[#667085]">{scoring.skipped_line}</td>
               <td className="px-4 py-3 text-right font-extrabold text-[#667085]">0</td>
             </tr>
@@ -75,9 +75,10 @@ export function SubjectMarksTable({
           <thead className="bg-[#f8fafc] text-left text-xs font-extrabold uppercase tracking-[0.12em] text-[#667085]">
             <tr>
               <th className="px-4 py-3">Subject</th>
+              <th className="px-4 py-3">Attempted</th>
               <th className="px-4 py-3">Correct</th>
               <th className="px-4 py-3">Wrong</th>
-              <th className="px-4 py-3">Skipped</th>
+              <th className="px-4 py-3">Unattempted</th>
               <th className="px-4 py-3">+ Marks</th>
               <th className="px-4 py-3">− Marks</th>
               <th className="px-4 py-3">Score / Max</th>
@@ -92,6 +93,7 @@ export function SubjectMarksTable({
               return (
                 <tr key={section.section_name} className="border-t border-[#eef2f7] align-top">
                   <td className="px-4 py-3 font-bold text-[#172a69]">{section.section_name}</td>
+                  <td className="px-4 py-3 font-extrabold text-[#175cd3]">{section.attempted}</td>
                   <td className="px-4 py-3 font-extrabold text-[#16a34a]">{section.correct}</td>
                   <td className="px-4 py-3 font-extrabold text-[#dc2626]">{section.incorrect}</td>
                   <td className="px-4 py-3 font-bold text-[#667085]">{section.skipped + section.unseen}</td>
@@ -107,6 +109,7 @@ export function SubjectMarksTable({
             {overall && (
               <tr className="border-t border-[#dfe5ef] bg-[#f8fafc] font-extrabold">
                 <td className="px-4 py-3 text-[#172a69]">TOTAL</td>
+                <td className="px-4 py-3 text-[#175cd3]">{sections.reduce((sum, section) => sum + section.attempted, 0)}</td>
                 <td className="px-4 py-3 text-[#16a34a]">{overall.correct}</td>
                 <td className="px-4 py-3 text-[#dc2626]">{overall.incorrect}</td>
                 <td className="px-4 py-3 text-[#667085]">{overall.skipped}</td>

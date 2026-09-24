@@ -252,7 +252,7 @@ export default function MockSolutionPage() {
             <div className="mb-3 flex flex-wrap gap-2 text-[10px] font-bold">
               <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-[#22c55e]" /> Correct</span>
               <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-[#ef4444]" /> Incorrect</span>
-              <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-[#e4e7ec]" /> Skipped</span>
+              <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-[#e4e7ec]" /> Unattempted</span>
               <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-white ring-1 ring-[#c4c4c4]" /> Unseen</span>
             </div>
             <div className="grid grid-cols-5 gap-2">

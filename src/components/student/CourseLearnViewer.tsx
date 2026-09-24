@@ -177,6 +177,7 @@ export function CourseLearnViewer() {
                   url={playbackUrl}
                   qualities={playbackQualities}
                   title={activeLesson.title}
+                  progressKey={`lesson-${activeLesson.id}`}
                 />
               ) : (
                 <div className="grid h-full place-items-center p-8 text-center">

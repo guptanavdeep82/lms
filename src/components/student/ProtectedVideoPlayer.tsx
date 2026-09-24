@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { extractYouTubeId, isDirectVideoUrl, youtubeEmbedUrl } from "@/lib/lesson-video";
+import { clearVideoPosition, loadVideoPosition, saveVideoPosition } from "@/lib/video-progress";
 
 export type VideoQualityOption = {
   id: string;
@@ -106,6 +107,9 @@ type YouTubePlayerHandle = {
   setPlaybackRate?: (rate: number) => void;
   setPlaybackQuality?: (quality: string) => void;
   setPlaybackQualityRange?: (min: string, max: string) => void;
+  getCurrentTime?: () => number;
+  getDuration?: () => number;
+  seekTo?: (seconds: number, allowSeekAhead?: boolean) => void;
   destroy?: () => void;
 };
 
@@ -180,11 +184,13 @@ export function ProtectedVideoPlayer({
   qualities = [],
   autoPlay = false,
   title = "Course video",
+  progressKey,
 }: {
   url: string;
   qualities?: VideoQualityOption[];
   autoPlay?: boolean;
   title?: string;
+  progressKey?: string;
 }) {
   const fileOptions = useMemo(() => uniqueVideoQualities(url, qualities), [qualities, url]);
   const youtubeId = extractYouTubeId(url);
@@ -212,7 +218,8 @@ export function ProtectedVideoPlayer({
 
   useEffect(() => {
     setQualityId(storedQualityId());
-  }, [url]);
+    resumeAtRef.current = 0;
+  }, [url, progressKey]);
 
   const changeQuality = (id: string) => {
     const video = videoRef.current;
@@ -246,20 +253,45 @@ export function ProtectedVideoPlayer({
 
     document.addEventListener("visibilitychange", onVisibility);
 
-    if (resumeAtRef.current > 0) {
-      const restore = () => {
-        video.currentTime = resumeAtRef.current;
-        applySpeed();
-      };
-      video.addEventListener("loadedmetadata", restore, { once: true });
-    }
+    const saved = progressKey ? loadVideoPosition(progressKey) : 0;
+    const startAt = resumeAtRef.current > 0 ? resumeAtRef.current : saved;
+    const restore = () => {
+      if (startAt > 0 && Number.isFinite(video.duration) && startAt < video.duration - 5) {
+        video.currentTime = startAt;
+      }
+      applySpeed();
+      if (resumeAtRef.current > 0 && wasPlayingRef.current) {
+        void video.play().catch(() => undefined);
+      }
+    };
+    video.addEventListener("loadedmetadata", restore, { once: true });
+
+    let lastSaved = 0;
+    const persist = () => {
+      if (!progressKey) return;
+      const current = video.currentTime;
+      if (Math.abs(current - lastSaved) < 3) return;
+      lastSaved = current;
+      saveVideoPosition(progressKey, current, video.duration);
+    };
+
+    video.addEventListener("timeupdate", persist);
+    video.addEventListener("pause", persist);
+    const onEnded = () => {
+      if (progressKey) clearVideoPosition(progressKey);
+    };
+    video.addEventListener("ended", onEnded);
 
     return () => {
+      persist();
       video.removeEventListener("contextmenu", onContextMenu);
       video.removeEventListener("loadedmetadata", applySpeed);
+      video.removeEventListener("timeupdate", persist);
+      video.removeEventListener("pause", persist);
+      video.removeEventListener("ended", onEnded);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [playbackUrl, speed]);
+  }, [playbackUrl, progressKey, speed]);
 
   useEffect(() => {
     if (!youtubeId || !youtubeHostRef.current) return;
@@ -279,17 +311,31 @@ export function ProtectedVideoPlayer({
           modestbranding: 1,
           playsinline: 1,
           autoplay: autoPlay ? 1 : 0,
+          start: progressKey ? Math.floor(loadVideoPosition(progressKey)) : 0,
           origin: window.location.origin,
         },
         events: {
           onReady: (event: { target: YouTubePlayerHandle }) => {
             event.target.setPlaybackRate?.(speed);
             applyYouTubeQuality(event.target, qualityId);
+            const saved = progressKey ? loadVideoPosition(progressKey) : 0;
+            if (saved > 0) {
+              event.target.seekTo?.(saved, true);
+            }
           },
           onStateChange: (event: { data: number; target: YouTubePlayerHandle }) => {
             if (event.data === 1) {
               applyYouTubeQuality(event.target, qualityId);
               event.target.setPlaybackRate?.(speed);
+            }
+            if (progressKey && (event.data === 2 || event.data === 0)) {
+              const current = event.target.getCurrentTime?.() ?? 0;
+              const duration = event.target.getDuration?.() ?? 0;
+              if (event.data === 0) {
+                clearVideoPosition(progressKey);
+              } else {
+                saveVideoPosition(progressKey, current, duration);
+              }
             }
           },
         },

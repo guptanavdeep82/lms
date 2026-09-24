@@ -487,7 +487,14 @@ export default function DynamicMockExamPage() {
     return <main className="grid min-h-screen place-items-center bg-white"><Loader2 className="animate-spin text-[#3378b9]" size={34} /></main>;
   }
 
+  const requireUnpaused = () => {
+    if (!isPaused) return true;
+    setValidationMessage("Please unpause first.");
+    return false;
+  };
+
   const saveCurrent = () => {
+    if (!requireUnpaused()) return;
     accumulateQuestionTime(question.id);
     setValidationMessage("");
     setSaveNotice("Saved");
@@ -496,6 +503,7 @@ export default function DynamicMockExamPage() {
   };
 
   const goToNext = () => {
+    if (!requireUnpaused()) return;
     accumulateQuestionTime(question.id);
     setValidationMessage("");
     setCurrentIndex((index) => Math.min(index + 1, questions.length - 1));
@@ -503,12 +511,14 @@ export default function DynamicMockExamPage() {
   };
 
   const markForReview = () => {
+    if (!requireUnpaused()) return;
     setReviewMarked((previous) => ({ ...previous, [question.id]: !previous[question.id] }));
     void persistExamSession(isPaused);
   };
 
   const jumpToQuestion = (index: number) => {
     if (index === currentIndex) return;
+    if (!requireUnpaused()) return;
     accumulateQuestionTime(question.id);
     setValidationMessage("");
     setCurrentIndex(index);
@@ -516,6 +526,7 @@ export default function DynamicMockExamPage() {
   };
 
   const clearResponse = () => {
+    if (!requireUnpaused()) return;
     setValidationMessage("");
     setAnswers((previous) => {
       const next = { ...previous };
@@ -528,6 +539,11 @@ export default function DynamicMockExamPage() {
       return next;
     });
     setOptionResetKey((value) => value + 1);
+  };
+
+  const openSubmitSummary = () => {
+    if (!requireUnpaused()) return;
+    setShowSubmitSummary(true);
   };
 
   const togglePause = () => {
@@ -560,7 +576,7 @@ export default function DynamicMockExamPage() {
                 {formatExamClock(remainingSeconds)}
               </span>
             </div>
-            <button onClick={togglePause} className="flex h-9 min-w-[76px] items-center justify-center gap-1 rounded bg-white px-2 text-sm text-[#2768a5]">
+            <button onClick={() => { setValidationMessage(""); togglePause(); }} className="flex h-9 min-w-[76px] items-center justify-center gap-1 rounded bg-white px-2 text-sm text-[#2768a5]">
               {isPaused ? <Play size={15} /> : <Pause size={15} />}{isPaused ? "Resume" : "Pause"}
             </button>
             <button onClick={enterFullscreen} className="grid h-9 w-9 place-items-center rounded bg-white text-[#2768a5]"><Expand size={17} /></button>
@@ -581,6 +597,11 @@ export default function DynamicMockExamPage() {
         )}
         </div>
       </header>
+      {isPaused ? (
+        <div className="bg-[#fff7ed] px-3 py-2 text-center text-xs font-bold text-[#9a3412] sm:text-sm">
+          Timer is paused. Please unpause first to answer or submit.
+        </div>
+      ) : null}
 
       <section className="exam-main">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] bg-[#f6f6f6] px-2 py-2 text-sm">
@@ -618,6 +639,7 @@ export default function DynamicMockExamPage() {
                       name={`question-${question.id}-${optionResetKey}`}
                       checked={answers[question.id] === key}
                       onChange={() => {
+                        if (!requireUnpaused()) return;
                         setValidationMessage("");
                         setAnswers((previous) => ({ ...previous, [question.id]: key }));
                       }}
@@ -644,9 +666,6 @@ export default function DynamicMockExamPage() {
               {reviewMarked[question.id] ? "Marked for Review" : "Mark for Review"}
             </button>
             <button type="button" onClick={clearResponse} className="shrink-0 rounded-lg border border-[#b9bec8] bg-white px-4 py-2 text-sm font-bold text-[#344054]">Clear Response</button>
-            <button type="button" onClick={() => setShowSubmitSummary(true)} disabled={submitting} className="shrink-0 rounded-lg bg-[#be123c] px-4 py-2 text-sm font-bold text-white shadow disabled:opacity-60">
-              {submitting ? "Submitting..." : sectionMeta ? "Submit Section" : "Submit Test"}
-            </button>
             {saveNotice ? <span className="text-sm font-bold text-[#027a48]">{saveNotice}</span> : null}
           </div>
         </footer>
@@ -710,8 +729,8 @@ export default function DynamicMockExamPage() {
         </div>
 
         <div className="flex items-center justify-center border-t border-[#cfd7df] bg-[#efefef] px-4 py-2">
-          <button onClick={() => setShowSubmitSummary(true)} disabled={submitting} className="h-10 w-full rounded bg-[#2f78bf] text-sm font-bold text-white shadow disabled:opacity-60">
-            {submitting ? "Submitting..." : sectionMeta ? "Submit Section" : "Submit Test"}
+          <button onClick={openSubmitSummary} disabled={submitting} className="h-10 w-full rounded bg-[#2f78bf] text-sm font-bold text-white shadow disabled:opacity-60">
+            {submitting ? "Submitting..." : "Submit Test"}
           </button>
         </div>
       </aside>
