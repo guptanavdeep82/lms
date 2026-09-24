@@ -125,21 +125,24 @@ export function PublicHeader({ active, pages }: PublicHeaderProps) {
           <button
             type="button"
             className="mobile-menu-btn"
-            aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
+            aria-label="Open menu"
             aria-expanded={mobileNavOpen}
-            onClick={() => {
-              setMobileNavOpen((open) => !open);
-              if (mobileNavOpen) setOpenMenu(null);
-            }}
+            onClick={() => setMobileNavOpen(true)}
           >
-            {mobileNavOpen ? <X size={22} /> : <Menu size={22} />}
+            <Menu size={22} />
           </button>
 
           <HeaderSearch />
 
           <nav>
+            <div className="mobile-nav-head">
+              <span>Menu</span>
+              <button type="button" className="mobile-nav-close" aria-label="Close menu" onClick={closeMobileNav}>
+                <X size={18} />
+              </button>
+            </div>
             {navLink("/", "Home", "home")}
-            <div className="course-menu-wrap">
+            <div className={`course-menu-wrap${openMenu === "courses" ? " open" : ""}`}>
               <Link
                 href="/courses"
                 onClick={(event) => toggleSubmenu(event, "courses")}
@@ -152,7 +155,7 @@ export function PublicHeader({ active, pages }: PublicHeaderProps) {
                 <Link href="/courses?type=pdf" onClick={closeMobileNav}><span>PDF</span> PDF Courses</Link>
               </div>
             </div>
-            <div className="exam-menu-wrap latest-exam-wrap">
+            <div className={`exam-menu-wrap latest-exam-wrap${openMenu === "latest-exam" ? " open" : ""}`}>
               <Link
                 href={headerPages[0] ? cmsPageHref(headerPages[0].slug) : "#"}
                 onClick={(event) => toggleSubmenu(event, "latest-exam")}

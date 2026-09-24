@@ -38,7 +38,11 @@ export function TrendingLinksBar() {
     };
   }, [links.length]);
 
-  const trackItems = useMemo(() => (links.length ? [...links, ...links] : []), [links]);
+  const groupLinks = useMemo(() => {
+    if (!links.length) return [];
+    const repeats = Math.max(4, Math.ceil(16 / links.length));
+    return Array.from({ length: repeats }, () => links).flat();
+  }, [links]);
 
   if (!links.length) return null;
 
@@ -47,11 +51,14 @@ export function TrendingLinksBar() {
       <strong>Trending Links:</strong>
       <div className="public-trending-marquee">
         <div className="public-trending-track">
-          {trackItems.map((link, index) => (
-            <span key={`${link.label}-${index}`}>
-              <a href={linkHref(link.url)}>{link.label}</a>
-              <span className="public-trending-sep">|</span>
-            </span>
+          {[0, 1].map((copy) => (
+            <div className="public-trending-group" key={copy} aria-hidden={copy === 1}>
+              {groupLinks.map((link, index) => (
+                <a key={`${copy}-${link.label}-${index}`} href={linkHref(link.url)}>
+                  {link.label}
+                </a>
+              ))}
+            </div>
           ))}
         </div>
       </div>

@@ -33,28 +33,40 @@
 }
 
 .public-trending-track {
-  display: inline-flex;
-  gap: 14px;
-  min-width: max-content;
-  white-space: nowrap;
-  animation: publicTrendMove 24s linear infinite;
+  display: flex;
+  width: max-content;
+  animation: publicTrendMove 32s linear infinite;
+  will-change: transform;
 }
 
-.public-trending-track a {
+.public-trending-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.public-trending-group a {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
   color: #ffffff;
   font-size: 14px;
   font-weight: 800;
   text-decoration: none;
+  white-space: nowrap;
+}
+
+.public-trending-group a::after {
+  content: "|";
+  display: inline-block;
+  margin: 0 16px;
+  color: #ffffff;
+  opacity: 0.7;
+  font-weight: 600;
 }
 
 .public-trending-track a:hover {
   text-decoration: underline;
-}
-
-.public-trending-sep {
-  color: #ffffff;
-  opacity: 0.7;
-  margin-left: 14px;
 }
 
 @keyframes publicTrendMove {
@@ -72,7 +84,7 @@
     font-size: 12px;
   }
 
-  .public-trending-track a {
+  .public-trending-group a {
     font-size: 12px;
   }
 }
@@ -278,6 +290,10 @@ header.public-home-header {
 }
 
 .public-home-header .hdr-btns-in-nav {
+  display: none;
+}
+
+.public-home-header .mobile-nav-head {
   display: none;
 }
 
@@ -675,6 +691,13 @@ header.public-home-header {
 
   .public-home-header .mobile-menu-btn {
     display: grid;
+    position: relative;
+    z-index: 121;
+  }
+
+  .public-home-header.mobile-nav-open .mobile-menu-btn {
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .public-home-header .mobile-nav-backdrop {
@@ -684,7 +707,7 @@ header.public-home-header {
     top: 0;
     z-index: 110;
     border: 0;
-    background: rgba(9, 40, 120, 0.35);
+    background: rgba(9, 40, 120, 0.42);
     cursor: pointer;
   }
 
@@ -715,20 +738,54 @@ header.public-home-header {
     right: 0;
     z-index: 120;
     width: min(92vw, 360px);
-    height: 100vh;
+    height: 100dvh;
     overflow-y: auto;
     flex-direction: column;
     align-items: stretch;
     gap: 0;
     margin: 0;
-    padding: 88px 16px 24px;
+    padding: 0 0 28px;
     background: #ffffff;
     border-left: 1px solid rgba(9, 87, 211, 0.12);
-    box-shadow: -12px 0 40px rgba(9, 40, 120, 0.12);
+    box-shadow: -18px 0 48px rgba(9, 40, 120, 0.16);
   }
 
   .public-home-header.mobile-nav-open nav {
     display: flex !important;
+  }
+
+  .public-home-header .mobile-nav-head {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 16px 14px;
+    margin: 0;
+    background: linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%);
+    border-bottom: 1px solid rgba(9, 87, 211, 0.12);
+  }
+
+  .public-home-header .mobile-nav-head span {
+    color: #0e318d;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  .public-home-header .mobile-nav-close {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(9, 87, 211, 0.18);
+    border-radius: 12px;
+    background: #ffffff;
+    color: #0957d3;
+    box-shadow: 0 6px 16px rgba(9, 87, 211, 0.08);
+    cursor: pointer;
   }
 
   .public-home-header nav > a,
@@ -736,24 +793,40 @@ header.public-home-header {
   .public-home-header .exam-menu-wrap {
     width: 100%;
     height: auto;
-    border-bottom: 1px solid rgba(9, 87, 211, 0.08);
+    margin: 0;
+    border-bottom: 1px solid rgba(9, 87, 211, 0.12);
   }
 
-  .public-home-header nav a,
+  .public-home-header nav > a,
   .public-home-header .exam-menu-trigger {
     width: 100%;
     height: auto;
-    min-height: 44px;
+    min-height: 52px;
     justify-content: space-between;
-    padding: 12px 4px;
-    font-size: 14px;
-    border-bottom: 0;
+    padding: 14px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0e318d;
+    border-bottom: 0 !important;
   }
 
   .public-home-header .course-menu-wrap,
   .public-home-header .exam-menu-wrap {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .public-home-header .course-menu-wrap.open .chev,
+  .public-home-header .exam-menu-wrap.open .chev {
+    transform: rotate(180deg);
+  }
+
+  .public-home-header .course-menu-wrap:hover .course-dropdown,
+  .public-home-header .exam-menu-wrap:hover .exam-mega,
+  .public-home-header .latest-exam-wrap:hover .latest-exam-mega {
+    display: none;
+    opacity: 0;
+    visibility: hidden;
   }
 
   .public-home-header .course-dropdown,
@@ -763,67 +836,97 @@ header.public-home-header {
     left: auto;
     right: auto;
     top: auto;
-    width: 100%;
+    width: auto;
     max-height: none;
     min-width: 0;
-    margin: 0 0 8px;
-    padding: 0 0 8px 8px;
+    margin: 0 12px 12px;
+    padding: 4px;
     opacity: 1;
     visibility: visible;
     transform: none;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
+    overflow: hidden;
     display: none;
+    border: 1px solid rgba(9, 87, 211, 0.12);
+    border-radius: 14px;
+    background: #f5f8fc;
+    box-shadow: none;
   }
 
   .public-home-header .course-dropdown.open,
   .public-home-header .exam-mega.open,
   .public-home-header .latest-exam-mega.open {
-    display: block;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
-  .public-home-header .course-dropdown a {
-    min-height: 42px;
-    font-size: 13px;
+  .public-home-header .course-dropdown a,
+  .public-home-header .exam-link {
+    width: 100%;
+    min-height: 46px;
+    height: auto;
+    margin: 0;
+    padding: 10px 12px;
+    border: 0;
+    border-bottom: 1px solid rgba(9, 87, 211, 0.1) !important;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0e318d;
+    white-space: normal;
+    line-height: 1.35;
+  }
+
+  .public-home-header .course-dropdown a:last-child,
+  .public-home-header .exam-grid .exam-link:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .public-home-header .course-dropdown a:hover,
+  .public-home-header .exam-link:hover {
+    background: #ffffff;
+    transform: none;
   }
 
   .public-home-header .exam-mega,
   .public-home-header .latest-exam-mega {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 0;
   }
 
   .public-home-header .exam-cats {
-    display: flex;
-    flex-direction: column;
-    max-height: none;
-    overflow: visible;
-    gap: 6px;
-  }
-
-  .public-home-header .exam-cat {
-    width: 100%;
-    font-family: inherit;
-    cursor: pointer;
+    display: none;
   }
 
   .public-home-header .exam-grid {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 
   .public-home-header .exam-link {
-    height: auto;
-    min-height: 42px;
-    font-size: 12px;
-    white-space: normal;
-    line-height: 1.35;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .public-home-header .exam-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
   }
 
   .public-home-header .hdr-btns {
     margin-left: 0;
     gap: 8px;
+  }
+
+  .public-home-header .hdr-btns-in-nav {
+    border-top: 1px solid rgba(9, 87, 211, 0.12);
+    margin-top: 8px;
+    padding: 16px;
   }
 
   .public-home-header .btn-ghost,
