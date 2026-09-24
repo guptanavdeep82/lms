@@ -1337,6 +1337,16 @@ header.public-home-header {
   z-index: 100 !important;
   background: rgba(255, 255, 255, 0.96) !important;
 }
+header.public-home-header.mobile-nav-open {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  height: 100dvh !important;
+  z-index: 400 !important;
+  backdrop-filter: none !important;
+  padding: 0 !important;
+  background: #ffffff !important;
+}
 header.public-home-header .header-inner {
   display: grid !important;
   height: auto !important;
@@ -1439,12 +1449,37 @@ footer.public-site-footer .public-site-footer-inner {
     max-width: none !important;
     margin-left: 16px !important;
     margin-right: 16px !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .kr-logics-reference-home .cat-strip .cat-chip:last-child {
+    grid-column: 1 / -1 !important;
+  }
+  .kr-logics-reference-home section.achieve-strip {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    align-content: flex-start !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 14px 16px !important;
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+  }
+  .kr-logics-reference-home .achieve-item {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
   }
 }
 @media (max-width: 560px) {
   .kr-logics-reference-home .cat-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .kr-logics-reference-home .cat-strip .cat-chip:last-child {
+    grid-column: 1 / -1 !important;
   }
 }
 `;

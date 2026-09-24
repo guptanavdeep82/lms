@@ -646,8 +646,35 @@ header.public-home-header {
 }
 
 @media (max-width: 900px) {
+  body:has(.public-home-header.mobile-nav-open) .public-trending-strip {
+    z-index: 1;
+  }
+
   .public-home-header {
     padding-inline: 12px;
+  }
+
+  .public-home-header.mobile-nav-open {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    height: 100dvh !important;
+    z-index: 400 !important;
+    backdrop-filter: none !important;
+    padding: 0;
+    background: #ffffff;
+  }
+
+  .public-home-header.mobile-nav-open .header-inner {
+    display: block !important;
+    height: 100%;
+    min-height: 100dvh;
+    padding: 0;
+  }
+
+  .public-home-header.mobile-nav-open .logo-wrap,
+  .public-home-header.mobile-nav-open .header-search-wrap {
+    display: none !important;
   }
 
   .public-home-header .header-inner {
@@ -670,8 +697,8 @@ header.public-home-header {
     flex-direction: column;
     gap: 10px;
     width: 100%;
-    margin-top: 16px;
-    padding-top: 16px;
+    margin-top: 8px;
+    padding: 16px;
     border-top: 1px solid rgba(9, 87, 211, 0.12);
   }
 
@@ -704,10 +731,9 @@ header.public-home-header {
     display: block;
     position: fixed;
     inset: 0;
-    top: 0;
-    z-index: 110;
+    z-index: 398;
     border: 0;
-    background: rgba(9, 40, 120, 0.42);
+    background: rgba(9, 40, 120, 0.5);
     cursor: pointer;
   }
 
@@ -734,11 +760,12 @@ header.public-home-header {
   .public-home-header nav {
     display: none !important;
     position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 120;
-    width: min(92vw, 360px);
+    inset: 0;
+    z-index: 399;
+    width: 100%;
+    max-width: none;
     height: 100dvh;
+    overflow-x: hidden;
     overflow-y: auto;
     flex-direction: column;
     align-items: stretch;
@@ -746,8 +773,9 @@ header.public-home-header {
     margin: 0;
     padding: 0 0 28px;
     background: #ffffff;
-    border-left: 1px solid rgba(9, 87, 211, 0.12);
-    box-shadow: -18px 0 48px rgba(9, 40, 120, 0.16);
+    border: 0;
+    box-shadow: none;
+    transform: none !important;
   }
 
   .public-home-header.mobile-nav-open nav {
@@ -764,7 +792,7 @@ header.public-home-header {
     gap: 12px;
     padding: 16px 16px 14px;
     margin: 0;
-    background: linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%);
+    background: #ffffff;
     border-bottom: 1px solid rgba(9, 87, 211, 0.12);
   }
 
@@ -784,7 +812,6 @@ header.public-home-header {
     border-radius: 12px;
     background: #ffffff;
     color: #0957d3;
-    box-shadow: 0 6px 16px rgba(9, 87, 211, 0.08);
     cursor: pointer;
   }
 
@@ -821,29 +848,44 @@ header.public-home-header {
     transform: rotate(180deg);
   }
 
+  .public-home-header .course-menu-wrap:hover .chev,
+  .public-home-header .exam-menu-wrap:hover .chev {
+    transform: none;
+  }
+
+  .public-home-header .course-menu-wrap.open:hover .chev,
+  .public-home-header .exam-menu-wrap.open:hover .chev {
+    transform: rotate(180deg);
+  }
+
   .public-home-header .course-menu-wrap:hover .course-dropdown,
   .public-home-header .exam-menu-wrap:hover .exam-mega,
   .public-home-header .latest-exam-wrap:hover .latest-exam-mega {
     display: none;
     opacity: 0;
     visibility: hidden;
+    transform: none !important;
   }
 
   .public-home-header .course-dropdown,
+  .public-home-header .course-dropdown.open,
   .public-home-header .exam-mega,
-  .public-home-header .latest-exam-mega {
-    position: static;
-    left: auto;
-    right: auto;
-    top: auto;
-    width: auto;
+  .public-home-header .exam-mega.open,
+  .public-home-header .latest-exam-mega,
+  .public-home-header .latest-exam-mega.open {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    width: auto !important;
+    max-width: none !important;
     max-height: none;
     min-width: 0;
-    margin: 0 12px 12px;
+    margin: 0 16px 12px;
     padding: 4px;
     opacity: 1;
     visibility: visible;
-    transform: none;
+    transform: none !important;
     overflow: hidden;
     display: none;
     border: 1px solid rgba(9, 87, 211, 0.12);
@@ -855,7 +897,8 @@ header.public-home-header {
   .public-home-header .course-dropdown.open,
   .public-home-header .exam-mega.open,
   .public-home-header .latest-exam-mega.open {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column;
     opacity: 1 !important;
     visibility: visible !important;
   }
@@ -877,6 +920,7 @@ header.public-home-header {
     color: #0e318d;
     white-space: normal;
     line-height: 1.35;
+    transform: none !important;
   }
 
   .public-home-header .course-dropdown a:last-child,
@@ -887,7 +931,7 @@ header.public-home-header {
   .public-home-header .course-dropdown a:hover,
   .public-home-header .exam-link:hover {
     background: #ffffff;
-    transform: none;
+    transform: none !important;
   }
 
   .public-home-header .exam-mega,
@@ -900,10 +944,12 @@ header.public-home-header {
     display: none;
   }
 
-  .public-home-header .exam-grid {
+  .public-home-header .exam-grid,
+  .public-home-header .latest-exam-mega .exam-grid {
     display: flex;
     flex-direction: column;
     gap: 0;
+    grid-template-columns: 1fr;
   }
 
   .public-home-header .exam-link {
@@ -921,12 +967,6 @@ header.public-home-header {
   .public-home-header .hdr-btns {
     margin-left: 0;
     gap: 8px;
-  }
-
-  .public-home-header .hdr-btns-in-nav {
-    border-top: 1px solid rgba(9, 87, 211, 0.12);
-    margin-top: 8px;
-    padding: 16px;
   }
 
   .public-home-header .btn-ghost,
