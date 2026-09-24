@@ -179,7 +179,7 @@ export function HomeFaqSection({ faqs }: { faqs: HomePageFaq[] }) {
 
 function faClass(icon: string) {
   if (icon.startsWith("fa ") || icon.startsWith("fab ") || icon.startsWith("fas ") || icon.startsWith("far ")) return icon;
-  if (["fa-whatsapp", "fa-youtube", "fa-instagram", "fa-facebook-f", "fa-telegram-plane"].includes(icon)) {
+  if (["fa-whatsapp", "fa-youtube", "fa-instagram", "fa-facebook-f", "fa-telegram-plane", "fa-telegram"].includes(icon)) {
     return `fab ${icon}`;
   }
   return `fa ${icon}`;
@@ -299,23 +299,27 @@ export function HomeOfferBar({ settings }: { settings?: HomePageSettings | null 
 }
 
 function resolveTileUrl(url: string, settings?: HomePageSettings | null, icon = "") {
-  const key = url.trim().toLowerCase();
+  const raw = url.trim();
+  const key = raw.toLowerCase();
   const iconKey = icon.toLowerCase();
 
   if (key === "whatsapp" || key.includes("wa.me") || key.includes("whatsapp") || iconKey.includes("whatsapp")) {
     const digits = (settings?.whatsapp_number || "").replace(/\D/g, "");
     return digits ? `https://wa.me/${digits}` : "/contact";
   }
-  if (key === "youtube" || key.includes("youtube.com") || iconKey.includes("youtube")) {
+  if (/^https?:\/\//i.test(raw)) {
+    return raw;
+  }
+  if (key === "youtube" || iconKey.includes("youtube")) {
     return settings?.youtube_link || "/contact";
   }
-  if (key === "instagram" || key.includes("instagram.com") || iconKey.includes("instagram")) {
+  if (key === "instagram" || iconKey.includes("instagram")) {
     return settings?.instagram_link || "/contact";
   }
-  if (key === "facebook" || key.includes("facebook.com") || iconKey.includes("facebook")) {
+  if (key === "facebook" || iconKey.includes("facebook")) {
     return settings?.facebook_link || "/contact";
   }
-  return url.trim() || "/courses";
+  return raw || "/courses";
 }
 
 function useOfferCountdown(endsAt: string | null) {
