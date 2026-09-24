@@ -281,10 +281,10 @@ export const defaultHomePageSettings: HomePageSettings = {
   hero_secondary_btn_note: "See how it works",
   category_chips: [
     { title: "Banking Exams", subtitle: "220+ Courses", url: "/courses", icon: "fa-building-columns" },
-    { title: "SSC Exams", subtitle: "180+ Courses", url: "/courses", icon: "fa-pen-ruler" },
+    { title: "SSC Exams", subtitle: "180+ Courses", url: "/courses", icon: "fa-pen-fancy" },
     { title: "Railway Exams", subtitle: "150+ Courses", url: "/courses", icon: "fa-train" },
     { title: "Teaching Exams", subtitle: "120+ Courses", url: "/courses", icon: "fa-chalkboard-user" },
-    { title: "UPSC Exams", subtitle: "100+ Courses", url: "/courses", icon: "fa-landmark-dome" },
+    { title: "UPSC Exams", subtitle: "100+ Courses", url: "/courses", icon: "fa-landmark" },
     { title: "State Exams", subtitle: "90+ Courses", url: "/courses", icon: "fa-map-location-dot" },
   ],
   top_course_tiles: [

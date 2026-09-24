@@ -20,9 +20,26 @@ function escapeHtml(value: string | null | undefined): string {
 
 function faIconClass(icon: string | null | undefined): string {
   const value = String(icon ?? "fa-circle").trim();
-  if (value.startsWith("fa ")) return value;
-  if (value.startsWith("fa-")) return `fa ${value}`;
-  return `fa fa-${value}`;
+  if (/^(fa-solid|fa-regular|fa-brands|fas|far|fab)\s/.test(value)) return value;
+  if (value.startsWith("fa ")) return value.replace(/^fa\s+/, "fa-solid ");
+  if (value.startsWith("fa-")) return `fa-solid ${value}`;
+  return `fa-solid fa-${value}`;
+}
+
+function relevantChipIcon(title: string, fallback?: string | null): string {
+  const name = title.toLowerCase();
+  if (name.includes("elite") || name.includes("pass")) return "fa-solid fa-crown";
+  if (name.includes("english")) return "fa-solid fa-book-open";
+  if (name.includes("jaiib") || name.includes("tamil")) return "fa-solid fa-graduation-cap";
+  if (name.includes("reason")) return "fa-solid fa-brain";
+  if (name.includes("awareness")) return "fa-solid fa-building-columns";
+  if (name.includes("ssc")) return "fa-solid fa-pen-fancy";
+  if (name.includes("rail")) return "fa-solid fa-train";
+  if (name.includes("teach")) return "fa-solid fa-chalkboard-user";
+  if (name.includes("upsc")) return "fa-solid fa-landmark";
+  if (name.includes("state")) return "fa-solid fa-map-location-dot";
+  if (name.includes("bank")) return "fa-solid fa-building-columns";
+  return faIconClass(fallback);
 }
 
 export function stripHeroLeftStats(markup: string): string {
@@ -129,7 +146,7 @@ export function buildCategoryChipsMarkup(chips: HomeCategoryChip[]): string {
 
   const items = chips
     .map((chip, index) => {
-      const visual = `<span class="cat-ic c${(index % 6) + 1}"><i class="${faIconClass(chip.icon)}"></i></span>`;
+      const visual = `<span class="cat-ic c${(index % 6) + 1}"><i class="${relevantChipIcon(chip.title, chip.icon)}"></i></span>`;
 
       return `<a href="${escapeHtml(chip.url || "/courses")}" class="cat-chip">
     ${visual}
