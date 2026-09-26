@@ -367,3 +367,84 @@
 .kr-chat-fab:hover {
   background: #0538a1 !important;
 }
+
+.kr-chat-lead {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  margin: 0 !important;
+  padding: 24px 20px !important;
+  background: #f4f7fb !important;
+}
+
+.kr-chat-lead-copy {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+  color: #475569 !important;
+  text-align: center !important;
+}
+
+.kr-chat-lead-form {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.kr-chat-lead-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #334155 !important;
+}
+
+.kr-chat-lead-field input {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 12px 14px !important;
+  border: 1.5px solid #d8e2f0 !important;
+  border-radius: 12px !important;
+  background: #ffffff !important;
+  font: inherit !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #1e1b3a !important;
+  outline: none !important;
+}
+
+.kr-chat-lead-field input:focus {
+  border-color: #0957d3 !important;
+  box-shadow: 0 0 0 3px rgba(9, 87, 211, 0.12) !important;
+}
+
+.kr-chat-lead-submit {
+  margin-top: 4px !important;
+  padding: 13px 16px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: #0957d3 !important;
+  color: #ffffff !important;
+  font: inherit !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+}
+
+.kr-chat-lead-submit:hover {
+  background: #0538a1 !important;
+}
+
+.kr-chat-error.inline {
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: #fef2f2 !important;
+}
