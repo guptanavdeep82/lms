@@ -120,6 +120,7 @@ export type StudentLibraryResponse = {
     id: number;
     purchasable_type: string;
     purchasable_id: number;
+    status?: string | null;
     expires_at: string | null;
     created_at: string | null;
   }>;
@@ -142,14 +143,6 @@ export type StudentLibraryResponse = {
     payment_method?: string | null;
     razorpay_payment_id?: string | null;
     paid_at: string | null;
-  }>;
-  purchases?: Array<{
-    id: number;
-    purchasable_type: string;
-    purchasable_id: number;
-    status?: string | null;
-    expires_at: string | null;
-    created_at: string | null;
   }>;
   stats: {
     courses_count: number;
