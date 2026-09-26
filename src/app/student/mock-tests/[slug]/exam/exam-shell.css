@@ -45,6 +45,50 @@ body.exam-lock {
   -webkit-overflow-scrolling: touch;
 }
 
+.exam-drag-pane-wrap {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.exam-drag-pane {
+  flex: 1;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.exam-drag-pane::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.exam-drag-pane.is-dragging {
+  cursor: grabbing;
+}
+
+.exam-drag-notice {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  z-index: 8;
+  transform: translateX(-50%);
+  max-width: calc(100% - 24px);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
+  pointer-events: none;
+  text-align: center;
+}
+
 .exam-actions {
   position: sticky;
   bottom: 0;

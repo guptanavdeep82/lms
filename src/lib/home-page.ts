@@ -280,11 +280,11 @@ export const defaultHomePageSettings: HomePageSettings = {
   hero_secondary_btn_url: "/mock-tests",
   hero_secondary_btn_note: "See how it works",
   category_chips: [
-    { title: "Elite pass", subtitle: "220+ Courses", url: "/courses/elite-pass", icon: "fa-crown" },
-    { title: "English", subtitle: "180+ Courses", url: "/courses/reena-mams-advanced-english-batch-one-stop-solution-for-english-mains", icon: "fa-book-open" },
-    { title: "JAIIB Tamil", subtitle: "150+ Courses", url: "/courses/jaiib-tamil", icon: "fa-graduation-cap" },
-    { title: "Reasoning", subtitle: "120+ Courses", url: "/courses/reasoning-course", icon: "fa-brain" },
-    { title: "Banking Awareness", subtitle: "100+ Courses", url: "/courses/banking-awareness-course", icon: "fa-building-columns" },
+    { title: "Elite pass", subtitle: "", url: "/courses/elite-pass", icon: "fa-crown" },
+    { title: "English", subtitle: "", url: "/courses/a-z-banking-english-advance-english-batch-20", icon: "fa-book-open" },
+    { title: "Aptitude", subtitle: "", url: "/courses/complete-a-z-quants-course-foundation-project-k-k-10-2o-mains", icon: "fa-calculator" },
+    { title: "Reasoning", subtitle: "", url: "/courses/reasoning-course", icon: "fa-brain" },
+    { title: "Banking Awareness", subtitle: "", url: "/courses/banking-awareness-course", icon: "fa-building-columns" },
   ],
   top_course_tiles: [
     {
@@ -301,7 +301,7 @@ export const defaultHomePageSettings: HomePageSettings = {
       title: "Video course",
       tone: "mint",
       items: [
-        { label: "English", url: "/courses/reena-mams-advanced-english-batch-one-stop-solution-for-english-mains", icon: "fa-book-open" },
+        { label: "English", url: "/courses/a-z-banking-english-advance-english-batch-20", icon: "fa-book-open" },
         { label: "Aptitude", url: "/courses/complete-a-z-quants-course-foundation-project-k-k-10-2o-mains", icon: "fa-calculator" },
         { label: "Reasoning", url: "/courses/reasoning-course", icon: "fa-brain" },
         { label: "Banking awareness", url: "/courses/banking-awareness-course", icon: "fa-landmark" },

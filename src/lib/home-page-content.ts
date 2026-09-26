@@ -30,6 +30,7 @@ function relevantChipIcon(title: string, fallback?: string | null): string {
   const name = title.toLowerCase();
   if (name.includes("elite") || name.includes("pass")) return "fa-solid fa-crown";
   if (name.includes("english")) return "fa-solid fa-book-open";
+  if (name.includes("aptitude") || name.includes("quant")) return "fa-solid fa-calculator";
   if (name.includes("jaiib") || name.includes("tamil")) return "fa-solid fa-graduation-cap";
   if (name.includes("reason")) return "fa-solid fa-brain";
   if (name.includes("awareness")) return "fa-solid fa-building-columns";
@@ -150,7 +151,7 @@ export function buildCategoryChipsMarkup(chips: HomeCategoryChip[]): string {
 
       return `<a href="${escapeHtml(chip.url || "/courses")}" class="cat-chip">
     ${visual}
-    <span class="cat-chip-meta"><b>${escapeHtml(chip.title)}</b><small>${escapeHtml(chip.subtitle || "Explore Courses")}</small></span>
+    <span class="cat-chip-meta"><b>${escapeHtml(chip.title)}</b>${chip.subtitle?.trim() ? `<small>${escapeHtml(chip.subtitle)}</small>` : ""}</span>
   </a>`;
     })
     .join("\n  ");

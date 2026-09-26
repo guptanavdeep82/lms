@@ -12,6 +12,7 @@ import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
 import { mockTestsApiUrl, mockTestSectionExamUrl, mockExamSessionUrl, nextUnlockedSection, notifyMockExamOpener, toIdFlagMap, toIdNumberMap, toIdStringMap, type MockExamSession, type MockQuestion, type MockTestDetailResponse, type MockTestSection, type MockTestSectionExamResponse } from "@/lib/mock-tests";
 import { decodeHtmlEntities } from "@/lib/html-entities";
 import { RichHtml } from "@/components/student/RichHtml";
+import { ExamDragPane } from "@/components/student/ExamDragPane";
 import "./exam-shell.css";
 
 export default function DynamicMockExamPage() {
@@ -493,19 +494,12 @@ export default function DynamicMockExamPage() {
     return false;
   };
 
-  const saveCurrent = () => {
+  const saveAndNext = () => {
     if (!requireUnpaused()) return;
     accumulateQuestionTime(question.id);
     setValidationMessage("");
     setSaveNotice("Saved");
     window.setTimeout(() => setSaveNotice(""), 1400);
-    void persistExamSession(isPaused);
-  };
-
-  const goToNext = () => {
-    if (!requireUnpaused()) return;
-    accumulateQuestionTime(question.id);
-    setValidationMessage("");
     setCurrentIndex((index) => Math.min(index + 1, questions.length - 1));
     void persistExamSession(isPaused);
   };
@@ -624,33 +618,37 @@ export default function DynamicMockExamPage() {
         </div>
 
         <div className="exam-question-pane">
-          <div className="exam-question-scroll border-b border-[#cfd7df] p-3 text-[15px] leading-7 lg:border-b-0 lg:border-r lg:text-[18px] lg:leading-8">
-            <p className="mb-4 font-bold"><RichHtml html={question.question_text} /></p>
-          </div>
-
-          <div className="exam-question-scroll p-4 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
-            <h2 className="mb-3 font-bold">Choose the correct answer.</h2>
-            <div className="mt-4 space-y-4" key={`${question.id}-${optionResetKey}-${answers[question.id] ?? "none"}`}>
-              {(Object.entries(question.options) as Array<[keyof MockQuestion["options"], string | null]>).map(([key, option]) => (
-                option ? (
-                  <label key={key} className="flex cursor-pointer items-center gap-3">
-                    <input
-                      type="radio"
-                      name={`question-${question.id}-${optionResetKey}`}
-                      checked={answers[question.id] === key}
-                      onChange={() => {
-                        if (!requireUnpaused()) return;
-                        setValidationMessage("");
-                        setAnswers((previous) => ({ ...previous, [question.id]: key }));
-                      }}
-                      className="h-5 w-5"
-                    />
-                        <span><b>{key}.</b> <RichHtml html={option} /></span>
-                  </label>
-                ) : null
-              ))}
+          <ExamDragPane className="border-b border-[#cfd7df] lg:border-b-0 lg:border-r">
+            <div className="p-3 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
+              <p className="mb-4 font-bold"><RichHtml html={question.question_text} /></p>
             </div>
-          </div>
+          </ExamDragPane>
+
+          <ExamDragPane>
+            <div className="p-4 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
+              <h2 className="mb-3 font-bold">Choose the correct answer.</h2>
+              <div className="mt-4 space-y-4" key={`${question.id}-${optionResetKey}-${answers[question.id] ?? "none"}`}>
+                {(Object.entries(question.options) as Array<[keyof MockQuestion["options"], string | null]>).map(([key, option]) => (
+                  option ? (
+                    <label key={key} className="flex cursor-pointer items-center gap-3">
+                      <input
+                        type="radio"
+                        name={`question-${question.id}-${optionResetKey}`}
+                        checked={answers[question.id] === key}
+                        onChange={() => {
+                          if (!requireUnpaused()) return;
+                          setValidationMessage("");
+                          setAnswers((previous) => ({ ...previous, [question.id]: key }));
+                        }}
+                        className="h-5 w-5"
+                      />
+                      <span><b>{key}.</b> <RichHtml html={option} /></span>
+                    </label>
+                  ) : null
+                ))}
+              </div>
+            </div>
+          </ExamDragPane>
         </div>
 
         <footer className="exam-actions flex flex-col items-stretch justify-between gap-2 border-t border-[#cfd7df] px-3 py-2">
@@ -660,8 +658,6 @@ export default function DynamicMockExamPage() {
             </div>
           )}
           <div className="flex flex-wrap items-center gap-2">
-            <button type="button" onClick={saveCurrent} className="shrink-0 rounded-lg border border-[#8dc8ff] bg-[#cae7ff] px-4 py-2 text-sm font-bold text-[#174b82]">Save</button>
-            <button type="button" onClick={goToNext} disabled={currentIndex >= questions.length - 1} className="shrink-0 rounded-lg bg-[#2f78bf] px-4 py-2 text-sm font-bold text-white shadow disabled:opacity-50">Next</button>
             <button type="button" onClick={markForReview} className={`shrink-0 rounded-lg border px-4 py-2 text-sm font-bold ${reviewMarked[question.id] ? "border-[#6b21a8] bg-[#7e22ce] text-white" : "border-[#8dc8ff] bg-[#cae7ff] text-[#174b82]"}`}>
               {reviewMarked[question.id] ? "Marked for Review" : "Mark for Review"}
             </button>
@@ -728,9 +724,17 @@ export default function DynamicMockExamPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center border-t border-[#cfd7df] bg-[#efefef] px-4 py-2">
+        <div className="flex flex-col gap-2 border-t border-[#cfd7df] bg-[#efefef] px-4 py-2">
+          <button
+            type="button"
+            onClick={saveAndNext}
+            disabled={currentIndex >= questions.length - 1 || submitting}
+            className="h-10 w-full rounded bg-[#174b82] text-sm font-bold text-white shadow disabled:opacity-60"
+          >
+            Save &amp; Next
+          </button>
           <button onClick={openSubmitSummary} disabled={submitting} className="h-10 w-full rounded bg-[#2f78bf] text-sm font-bold text-white shadow disabled:opacity-60">
-            {submitting ? "Submitting..." : "Submit Test"}
+            {submitting ? "Submitting..." : "Submit Section"}
           </button>
         </div>
       </aside>

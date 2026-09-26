@@ -641,3 +641,77 @@ canvas {
   border: 1px solid #d0d5dd;
   padding: 4px 8px;
 }
+
+/* Soft capture deterrents (website) */
+html.kr-capture-guard {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html.kr-capture-guard input,
+html.kr-capture-guard textarea,
+html.kr-capture-guard [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.kr-capture-block {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 15, 35, 0.92);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+}
+
+.kr-capture-block-card {
+  max-width: 420px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #0f1b3d;
+  color: #fff;
+  padding: 22px 24px;
+  text-align: center;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.kr-capture-block-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.kr-capture-block-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+html.kr-capture-hidden body {
+  visibility: hidden !important;
+}
+
+html.kr-capture-hidden::before {
+  content: "Screen capture is not allowed";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  display: grid;
+  place-items: center;
+  background: #0b1224;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  visibility: visible;
+}
+
+@media print {
+  html.kr-capture-guard body {
+    display: none !important;
+  }
+}

@@ -1,6 +1,7 @@
 import { siteOrigin } from "@/lib/site-url";
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat, Poppins, Rajdhani, Sora } from "next/font/google";
+import { CaptureGuard } from "@/components/CaptureGuard";
 import { FcmProvider } from "@/components/notifications/FcmProvider";
 import { PublicChrome } from "@/components/PublicChrome";
 import { StaticRuntime } from "@/components/StaticRuntime";
@@ -72,6 +73,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground font-[family-name:var(--font-poppins)]">
         <StaticRuntime>
           <FcmProvider>
+            <CaptureGuard />
             <PublicChrome footerSettings={homeData?.settings ?? null} headerPages={headerPages}>
               {children}
             </PublicChrome>

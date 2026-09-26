@@ -53,23 +53,23 @@ const trendingStripMarkup = `<section class="trending-strip" aria-label="Trendin
 const categoryStripMarkup = `<section class="cat-strip" id="categories" aria-label="Explore exam categories">
   <a href="/courses/elite-pass" class="cat-chip">
     <span class="cat-ic c1"><i class="fa-solid fa-crown"></i></span>
-    <span class="cat-chip-meta"><b>Elite pass</b><small>220+ Courses</small></span>
+    <span class="cat-chip-meta"><b>Elite pass</b></span>
   </a>
-  <a href="/courses/reena-mams-advanced-english-batch-one-stop-solution-for-english-mains" class="cat-chip">
+  <a href="/courses/a-z-banking-english-advance-english-batch-20" class="cat-chip">
     <span class="cat-ic c2"><i class="fa-solid fa-book-open"></i></span>
-    <span class="cat-chip-meta"><b>English</b><small>180+ Courses</small></span>
+    <span class="cat-chip-meta"><b>English</b></span>
   </a>
-  <a href="/courses/jaiib-tamil" class="cat-chip">
-    <span class="cat-ic c3"><i class="fa-solid fa-graduation-cap"></i></span>
-    <span class="cat-chip-meta"><b>JAIIB Tamil</b><small>150+ Courses</small></span>
+  <a href="/courses/complete-a-z-quants-course-foundation-project-k-k-10-2o-mains" class="cat-chip">
+    <span class="cat-ic c3"><i class="fa-solid fa-calculator"></i></span>
+    <span class="cat-chip-meta"><b>Aptitude</b></span>
   </a>
   <a href="/courses/reasoning-course" class="cat-chip">
     <span class="cat-ic c4"><i class="fa-solid fa-brain"></i></span>
-    <span class="cat-chip-meta"><b>Reasoning</b><small>120+ Courses</small></span>
+    <span class="cat-chip-meta"><b>Reasoning</b></span>
   </a>
   <a href="/courses/banking-awareness-course" class="cat-chip">
     <span class="cat-ic c5"><i class="fa-solid fa-building-columns"></i></span>
-    <span class="cat-chip-meta"><b>Banking Awareness</b><small>100+ Courses</small></span>
+    <span class="cat-chip-meta"><b>Banking Awareness</b></span>
   </a>
 </section>`;
 
