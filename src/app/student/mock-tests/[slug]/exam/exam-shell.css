@@ -55,11 +55,24 @@ body.exam-lock {
 
 .exam-drag-pane {
   flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
   cursor: grab;
   touch-action: none;
-  user-select: none;
-  overscroll-behavior: contain;
+  overscroll-behavior: none;
   scrollbar-width: none;
+}
+
+.exam-drag-pane input,
+.exam-drag-pane label,
+.exam-drag-pane button,
+.exam-drag-pane a,
+.exam-drag-pane select,
+.exam-drag-pane textarea {
+  touch-action: manipulation;
+  user-select: auto;
+  cursor: pointer;
 }
 
 .exam-drag-pane::-webkit-scrollbar {
@@ -69,6 +82,7 @@ body.exam-lock {
 
 .exam-drag-pane.is-dragging {
   cursor: grabbing;
+  user-select: none;
 }
 
 .exam-drag-notice {

@@ -200,6 +200,21 @@
   border-bottom-right-radius: 5px !important;
 }
 
+.kr-chat-link {
+  color: inherit !important;
+  font-weight: 700 !important;
+  text-decoration: underline !important;
+  word-break: break-all !important;
+}
+
+.kr-chat-bubble.is-assistant .kr-chat-link {
+  color: #0957d3 !important;
+}
+
+.kr-chat-bubble.is-user .kr-chat-link {
+  color: #ffffff !important;
+}
+
 .kr-chat-typing {
   display: flex !important;
   align-items: center !important;

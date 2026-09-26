@@ -37,6 +37,7 @@ export default function DynamicMockExamPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [optionResetKey, setOptionResetKey] = useState(0);
   const [saveNotice, setSaveNotice] = useState("");
+  const [activeMarksKey, setActiveMarksKey] = useState<string | null>(null);
   const visitCounterRef = useRef(0);
   const questionStartedAtRef = useRef(Date.now());
   const persistTimerRef = useRef<number | null>(null);
@@ -161,6 +162,47 @@ export default function DynamicMockExamPage() {
 
   const questions = data?.questions ?? [];
   const question = questions[currentIndex];
+  const sectionLabel = sectionMeta?.name || question?.section_name || "Section";
+
+  const markBuckets = useMemo(() => {
+    const map = new Map<number, MockQuestion[]>();
+    for (const item of questions) {
+      const marks = Number(item.marks) || 0;
+      const list = map.get(marks) ?? [];
+      list.push(item);
+      map.set(marks, list);
+    }
+    return Array.from(map.entries())
+      .sort((a, b) => b[0] - a[0])
+      .map(([marks, items]) => ({
+        key: String(marks),
+        marks,
+        label: `${sectionLabel} [${marks === 1 ? "1 Mark" : `${marks} Marks`}]`,
+        questions: items,
+      }));
+  }, [questions, sectionLabel]);
+
+  const showMarkTabs = markBuckets.length > 1;
+
+  useEffect(() => {
+    if (!showMarkTabs) {
+      setActiveMarksKey(null);
+      return;
+    }
+    const currentMarks = question ? String(Number(question.marks) || 0) : markBuckets[0]?.key;
+    if (currentMarks && markBuckets.some((bucket) => bucket.key === currentMarks)) {
+      setActiveMarksKey(currentMarks);
+    } else if (!activeMarksKey || !markBuckets.some((bucket) => bucket.key === activeMarksKey)) {
+      setActiveMarksKey(markBuckets[0]?.key ?? null);
+    }
+  }, [activeMarksKey, markBuckets, question, showMarkTabs]);
+
+  const displayQuestions = useMemo(() => {
+    if (!showMarkTabs || !activeMarksKey) return questions;
+    return markBuckets.find((bucket) => bucket.key === activeMarksKey)?.questions ?? questions;
+  }, [activeMarksKey, markBuckets, questions, showMarkTabs]);
+
+  const activeBucketIndex = Math.max(0, displayQuestions.findIndex((item) => item.id === question?.id));
   const answeredCount = useMemo(() => Object.keys(answers).length, [answers]);
   const test = data?.test;
   const activeDurationSeconds = sectionMeta ? sectionDurationSeconds : (test?.duration_minutes ?? 0) * 60;
@@ -500,13 +542,38 @@ export default function DynamicMockExamPage() {
     setValidationMessage("");
     setSaveNotice("Saved");
     window.setTimeout(() => setSaveNotice(""), 1400);
-    setCurrentIndex((index) => Math.min(index + 1, questions.length - 1));
+    const nextGlobal = Math.min(currentIndex + 1, questions.length - 1);
+    // Prefer next within the active marks tab when possible.
+    const localNext = Math.min(activeBucketIndex + 1, displayQuestions.length - 1);
+    if (displayQuestions.length > 1 && localNext !== activeBucketIndex) {
+      const nextId = displayQuestions[localNext]?.id;
+      const global = questions.findIndex((item) => item.id === nextId);
+      if (global >= 0) {
+        setCurrentIndex(global);
+        void persistExamSession(isPaused);
+        return;
+      }
+    }
+    setCurrentIndex(nextGlobal);
     void persistExamSession(isPaused);
   };
 
-  const markForReview = () => {
+  const markForReviewAndNext = () => {
     if (!requireUnpaused()) return;
-    setReviewMarked((previous) => ({ ...previous, [question.id]: !previous[question.id] }));
+    setReviewMarked((previous) => ({ ...previous, [question.id]: true }));
+    accumulateQuestionTime(question.id);
+    setValidationMessage("");
+    const localNext = Math.min(activeBucketIndex + 1, displayQuestions.length - 1);
+    if (displayQuestions.length > 1 && localNext !== activeBucketIndex) {
+      const nextId = displayQuestions[localNext]?.id;
+      const global = questions.findIndex((item) => item.id === nextId);
+      if (global >= 0) {
+        setCurrentIndex(global);
+        void persistExamSession(isPaused);
+        return;
+      }
+    }
+    setCurrentIndex((index) => Math.min(index + 1, questions.length - 1));
     void persistExamSession(isPaused);
   };
 
@@ -599,7 +666,36 @@ export default function DynamicMockExamPage() {
 
       <section className="exam-main">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7df] bg-[#f6f6f6] px-2 py-2 text-sm">
-          <span className="font-bold text-[#0f60b5] underline">{decodeHtmlEntities(question.section_name)}</span>
+          {showMarkTabs ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-bold text-[#344054]">Sections</span>
+              {markBuckets.map((bucket) => {
+                const active = bucket.key === activeMarksKey;
+                return (
+                  <button
+                    key={bucket.key}
+                    type="button"
+                    onClick={() => {
+                      if (!requireUnpaused()) return;
+                      setActiveMarksKey(bucket.key);
+                      const first = bucket.questions[0];
+                      if (first) {
+                        accumulateQuestionTime(question.id);
+                        const nextIndex = questions.findIndex((item) => item.id === first.id);
+                        if (nextIndex >= 0) setCurrentIndex(nextIndex);
+                        void persistExamSession(isPaused);
+                      }
+                    }}
+                    className={`rounded px-3 py-1.5 text-sm font-bold ${active ? "bg-[#2f78bf] text-white" : "bg-[#dbe7f3] text-[#174b82]"}`}
+                  >
+                    {bucket.label}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <span className="font-bold text-[#0f60b5] underline">{decodeHtmlEntities(question.section_name)}</span>
+          )}
           <span className="inline-flex items-center rounded border border-[#111827] bg-white px-3 py-1 text-base">
             English
           </span>
@@ -611,7 +707,7 @@ export default function DynamicMockExamPage() {
             <span className="rounded border border-[#cfd7df] bg-white px-3 py-1 font-bold text-[#175cd3]">
               Attempted {answeredCount}/{questions.length}
             </span>
-            <span className="text-[#667085]">Q {currentIndex + 1} / {questions.length}</span>
+            <span className="text-[#667085]">Q {activeBucketIndex + 1} / {displayQuestions.length}</span>
             <span className="rounded border border-[#cfd7df] px-3 py-1">Qn. Time : <Clock3 size={12} className="inline" /></span>
             <span><b>Marks :</b> <span className="text-[#00a651]">+{question.marks}</span> | <span className="text-[#ff3950]">-{question.negative_marks}</span></span>
           </div>
@@ -657,12 +753,22 @@ export default function DynamicMockExamPage() {
               {validationMessage}
             </div>
           )}
-          <div className="flex flex-wrap items-center gap-2">
-            <button type="button" onClick={markForReview} className={`shrink-0 rounded-lg border px-4 py-2 text-sm font-bold ${reviewMarked[question.id] ? "border-[#6b21a8] bg-[#7e22ce] text-white" : "border-[#8dc8ff] bg-[#cae7ff] text-[#174b82]"}`}>
-              {reviewMarked[question.id] ? "Marked for Review" : "Mark for Review"}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" onClick={markForReviewAndNext} className="shrink-0 rounded-lg border border-[#8a8a8a] bg-[#efefef] px-4 py-2 text-sm font-bold text-[#333]">
+                Mark for Review &amp; Next
+              </button>
+              <button type="button" onClick={clearResponse} className="shrink-0 rounded-lg border border-[#b9bec8] bg-white px-4 py-2 text-sm font-bold text-[#344054]">Clear Response</button>
+              {saveNotice ? <span className="text-sm font-bold text-[#027a48]">{saveNotice}</span> : null}
+            </div>
+            <button
+              type="button"
+              onClick={saveAndNext}
+              disabled={activeBucketIndex >= displayQuestions.length - 1 || submitting}
+              className="shrink-0 rounded-lg bg-[#2f78bf] px-5 py-2 text-sm font-bold text-white shadow disabled:opacity-60"
+            >
+              Save &amp; Next
             </button>
-            <button type="button" onClick={clearResponse} className="shrink-0 rounded-lg border border-[#b9bec8] bg-white px-4 py-2 text-sm font-bold text-[#344054]">Clear Response</button>
-            {saveNotice ? <span className="text-sm font-bold text-[#027a48]">{saveNotice}</span> : null}
           </div>
         </footer>
       </section>
@@ -696,12 +802,13 @@ export default function DynamicMockExamPage() {
         <div className="exam-palette-numbers">
           <div className="exam-palette-scroll">
           <div className="grid grid-cols-4 gap-3">
-            {questions.map((item, index) => {
+            {displayQuestions.map((item, index) => {
               const hasAnswer = Boolean(answers[item.id]);
               const isReview = Boolean(reviewMarked[item.id]);
               const isVisited = Boolean(visited[item.id]);
+              const isCurrent = item.id === question.id;
               const paletteClass = (() => {
-                if (index === currentIndex) return "border-[#174b82] bg-[#3378b9] font-bold text-white";
+                if (isCurrent) return "border-[#174b82] bg-[#3378b9] font-bold text-white";
                 if (hasAnswer && isReview) return "rounded-full border-[#6b21a8] bg-[#7e22ce] font-bold text-white";
                 if (isReview) return "rounded-full border-[#6b21a8] bg-[#7e22ce] font-bold text-white";
                 if (hasAnswer) return "border-[#15803d] bg-[#22c55e] font-bold text-white";
@@ -712,7 +819,10 @@ export default function DynamicMockExamPage() {
               return (
                 <button
                   key={item.id}
-                  onClick={() => jumpToQuestion(index)}
+                  onClick={() => {
+                    const global = questions.findIndex((q) => q.id === item.id);
+                    if (global >= 0) jumpToQuestion(global);
+                  }}
                   className={`relative h-11 rounded border text-sm ${paletteClass}`}
                 >
                   {index + 1}
@@ -724,16 +834,17 @@ export default function DynamicMockExamPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 border-t border-[#cfd7df] bg-[#efefef] px-4 py-2">
+        <div className="flex items-stretch gap-0 border-t border-[#cfd7df] bg-[#efefef] px-3 py-2">
           <button
             type="button"
             onClick={saveAndNext}
-            disabled={currentIndex >= questions.length - 1 || submitting}
-            className="h-10 w-full rounded bg-[#174b82] text-sm font-bold text-white shadow disabled:opacity-60"
+            disabled={activeBucketIndex >= displayQuestions.length - 1 || submitting}
+            className="h-10 flex-1 rounded-l bg-[#174b82] text-sm font-bold text-white shadow disabled:opacity-60"
           >
             Save &amp; Next
           </button>
-          <button onClick={openSubmitSummary} disabled={submitting} className="h-10 w-full rounded bg-[#2f78bf] text-sm font-bold text-white shadow disabled:opacity-60">
+          <div className="mx-1 w-px self-stretch bg-[#b7c4d4]" aria-hidden />
+          <button onClick={openSubmitSummary} disabled={submitting} className="h-10 flex-1 rounded-r bg-[#2f78bf] text-sm font-bold text-white shadow disabled:opacity-60">
             {submitting ? "Submitting..." : "Submit Section"}
           </button>
         </div>

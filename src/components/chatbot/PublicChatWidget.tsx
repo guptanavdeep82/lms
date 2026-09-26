@@ -11,6 +11,7 @@ import {
   type ChatbotHistoryItem,
   type ChatbotLead,
 } from "@/lib/chatbot";
+import { ChatMessageContent } from "@/components/chatbot/ChatMessageContent";
 import "./public-chat-widget.css";
 
 type UiMessage = {
@@ -254,7 +255,7 @@ export function PublicChatWidget() {
                       )}
                     </div>
                     <div className={`kr-chat-bubble ${message.role === "user" ? "is-user" : "is-assistant"}`}>
-                      {message.content}
+                      <ChatMessageContent content={message.content} />
                     </div>
                   </div>
                 ))}
