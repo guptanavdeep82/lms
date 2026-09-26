@@ -40,6 +40,8 @@ export function StudentOrderHistoryPanel() {
             <tr className="border-b border-[#edf1f7] text-[#7d8799]">
               <th className="px-3 py-3">Order</th>
               <th className="px-3 py-3">Item</th>
+              <th className="px-3 py-3">Payment ID</th>
+              <th className="px-3 py-3">Mode</th>
               <th className="px-3 py-3">Amount</th>
               <th className="px-3 py-3">Status</th>
               <th className="px-3 py-3">Paid At</th>
@@ -50,12 +52,18 @@ export function StudentOrderHistoryPanel() {
               <tr key={order.id} className="border-b border-[#f3f6fb]">
                 <td className="px-3 py-3 font-semibold">#{order.id}</td>
                 <td className="px-3 py-3">{order.item_title}</td>
-                <td className="px-3 py-3">{formatInr(order.final_amount)}</td>
+                <td className="px-3 py-3 font-mono text-xs text-[#475569]">
+                  {order.razorpay_payment_id || "-"}
+                </td>
+                <td className="px-3 py-3 capitalize">{order.payment_method || "-"}</td>
+                <td className="px-3 py-3">
+                  {Number(order.final_amount) > 0 ? formatInr(order.final_amount) : "Imported"}
+                </td>
                 <td className="px-3 py-3 capitalize">{order.status}</td>
                 <td className="px-3 py-3">{order.paid_at ? new Date(order.paid_at).toLocaleString() : "-"}</td>
               </tr>
             )) : (
-              <tr><td colSpan={5} className="px-3 py-8 text-center text-[#667085]">No orders found yet.</td></tr>
+              <tr><td colSpan={7} className="px-3 py-8 text-center text-[#667085]">No orders found yet.</td></tr>
             )}
           </tbody>
         </table>

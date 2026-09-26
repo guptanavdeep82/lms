@@ -39,6 +39,7 @@ export function StudentPurchaseHistoryPanel() {
             <tr className="border-b border-[#edf1f7] text-[#7d8799]">
               <th className="px-3 py-3">Item Type</th>
               <th className="px-3 py-3">Item ID</th>
+              <th className="px-3 py-3">Status</th>
               <th className="px-3 py-3">Purchased On</th>
               <th className="px-3 py-3">Expires</th>
             </tr>
@@ -48,11 +49,12 @@ export function StudentPurchaseHistoryPanel() {
               <tr key={purchase.id} className="border-b border-[#f3f6fb]">
                 <td className="px-3 py-3 font-semibold capitalize">{purchase.purchasable_type.replace("_", " ")}</td>
                 <td className="px-3 py-3">#{purchase.purchasable_id}</td>
+                <td className="px-3 py-3 capitalize">{purchase.status || "active"}</td>
                 <td className="px-3 py-3">{purchase.created_at ? new Date(purchase.created_at).toLocaleDateString() : "-"}</td>
                 <td className="px-3 py-3">{purchase.expires_at ? new Date(purchase.expires_at).toLocaleDateString() : "Lifetime"}</td>
               </tr>
             )) : (
-              <tr><td colSpan={4} className="px-3 py-8 text-center text-[#667085]">No purchases found yet.</td></tr>
+              <tr><td colSpan={5} className="px-3 py-8 text-center text-[#667085]">No purchases found yet.</td></tr>
             )}
           </tbody>
         </table>
