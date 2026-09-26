@@ -834,17 +834,8 @@ export default function DynamicMockExamPage() {
           </div>
         </div>
 
-        <div className="flex items-stretch gap-0 border-t border-[#cfd7df] bg-[#efefef] px-3 py-2">
-          <button
-            type="button"
-            onClick={saveAndNext}
-            disabled={activeBucketIndex >= displayQuestions.length - 1 || submitting}
-            className="h-10 flex-1 rounded-l bg-[#174b82] text-sm font-bold text-white shadow disabled:opacity-60"
-          >
-            Save &amp; Next
-          </button>
-          <div className="mx-1 w-px self-stretch bg-[#b7c4d4]" aria-hidden />
-          <button onClick={openSubmitSummary} disabled={submitting} className="h-10 flex-1 rounded-r bg-[#2f78bf] text-sm font-bold text-white shadow disabled:opacity-60">
+        <div className="flex items-center justify-center border-t border-[#cfd7df] bg-[#efefef] px-4 py-2">
+          <button onClick={openSubmitSummary} disabled={submitting} className="h-10 w-full rounded bg-[#2f78bf] text-sm font-bold text-white shadow disabled:opacity-60">
             {submitting ? "Submitting..." : "Submit Section"}
           </button>
         </div>
