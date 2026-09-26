@@ -14,6 +14,10 @@ export type StudentSession = {
   referralDiscountType?: "percentage" | "fixed" | null;
   referralDiscountValue?: number | null;
   referralDiscountLabel?: string | null;
+  /** Backend single-device session token (plaintext). */
+  sessionToken?: string;
+  /** Stable browser device id (localStorage UUID). */
+  deviceId?: string;
   loggedInAt: string;
 };
 
@@ -28,6 +32,8 @@ export type StudentLoginInput = string | {
   referralDiscountType?: "percentage" | "fixed" | null;
   referralDiscountValue?: number | null;
   referralDiscountLabel?: string | null;
+  sessionToken?: string;
+  deviceId?: string;
 };
 
 export type StudentProfile = {
@@ -104,6 +110,7 @@ export function saveStudentProfile(input: Omit<StudentProfile, "createdAt" | "up
 export function loginStudent(input: StudentLoginInput) {
   const email = typeof input === "string" ? input : input.email;
   const normalizedEmail = email.trim().toLowerCase();
+  const existing = getStudentSession();
   const name = typeof input === "string"
     ? normalizedEmail.includes("@") ? normalizedEmail.split("@")[0] : "Student"
     : input.name || (normalizedEmail.includes("@") ? normalizedEmail.split("@")[0] : "Student");
@@ -118,6 +125,16 @@ export function loginStudent(input: StudentLoginInput) {
     referralDiscountType: typeof input === "string" ? undefined : input.referralDiscountType,
     referralDiscountValue: typeof input === "string" ? undefined : input.referralDiscountValue,
     referralDiscountLabel: typeof input === "string" ? undefined : input.referralDiscountLabel,
+    sessionToken: typeof input === "string"
+      ? existing?.email === normalizedEmail
+        ? existing.sessionToken
+        : undefined
+      : input.sessionToken ?? (existing?.email === normalizedEmail ? existing.sessionToken : undefined),
+    deviceId: typeof input === "string"
+      ? existing?.email === normalizedEmail
+        ? existing.deviceId
+        : undefined
+      : input.deviceId ?? (existing?.email === normalizedEmail ? existing.deviceId : undefined),
     loggedInAt: new Date().toISOString(),
   };
 

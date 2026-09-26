@@ -6,6 +6,7 @@ import { staticPush } from "@/lib/static-nav";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { loginStudent, saveStudentProfile } from "@/lib/student-auth";
+import { attachStudentDeviceSession } from "@/lib/student-session";
 import { checkStudentRegistration, fetchStates, registerStudent, type StateOption } from "@/lib/student-registration";
 import { OTP_LENGTH, isValidOtp, sendStudentWhatsappOtp, verifyStudentWhatsappOtp } from "@/lib/student-otp";
 import { referralToSessionFields, validateReferralCode } from "@/lib/referral";
@@ -77,7 +78,7 @@ export default function RegisterPage() {
         ...referral,
       });
 
-      loginStudent({
+      const session = loginStudent({
         name: profile.name,
         email: profile.email,
         mobile: profile.mobile,
@@ -86,6 +87,8 @@ export default function RegisterPage() {
         provider: "google",
         ...referral,
       });
+
+      await attachStudentDeviceSession(session);
 
       const params = new URLSearchParams(window.location.search);
       staticPush(params.get("redirect") || "/student/dashboard");

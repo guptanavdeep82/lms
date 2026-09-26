@@ -9,7 +9,8 @@ import { cmsPageHref, fetchHeaderCmsPages, type CmsPageSummary } from "@/lib/cms
 import { BRAND_LOGO_ALT, BRAND_LOGO_HEADER_SRC } from "@/lib/brand";
 import { HeaderSearch } from "@/components/HeaderSearch";
 import { TrendingLinksBar } from "@/components/home/TrendingLinksBar";
-import { getStudentSession, logoutStudent } from "@/lib/student-auth";
+import { getStudentSession } from "@/lib/student-auth";
+import { logoutStudentDeviceSession } from "@/lib/student-session";
 
 type ActiveKey = "home" | "courses" | "packages" | "mock-tests" | "contact" | "live-classes" | "current-affairs" | "faq";
 
@@ -84,9 +85,10 @@ export function PublicHeader({ active, pages }: PublicHeaderProps) {
   const registerHref = getRegisterHref();
 
   const handleLogout = () => {
-    logoutStudent();
-    setIsLoggedIn(false);
-    setMobileNavOpen(false);
+    void logoutStudentDeviceSession().finally(() => {
+      setIsLoggedIn(false);
+      setMobileNavOpen(false);
+    });
   };
 
   const closeMobileNav = () => {

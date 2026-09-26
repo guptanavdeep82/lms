@@ -1,13 +1,19 @@
 "use client";
 
 import { Bell, Menu } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { staticReplace } from "@/lib/static-nav";
 import { BookmarksProvider } from "@/components/student/BookmarksProvider";
 import { StudentMobileNav } from "@/components/student/StudentMobileNav";
 import { StudentSidebar } from "@/components/student/StudentSidebar";
-import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
+import { getStudentSession, isStudentLoggedIn, logoutStudent } from "@/lib/student-auth";
+import {
+  attachStudentDeviceSession,
+  validateStudentDeviceSession,
+} from "@/lib/student-session";
 import { studentInitials } from "@/lib/student-dashboard";
+
+const SESSION_VALIDATE_MS = 30_000;
 
 type StudentDashboardShellProps = {
   children: ReactNode;
@@ -16,16 +22,77 @@ type StudentDashboardShellProps = {
 export function StudentDashboardShell({ children }: StudentDashboardShellProps) {
   const [initials, setInitials] = useState("ST");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
+  const validatingRef = useRef(false);
+
+  const kickToLogin = useCallback((reason?: "another_device") => {
+    logoutStudent();
+    const redirect = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
+    const kicked = reason === "another_device" ? "&kicked=1" : "";
+    staticReplace(`/login?redirect=${redirect}${kicked}`);
+  }, []);
+
+  const runSessionCheck = useCallback(async () => {
+    if (validatingRef.current) return;
+    validatingRef.current = true;
+    try {
+      let session = getStudentSession();
+      if (!session) {
+        kickToLogin();
+        return;
+      }
+
+      if (!session.sessionToken || !session.deviceId) {
+        session = (await attachStudentDeviceSession(session)) || session;
+      }
+
+      if (session.sessionToken && session.deviceId) {
+        const valid = await validateStudentDeviceSession();
+        if (!valid) {
+          kickToLogin("another_device");
+          return;
+        }
+      }
+
+      setSessionReady(true);
+      if (session.name) setInitials(studentInitials(session.name));
+    } catch {
+      // Network blips should not force logout; retry on next interval/focus.
+      setSessionReady(true);
+    } finally {
+      validatingRef.current = false;
+    }
+  }, [kickToLogin]);
 
   useEffect(() => {
     if (!isStudentLoggedIn()) {
-      const redirect = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
-      staticReplace(`/login?redirect=${redirect}`);
+      kickToLogin();
       return;
     }
-    const session = getStudentSession();
-    if (session?.name) setInitials(studentInitials(session.name));
-  }, []);
+
+    void runSessionCheck();
+
+    const intervalId = window.setInterval(() => {
+      void runSessionCheck();
+    }, SESSION_VALIDATE_MS);
+
+    const onFocus = () => {
+      if (document.visibilityState === "hidden") return;
+      void runSessionCheck();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
+    };
+  }, [kickToLogin, runSessionCheck]);
+
+  if (!sessionReady && !isStudentLoggedIn()) {
+    return null;
+  }
 
   return (
     <main className="min-h-screen bg-[#f6f8fc] text-[13px] text-[#111827] sm:text-sm" style={{ fontFamily: "'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif" }}>

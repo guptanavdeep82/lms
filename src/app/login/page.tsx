@@ -6,6 +6,7 @@ import { staticPush } from "@/lib/static-nav";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { getStudentProfile, loginStudent, saveStudentProfile } from "@/lib/student-auth";
+import { attachStudentDeviceSession } from "@/lib/student-session";
 import { checkStudentRegistration, syncStudentWithBackend } from "@/lib/student-registration";
 import { OTP_LENGTH, isValidOtp, sendStudentWhatsappOtp, verifyStudentWhatsappOtp } from "@/lib/student-otp";
 import type { GoogleStudent } from "@/lib/google-sign-in";
@@ -33,6 +34,13 @@ export default function LoginPage() {
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("kicked") === "1") {
+      setError("Logged in on another device");
+    }
+  }, []);
+
   const redirectAfterLogin = () => {
     const params = new URLSearchParams(window.location.search);
     staticPush(params.get("redirect") || "/student/dashboard");
@@ -56,7 +64,7 @@ export default function LoginPage() {
       mobileVerified: true,
     });
 
-    loginStudent({
+    const session = loginStudent({
       name: student.name,
       email: student.email,
       mobile: student.mobile,
@@ -70,6 +78,8 @@ export default function LoginPage() {
     } catch {
       // Local login should still work even if backend sync fails temporarily.
     }
+
+    await attachStudentDeviceSession(session);
 
     redirectAfterLogin();
   };

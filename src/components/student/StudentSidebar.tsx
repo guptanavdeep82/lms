@@ -21,7 +21,7 @@ import {
   WalletCards,
 } from "lucide-react";
 import { BRAND_LOGO_ALT, BRAND_LOGO_SRC } from "@/lib/brand";
-import { logoutStudent } from "@/lib/student-auth";
+import { logoutStudentDeviceSession } from "@/lib/student-session";
 
 const navGroups = [
   {
@@ -64,8 +64,9 @@ export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
   const pathname = usePathname();
 
   const handleSignOut = () => {
-    logoutStudent();
-    staticPush("/login");
+    void logoutStudentDeviceSession().finally(() => {
+      staticPush("/login");
+    });
   };
 
   return (
