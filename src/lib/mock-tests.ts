@@ -3,6 +3,7 @@ export type MockQuestion = {
   section_name: string;
   question_type: string;
   question_text: string;
+  passage?: string | null;
   options: Partial<Record<"A" | "B" | "C" | "D" | "E", string | null>>;
   correct_answer: string;
   marks: number;

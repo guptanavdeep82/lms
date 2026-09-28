@@ -17,6 +17,7 @@ export type MockAttemptQuestion = {
   topic: string;
   question_type: string;
   question_text: string;
+  passage?: string | null;
   options: { A?: string | null; B?: string | null; C?: string | null; D?: string | null; E?: string | null };
   selected_answer: string | null;
   correct_answer: string;

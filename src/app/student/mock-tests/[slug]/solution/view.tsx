@@ -176,10 +176,17 @@ export default function MockSolutionPage() {
         <section className="grid grid-rows-[1fr_auto]">
           <div className="grid overflow-hidden lg:grid-cols-2">
             <div className="border-b border-[#cfd7df] p-4 text-[15px] leading-7 lg:border-b-0 lg:border-r lg:overflow-y-auto lg:text-[17px]">
-              <p className="font-bold"><RichHtml html={question.question_text} /></p>
+              {question.passage ? (
+                <RichHtml html={question.passage} />
+              ) : (
+                <p className="font-bold"><RichHtml html={question.question_text} /></p>
+              )}
             </div>
 
             <div className="p-4 lg:overflow-y-auto">
+              {question.passage ? (
+                <div className="mb-4 text-[15px] font-bold leading-7 lg:text-[17px]"><RichHtml html={question.question_text} /></div>
+              ) : null}
               <div className="space-y-3">
                 {(Object.keys(question.options) as Array<keyof MockAttemptQuestion["options"]>).map((key) => {
                   const option = question.options[key];

@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef, useState, type ReactNode, type PointerE
 type ExamDragPaneProps = {
   children: ReactNode;
   className?: string;
+  /** When provided, the pane scrolls back to the top whenever this value changes. */
+  resetKey?: string | number;
 };
 
 const INTERACTIVE_SELECTOR = "input, button, textarea, select, a, label, [role='button'], [contenteditable='true']";
@@ -14,7 +16,7 @@ const DRAG_THRESHOLD_PX = 6;
  * Real-exam feel: native wheel/touch scroll is blocked. Users pan by dragging
  * empty space. Clicks on radios / buttons still work.
  */
-export function ExamDragPane({ children, className = "" }: ExamDragPaneProps) {
+export function ExamDragPane({ children, className = "", resetKey }: ExamDragPaneProps) {
   const ref = useRef<HTMLDivElement>(null);
   const drag = useRef<{
     pointerId: number;
@@ -48,6 +50,11 @@ export function ExamDragPane({ children, className = "" }: ExamDragPaneProps) {
       if (noticeTimer.current) window.clearTimeout(noticeTimer.current);
     };
   }, [showNotice]);
+
+  useEffect(() => {
+    if (resetKey === undefined) return;
+    if (ref.current) ref.current.scrollTop = 0;
+  }, [resetKey]);
 
   const isInteractiveTarget = (target: EventTarget | null) => {
     if (!(target instanceof Element)) return false;

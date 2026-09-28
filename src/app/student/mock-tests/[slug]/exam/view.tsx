@@ -714,14 +714,25 @@ export default function DynamicMockExamPage() {
         </div>
 
         <div className="exam-question-pane">
-          <ExamDragPane className="border-b border-[#cfd7df] lg:border-b-0 lg:border-r">
-            <div className="p-3 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
-              <p className="mb-4 font-bold"><RichHtml html={question.question_text} /></p>
-            </div>
-          </ExamDragPane>
+          {question.passage ? (
+            <ExamDragPane className="border-b border-[#cfd7df] lg:border-b-0 lg:border-r" resetKey={question.passage}>
+              <div className="exam-passage p-3 text-[15px] leading-7 lg:text-[17px] lg:leading-8">
+                <RichHtml html={question.passage} />
+              </div>
+            </ExamDragPane>
+          ) : (
+            <ExamDragPane className="border-b border-[#cfd7df] lg:border-b-0 lg:border-r">
+              <div className="p-3 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
+                <p className="mb-4 font-bold"><RichHtml html={question.question_text} /></p>
+              </div>
+            </ExamDragPane>
+          )}
 
-          <ExamDragPane>
+          <ExamDragPane resetKey={question.passage ? question.id : undefined}>
             <div className="p-4 text-[15px] leading-7 lg:text-[18px] lg:leading-8">
+              {question.passage ? (
+                <div className="mb-4 font-bold"><RichHtml html={question.question_text} /></div>
+              ) : null}
               <h2 className="mb-3 font-bold">Choose the correct answer.</h2>
               <div className="mt-4 space-y-4" key={`${question.id}-${optionResetKey}-${answers[question.id] ?? "none"}`}>
                 {(Object.entries(question.options) as Array<[keyof MockQuestion["options"], string | null]>).map(([key, option]) => (
