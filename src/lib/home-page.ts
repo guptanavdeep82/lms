@@ -311,10 +311,10 @@ export const defaultHomePageSettings: HomePageSettings = {
       title: "Previous year Memory based papers",
       tone: "sky",
       items: [
-        { label: "Ibps clerk mains", url: "/mock-tests/ibps-clerk-mains-2026", icon: "fa-file-lines" },
-        { label: "SBI clerk mains", url: "/mock-tests/sbi-clerk-mains-2026", icon: "fa-file-lines" },
-        { label: "RRB po prelims", url: "/mock-tests/ibps-rrb-prelims-2026", icon: "fa-file-lines" },
-        { label: "RRB clerk prelims", url: "/mock-tests/ibps-rrb-prelims-2026", icon: "fa-file-lines" },
+        { label: "Ibps clerk mains", url: "/courses/ibps-clerk-mains", icon: "fa-file-lines" },
+        { label: "SBI clerk mains", url: "/courses/sbi-clerk-mains-memoty-based-papers", icon: "fa-file-lines" },
+        { label: "RRB po prelims", url: "/courses/rrb-po-prelims-memoty-based-papers", icon: "fa-file-lines" },
+        { label: "RRB clerk prelims", url: "/courses/rrb-clerk-prelims-memoty-based-papers", icon: "fa-file-lines" },
       ],
     },
     {
