@@ -11,7 +11,6 @@ type PublicFooterProps = {
 
 const companyLinks = [
   { label: "Home", href: "/" },
-  { label: "All Packages", href: "/packages" },
   { label: "Mock Test Series", href: "/mock-tests" },
   { label: "Live Classes", href: "/live-classes" },
   { label: "Contact Us", href: "/contact" },
