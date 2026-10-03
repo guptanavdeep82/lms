@@ -86,7 +86,7 @@ export default function ContactPage() {
               Talk To KR Logics Counselling Team
             </h1>
             <p className="mt-5 max-w-xl text-base leading-8 text-slate-600">
-              Need help choosing the right course, mock test package, or exam plan? Share your details and our team will guide you with the best path.
+              Need help choosing the right course, mock test series, or exam strategy? Share your details and our team will guide you with the best path.
             </p>
 
             <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
@@ -140,7 +140,6 @@ export default function ContactPage() {
                   <option>SBI PO / Clerk Course</option>
                   <option>RBI Grade B Preparation</option>
                   <option>Mock Tests</option>
-                  <option>Packages</option>
                 </select>
               </label>
               <label className="space-y-2">
@@ -180,7 +179,7 @@ export default function ContactPage() {
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             <ShieldCheck className="mb-4 size-8 text-[#1b2e6b]" />
             <h3 className="font-rajdhani text-xl font-bold text-[#1b2e6b]">Admission Help</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Our team helps students compare courses, mock tests, batches and subscription plans.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Our team helps students compare courses, mock tests and batches.</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-[#1b2e6b] p-6 text-white">
             <MessageCircle className="mb-4 size-8 text-[#f5c518]" />

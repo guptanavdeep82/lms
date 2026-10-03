@@ -17,7 +17,6 @@ export const navItems = [
   { label: "Live Classes", href: "/live-classes" },
   { label: "Forum", href: "/forum" },
   { label: "Blog", href: "/blog" },
-  { label: "Pricing", href: "/pricing" },
 ];
 
 export const courses = [
@@ -73,12 +72,6 @@ export const stats = [
   ["300+", "Video lessons"],
   ["80+", "Mock tests"],
   ["24/7", "AI support"],
-];
-
-export const plans = [
-  { name: "Starter", price: "₹999", term: "1 Month", items: ["Free notes", "Basic mock tests", "Forum access"] },
-  { name: "Pro Learner", price: "₹3,499", term: "3 Months", items: ["Recorded courses", "Paid notes", "Live classes", "Analytics dashboard"], featured: true },
-  { name: "Rank Builder", price: "₹6,999", term: "12 Months", items: ["All courses", "Full mock tests", "1 year notes", "Priority support"] },
 ];
 
 export const blogs = [

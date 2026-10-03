@@ -23,9 +23,8 @@ export const revalidate = 3600;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
-  const [courseSlugs, packageSlugs, mockCategories, cmsPages] = await Promise.all([
+  const [courseSlugs, mockCategories, cmsPages] = await Promise.all([
     fetchListedSlugs("/api/courses", "courses"),
-    fetchListedSlugs("/api/packages", "packages"),
     fetchListedSlugs("/api/mock-tests", "categories"),
     fetchCmsPages(),
   ]);
@@ -33,7 +32,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     "",
     "/courses",
-    "/packages",
     "/mock-tests",
     "/live-classes",
     "/faculty",
@@ -51,7 +49,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const dynamicRoutes: MetadataRoute.Sitemap = [
     ...courseSlugs.map((slug) => ({ url: siteUrl(`/courses/${slug}`), lastModified: now, changeFrequency: "weekly" as const, priority: 0.7 })),
-    ...packageSlugs.map((slug) => ({ url: siteUrl(`/packages/${slug}`), lastModified: now, changeFrequency: "weekly" as const, priority: 0.6 })),
     ...mockCategories.map((slug) => ({ url: siteUrl(`/mock-tests/${slug}`), lastModified: now, changeFrequency: "weekly" as const, priority: 0.6 })),
     ...cmsPages.map((page) => ({ url: siteUrl(`/pages/${page.slug}`), lastModified: now, changeFrequency: "monthly" as const, priority: 0.5 })),
     ...blogs.map((blog) => ({ url: siteUrl(`/blog/${blog.slug}`), lastModified: now, changeFrequency: "monthly" as const, priority: 0.5 })),
