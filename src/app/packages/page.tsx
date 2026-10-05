@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BadgePercent, BookOpenCheck, CheckCircle2, Crown, Layers3, Loader2, MonitorPlay, Trophy } from "lucide-react";
+import { BadgePercent, BookOpenCheck, CheckCircle2, ChevronDown, ChevronUp, Crown, Layers3, Loader2, MonitorPlay, Trophy } from "lucide-react";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { RazorpayCheckoutButton } from "@/components/payments/RazorpayCheckoutButton";
 import { fetchPackages, formatInr, packageEffectivePrice, packageIncludeLabel, type PackageItem } from "@/lib/packages";
@@ -29,7 +29,8 @@ const styles = `
 .packages-wrap{max-width:1220px;margin:0 auto;padding:42px 5% 72px}
 .section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:22px}
 .section-head h2{margin:0;font-size:28px;line-height:1;font-weight:950;color:#0E318D}.section-head p{margin:8px 0 0;color:#5a6f9a;font-size:14px;line-height:1.65}
-.packages-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.packages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;align-items:start}
+.packages-grid.few{grid-template-columns:repeat(auto-fill,minmax(290px,380px))}
 .package-card{position:relative;display:flex;flex-direction:column;min-height:468px;border:1px solid rgba(9,87,211,.14);border-radius:18px;background:#fff;box-shadow:0 18px 44px rgba(9,40,120,.08);overflow:hidden;transition:transform .22s ease,box-shadow .22s ease}
 .package-card:hover{transform:translateY(-7px);box-shadow:0 28px 62px rgba(9,40,120,.14)}
 .package-card.featured{border-color:#0957D3;box-shadow:0 26px 70px rgba(9,87,211,.18)}
@@ -45,9 +46,16 @@ const styles = `
 .package-top p{position:relative;margin:0;color:rgba(255,255,255,.82);font-size:13px;line-height:1.6}
 .package-card.cream .package-top p{color:#5a6f9a}
 .package-body{display:flex;flex:1;flex-direction:column;padding:19px}
-.include-list{display:grid;gap:10px;margin-bottom:18px}
-.include-list div{display:flex;align-items:center;gap:9px;color:#1a2f5c;font-size:13px;font-weight:850}
-.include-list svg{color:#0957D3;flex:0 0 auto}
+.include-stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.include-stat{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#eef3fb;border:1px solid rgba(9,87,211,.14);color:#0957D3;padding:6px 11px;font-size:12px;font-weight:900}
+.include-stat strong{font-size:14px;font-weight:950;color:#0E318D}
+.include-title{margin:0 0 10px;color:#5a6f9a;font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.12em}
+.include-list{display:grid;gap:9px;margin-bottom:12px}
+.include-list.expanded{max-height:300px;overflow-y:auto;padding-right:6px;scrollbar-width:thin}
+.include-list div{display:flex;align-items:flex-start;gap:9px;color:#1a2f5c;font-size:13px;line-height:1.4;font-weight:800}
+.include-list svg{color:#0957D3;flex:0 0 auto;margin-top:1px}
+.include-toggle{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-bottom:18px;border:0;background:transparent;color:#0957D3;padding:0;font-size:13px;font-weight:900;cursor:pointer}
+.include-toggle:hover{text-decoration:underline}
 .package-price{margin-top:auto;border-top:1px solid rgba(9,87,211,.12);padding-top:16px}
 .package-price strong{font-size:30px;font-weight:950;color:#0E318D}.package-price del{margin-left:8px;color:#7a8db0;font-size:14px}
 .package-note{margin-top:5px;color:#5a6f9a;font-size:11px;font-weight:800}
@@ -55,22 +63,46 @@ const styles = `
 .why-strip{margin-top:42px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .why-item{border:1px solid rgba(9,87,211,.14);border-radius:16px;background:#eef3fb;padding:20px;box-shadow:0 14px 30px rgba(9,40,120,.05)}
 .why-item svg{color:#0957D3}.why-item h3{margin:12px 0 6px;font-size:16px;font-weight:950;color:#0E318D}.why-item p{margin:0;color:#5a6f9a;font-size:13px;line-height:1.55}
-@media(max-width:1080px){.packages-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.packages-hero-inner{grid-template-columns:1fr}.why-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:720px){.packages-hero{padding:46px 4%}.packages-wrap{padding-inline:4%}.packages-grid,.package-summary,.why-strip{grid-template-columns:1fr}.section-head{display:block}.package-card{min-height:auto}.package-top{min-height:auto}}
+@media(max-width:1080px){.packages-hero-inner{grid-template-columns:1fr}.why-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.packages-hero{padding:46px 4%}.packages-wrap{padding-inline:4%}.packages-grid,.packages-grid.few,.package-summary,.why-strip{grid-template-columns:1fr}.section-head{display:block}.package-card{min-height:auto}.package-top{min-height:auto}}
 `;
 
 const accents = ["gold", "black", "cream", "gold"] as const;
 const tags = ["Most Value", "Test Series", "Self Study", "Live Batch"];
+
+const INCLUDE_PREVIEW_LIMIT = 6;
+
+const includeTypeNames: Record<string, [string, string]> = {
+  course: ["Course", "Courses"],
+  mock_category: ["Mock Group", "Mock Groups"],
+  mock_test: ["Mock Test", "Mock Tests"],
+};
 
 function cardAccent(index: number, featured?: boolean) {
   if (featured) return "gold";
   return accents[index % accents.length];
 }
 
+function includeStats(includes: PackageItem["includes"]) {
+  const counts = new Map<string, number>();
+  for (const include of includes ?? []) {
+    counts.set(include.type, (counts.get(include.type) ?? 0) + 1);
+  }
+
+  return Array.from(counts.entries()).map(([type, count]) => {
+    const [singular, plural] = includeTypeNames[type] ?? ["Item", "Items"];
+    return { type, count, label: count === 1 ? singular : plural };
+  });
+}
+
 export default function PackagesPage() {
   const [packages, setPackages] = useState<PackageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [purchasedIds, setPurchasedIds] = useState<number[]>([]);
+  const [expandedIds, setExpandedIds] = useState<number[]>([]);
+
+  const toggleExpanded = (id: number) =>
+    setExpandedIds((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
 
   useEffect(() => {
     fetchPackages()
@@ -137,12 +169,16 @@ export default function PackagesPage() {
         {loading ? (
           <div className="grid min-h-[240px] place-items-center"><Loader2 className="animate-spin text-[#0957D3]" size={34} /></div>
         ) : (
-          <div className="packages-grid">
+          <div className={`packages-grid ${packages.length < 3 ? "few" : ""}`}>
             {packages.map((item, index) => {
               const price = packageEffectivePrice(item);
               const original = item.sale_price !== null && item.price > item.sale_price ? item.price : null;
               const accent = cardAccent(index, item.is_featured);
               const purchased = purchasedIds.includes(item.id);
+              const includes = item.includes ?? [];
+              const expanded = expandedIds.includes(item.id);
+              const visibleIncludes = expanded ? includes : includes.slice(0, INCLUDE_PREVIEW_LIMIT);
+              const hiddenCount = includes.length - INCLUDE_PREVIEW_LIMIT;
 
               return (
                 <article key={item.id} className={`package-card ${accent} ${item.is_featured ? "featured" : ""}`}>
@@ -153,11 +189,24 @@ export default function PackagesPage() {
                     <p>{item.short_description || "Focused banking exam preparation package."}</p>
                   </div>
                   <div className="package-body">
-                    <div className="include-list">
-                      {(item.includes?.length ? item.includes : []).map((include, includeIndex) => (
+                    {includes.length > INCLUDE_PREVIEW_LIMIT ? (
+                      <div className="include-stats">
+                        {includeStats(includes).map((stat) => (
+                          <span key={stat.type} className="include-stat"><strong>{stat.count}</strong> {stat.label}</span>
+                        ))}
+                      </div>
+                    ) : null}
+                    {includes.length ? <p className="include-title">What&apos;s included</p> : null}
+                    <div className={`include-list ${expanded ? "expanded" : ""}`}>
+                      {visibleIncludes.map((include, includeIndex) => (
                         <div key={`${include.type}-${include.id ?? includeIndex}`}><CheckCircle2 size={17} /> {packageIncludeLabel(include)}</div>
                       ))}
                     </div>
+                    {hiddenCount > 0 ? (
+                      <button type="button" className="include-toggle" onClick={() => toggleExpanded(item.id)}>
+                        {expanded ? <>Show less <ChevronUp size={16} /></> : <>View all {includes.length} items (+{hiddenCount} more) <ChevronDown size={16} /></>}
+                      </button>
+                    ) : null}
                     <div className="package-price">
                       <strong>{formatInr(price)}</strong>
                       {original ? <del>{formatInr(original)}</del> : null}
