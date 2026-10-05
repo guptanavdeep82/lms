@@ -178,6 +178,7 @@ export function PublicHeader({ active, pages }: PublicHeaderProps) {
               </div>
             </div>
             {navLink("/mock-tests", "Mock Tests", "mock-tests")}
+            {navLink("/packages", "Packages", "packages")}
             {navLink("/current-affairs", "Current Affairs", "current-affairs")}
             {navLink("/live-classes", "Live Classes", "live-classes")}
             <a href="https://krlogicsblog.com/" target="_blank" rel="noopener noreferrer" onClick={closeMobileNav}>Blog</a>

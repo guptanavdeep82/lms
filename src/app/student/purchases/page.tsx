@@ -8,7 +8,7 @@ export default function StudentPurchasesPage() {
       <StudentPageHeader
         eyebrow="Billing"
         title="Purchase History"
-        description="View all courses and mock tests you have purchased."
+        description="View all courses, mock tests, and packages you have purchased."
       />
       <StudentPurchaseHistoryPanel />
     </StudentDashboardShell>
