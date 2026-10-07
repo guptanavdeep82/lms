@@ -46,12 +46,15 @@ export function StudentDashboardShell({ children }: StudentDashboardShellProps) 
         session = (await attachStudentDeviceSession(session)) || session;
       }
 
-      if (session.sessionToken && session.deviceId) {
-        const valid = await validateStudentDeviceSession();
-        if (!valid) {
-          kickToLogin("another_device");
-          return;
-        }
+      if (!session.sessionToken || !session.deviceId) {
+        kickToLogin();
+        return;
+      }
+
+      const valid = await validateStudentDeviceSession();
+      if (!valid) {
+        kickToLogin("another_device");
+        return;
       }
 
       setSessionReady(true);

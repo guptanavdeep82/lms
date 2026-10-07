@@ -1,5 +1,6 @@
 import { publicBackendBaseUrl, type MockTestProgressResponse } from "@/lib/mock-tests";
 import type { StudentLibraryResponse } from "@/lib/packages";
+import { studentAuthHeaders } from "@/lib/student-auth";
 
 export type StudentProfileResponse = {
   id: number;
@@ -107,7 +108,7 @@ export async function updateStudentProfile(input: {
 export async function fetchTestAttempts(email: string, type?: "daily_practice" | "mock_test") {
   const query = new URLSearchParams({ email });
   if (type) query.set("type", type);
-  const response = await fetch(apiUrl(`/test-results?${query.toString()}`), { cache: "no-store" });
+  const response = await fetch(apiUrl(`/test-results?${query.toString()}`), { cache: "no-store", headers: studentAuthHeaders() });
   if (!response.ok) return [] as MockTestAttemptRecord[];
   const data = await response.json() as { attempts?: MockTestAttemptRecord[] };
   return data.attempts || [];
@@ -142,15 +143,21 @@ export async function saveTestAttempt(input: {
 }) {
   const response = await fetch(apiUrl("/test-results"), {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    headers: { "Content-Type": "application/json", Accept: "application/json", ...studentAuthHeaders() },
     body: JSON.stringify(input),
   });
-  if (!response.ok) return null;
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({})) as { message?: string };
+    throw new Error(data.message || "Unable to submit the test. Please try again.");
+  }
   return response.json() as Promise<{
     attempt?: {
       id: number;
       attempt_type: string;
       score: number;
+      correct_count?: number;
+      answered_count?: number;
+      total_questions?: number;
       passed?: boolean;
       percentage?: number;
       passing_percentage?: number;

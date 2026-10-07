@@ -8,12 +8,14 @@ import { Clock3, Expand, HelpCircle, Loader2, Pause, Play, UserRound, X } from "
 import { PaletteIcon, formatExamClock, formatMmSs } from "@/components/student/mock-exam-status";
 import type { MockAttemptAnswerInput } from "@/lib/mock-attempt-analysis";
 import { saveMockResult } from "@/lib/mock-results";
-import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
+import { getStudentSession, isStudentLoggedIn, studentAuthHeaders } from "@/lib/student-auth";
 import { mockTestsApiUrl, mockTestSectionExamUrl, mockExamSessionUrl, nextUnlockedSection, notifyMockExamOpener, toIdFlagMap, toIdNumberMap, toIdStringMap, type MockExamSession, type MockQuestion, type MockTestDetailResponse, type MockTestSection, type MockTestSectionExamResponse } from "@/lib/mock-tests";
 import { decodeHtmlEntities } from "@/lib/html-entities";
 import { RichHtml } from "@/components/student/RichHtml";
 import { ExamDragPane } from "@/components/student/ExamDragPane";
 import "./exam-shell.css";
+
+const SESSION_EXPIRED_MESSAGE = "Your login session has expired or is active on another device. Please log in again from the main window.";
 
 export default function DynamicMockExamPage() {
   const slug = useLiveParam("slug", 2);
@@ -27,6 +29,7 @@ export default function DynamicMockExamPage() {
   const [visitOrder, setVisitOrder] = useState<Record<number, number>>({});
   const [reviewMarked, setReviewMarked] = useState<Record<number, boolean>>({});
   const [validationMessage, setValidationMessage] = useState("");
+  const [submitError, setSubmitError] = useState("");
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [sectionDurationSeconds, setSectionDurationSeconds] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -96,7 +99,11 @@ export default function DynamicMockExamPage() {
         }
 
         if (sectionSlug && email) {
-          const response = await fetch(mockTestSectionExamUrl(slug, sectionSlug, email));
+          const response = await fetch(mockTestSectionExamUrl(slug, sectionSlug, email), { headers: studentAuthHeaders() });
+          if (response.status === 401) {
+            setLoadError(SESSION_EXPIRED_MESSAGE);
+            return;
+          }
           if (!response.ok) {
             setLoadError("This section is locked or unavailable. Go back and try again.");
             return;
@@ -124,7 +131,7 @@ export default function DynamicMockExamPage() {
           return;
         }
 
-        const response = await fetch(mockTestsApiUrl(slug, email));
+        const response = await fetch(mockTestsApiUrl(slug, email), { headers: studentAuthHeaders() });
         if (!response.ok) {
           setLoadError("Unable to load this mock test. Please try again.");
           return;
@@ -221,7 +228,7 @@ export default function DynamicMockExamPage() {
     try {
       await fetch(mockExamSessionUrl(slug, student.email, activeSectionId), {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...studentAuthHeaders() },
         body: JSON.stringify({
           email: student.email,
           section_id: activeSectionId,
@@ -367,20 +374,13 @@ export default function DynamicMockExamPage() {
     if (!data || submitting) return;
 
     setSubmitting(true);
+    setSubmitError("");
 
     const finalTimes = { ...questionTimes };
     if (question) {
       const elapsed = Math.max(1, Math.floor((Date.now() - questionStartedAtRef.current) / 1000));
       finalTimes[question.id] = (finalTimes[question.id] || 0) + elapsed;
     }
-
-    const correct = questions.reduce((sum, item) => sum + (answers[item.id] === item.correct_answer ? 1 : 0), 0);
-    const score = questions.reduce((sum, item) => {
-      const answer = answers[item.id];
-      if (!answer) return sum;
-      if (answer === item.correct_answer) return sum + item.marks;
-      return sum - item.negative_marks;
-    }, 0);
 
     const timeUsed = Math.max(
       activeDurationSeconds - remainingSeconds,
@@ -397,7 +397,9 @@ export default function DynamicMockExamPage() {
       visit_order: visitOrder[item.id] ?? null,
     }));
 
-    const saved = await saveMockResult(
+    let saved: Awaited<ReturnType<typeof saveMockResult>>;
+    try {
+      saved = await saveMockResult(
       {
         slug,
         testTitle: sectionMeta ? `${data.test.title} - ${sectionMeta.name}` : data.test.title,
@@ -407,14 +409,19 @@ export default function DynamicMockExamPage() {
         sectionName: sectionMeta?.name,
         total: questions.length,
         answered: answeredCount,
-        correct,
-        score,
+        correct: 0,
+        score: 0,
         submittedAt: new Date().toISOString(),
         timeUtilizedSeconds: timeUsed,
         durationSeconds: activeDurationSeconds,
       },
       answerPayload
-    );
+      );
+    } catch (submitFailure) {
+      setSubmitError(submitFailure instanceof Error ? submitFailure.message : "Unable to submit the test. Please try again.");
+      setSubmitting(false);
+      return;
+    }
 
     if (sectionMeta) {
       const progressSections = saved?.progress?.sections ?? data.sections ?? [];
@@ -463,10 +470,10 @@ export default function DynamicMockExamPage() {
   }, [data, isPaused, pendingNextSection, remainingSeconds]);
 
   useEffect(() => {
-    if (data && questions.length > 0 && remainingSeconds === 0 && !submitting && !pendingNextSection) {
+    if (data && questions.length > 0 && remainingSeconds === 0 && !submitting && !submitError && !pendingNextSection) {
       void submitTest();
     }
-  }, [data, pendingNextSection, questions.length, remainingSeconds, submitTest, submitting]);
+  }, [data, pendingNextSection, questions.length, remainingSeconds, submitError, submitTest, submitting]);
 
   const enterFullscreen = useCallback(() => {
     try {
@@ -762,6 +769,14 @@ export default function DynamicMockExamPage() {
           {validationMessage && (
             <div className="rounded-lg border border-[#ffd4a3] bg-[#fff7ed] px-3 py-2 text-xs font-bold text-[#9a3412]">
               {validationMessage}
+            </div>
+          )}
+          {submitError && (
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#fecaca] bg-[#fef2f2] px-3 py-2 text-xs font-bold text-[#991b1b]">
+              <span>Submission failed: {submitError} Your answers are still saved on this page.</span>
+              <button type="button" disabled={submitting} onClick={() => void submitTest()} className="rounded bg-[#991b1b] px-3 py-1.5 text-xs font-bold text-white disabled:opacity-60">
+                {submitting ? "Submitting..." : "Retry Submit"}
+              </button>
             </div>
           )}
           <div className="flex flex-wrap items-center justify-between gap-2">

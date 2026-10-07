@@ -1,4 +1,5 @@
 import { publicBackendBaseUrl } from "@/lib/mock-tests";
+import { studentAuthHeaders } from "@/lib/student-auth";
 
 export type MockAttemptAnswerInput = {
   question_id: number;
@@ -159,7 +160,7 @@ function apiUrl(path: string) {
 export async function fetchMockAttemptDetail(email: string, attemptId: number) {
   const response = await fetch(
     apiUrl(`/test-results/${attemptId}?email=${encodeURIComponent(email)}`),
-    { cache: "no-store" }
+    { cache: "no-store", headers: studentAuthHeaders() }
   );
   if (!response.ok) throw new Error("Unable to load attempt details.");
   return response.json() as Promise<MockAttemptDetail>;
@@ -170,7 +171,7 @@ export async function fetchMockAttemptBySlug(email: string, slug: string, combin
   if (combined) params.set("combined", "1");
   const response = await fetch(
     apiUrl(`/test-results/by-slug/${slug}?${params.toString()}`),
-    { cache: "no-store" }
+    { cache: "no-store", headers: studentAuthHeaders() }
   );
   if (!response.ok) throw new Error("Unable to load attempt details.");
   return response.json() as Promise<MockAttemptDetail>;

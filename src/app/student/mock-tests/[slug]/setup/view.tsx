@@ -6,7 +6,7 @@ import Link from "next/link";
 import { staticPush, staticReplace } from "@/lib/static-nav";
 import { useLiveParam } from "@/lib/use-live-param";
 import { ArrowLeft, ArrowRight, Award, CheckCircle2, Clock3, FileText, Loader2, MonitorCheck, ShieldCheck, UserRound } from "lucide-react";
-import { getStudentSession, isStudentLoggedIn } from "@/lib/student-auth";
+import { getStudentSession, isStudentLoggedIn, studentAuthHeaders } from "@/lib/student-auth";
 import {
   examTotalsFromDetail,
   MOCK_EXAM_MESSAGE_SOURCE,
@@ -45,7 +45,7 @@ export default function DynamicMockSetupPage() {
       return;
     }
 
-    const response = await fetch(mockTestsApiUrl(slug, student?.email), { cache: "no-store" });
+    const response = await fetch(mockTestsApiUrl(slug, student?.email), { cache: "no-store", headers: studentAuthHeaders() });
     if (!response.ok) return;
     const payload = (await response.json()) as MockTestDetailResponse;
     if (payload.test.is_locked) {
@@ -58,7 +58,7 @@ export default function DynamicMockSetupPage() {
   const refreshProgress = useCallback(async () => {
     if (!student?.email) return;
     try {
-      const response = await fetch(mockTestProgressUrl(slug, student.email), { cache: "no-store" });
+      const response = await fetch(mockTestProgressUrl(slug, student.email), { cache: "no-store", headers: studentAuthHeaders() });
       if (!response.ok) return;
       applyProgress((await response.json()) as MockTestProgressResponse);
     } catch {
@@ -151,7 +151,7 @@ export default function DynamicMockSetupPage() {
     try {
       const response = await fetch(mockTestResetProgressUrl(slug), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...studentAuthHeaders() },
         body: JSON.stringify({ email: student.email }),
       });
       if (response.ok) {

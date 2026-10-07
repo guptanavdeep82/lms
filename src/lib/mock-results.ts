@@ -46,10 +46,12 @@ export async function saveMockResult(
   answers: MockAttemptAnswerInput[] = []
 ): Promise<MockResult | null> {
   const storageKey = resultKey(result.slug, result.sectionSlug);
-  window.localStorage.setItem(storageKey, JSON.stringify(result));
 
   const session = getStudentSession();
-  if (!session?.email) return result;
+  if (!session?.email) {
+    window.localStorage.setItem(storageKey, JSON.stringify(result));
+    return result;
+  }
 
   const payload = await saveTestAttempt({
     email: session.email,
@@ -70,6 +72,10 @@ export async function saveMockResult(
 
   const enrichedResult: MockResult = {
     ...result,
+    score: payload?.attempt?.score ?? result.score,
+    correct: payload?.attempt?.correct_count ?? result.correct,
+    answered: payload?.attempt?.answered_count ?? result.answered,
+    total: payload?.attempt?.total_questions ?? result.total,
     attemptId: payload?.attempt?.id ?? result.attemptId,
     passed: payload?.attempt?.passed ?? result.passed,
     percentage: payload?.attempt?.percentage ?? result.percentage,

@@ -23,7 +23,7 @@ import { fetchMockAttemptBySlug, fetchMockAttemptDetail, type MockAttemptDetail 
 import { accuracyToneClass, scoreToneClass } from "@/components/student/mock-exam-status";
 import { MarksCalculationCard, SubjectMarksTable } from "@/components/student/MarksCalculation";
 import { getMockResult, type MockResult } from "@/lib/mock-results";
-import { isStudentLoggedIn, getStudentSession } from "@/lib/student-auth";
+import { isStudentLoggedIn, getStudentSession, studentAuthHeaders } from "@/lib/student-auth";
 import {
   mockTestsApiUrl,
   mockTestProgressUrl,
@@ -62,7 +62,7 @@ export default function MockResultPage() {
 
     Promise.all([
       fetch(mockTestsApiUrl(slug)).then((response) => response.json()) as Promise<MockTestDetailResponse>,
-      email ? fetch(mockTestProgressUrl(slug, email)).then((response) => (response.ok ? response.json() : null)) : Promise.resolve(null),
+      email ? fetch(mockTestProgressUrl(slug, email), { headers: studentAuthHeaders() }).then((response) => (response.ok ? response.json() : null)) : Promise.resolve(null),
       email
         ? attemptId
           ? fetchMockAttemptDetail(email, Number(attemptId)).catch(() => null)

@@ -6,7 +6,7 @@ import { staticPush, staticReplace } from "@/lib/static-nav";
 import { useLiveParam } from "@/lib/use-live-param";
 import { Globe2, Loader2 } from "lucide-react";
 import { PALETTE_LEGEND, PaletteIcon } from "@/components/student/mock-exam-status";
-import { isStudentLoggedIn, getStudentSession } from "@/lib/student-auth";
+import { isStudentLoggedIn, getStudentSession, studentAuthHeaders } from "@/lib/student-auth";
 import { examTotalsFromDetail, mockTestsApiUrl, sectionTotalMarks, type MockTestDetailResponse } from "@/lib/mock-tests";
 import { decodeHtmlEntities } from "@/lib/html-entities";
 
@@ -32,7 +32,7 @@ export default function DynamicMockInstructionsPage() {
       return;
     }
 
-    fetch(mockTestsApiUrl(slug, student?.email))
+    fetch(mockTestsApiUrl(slug, student?.email), { headers: studentAuthHeaders() })
       .then((response) => {
         if (!response.ok) throw new Error("Not found");
         return response.json();

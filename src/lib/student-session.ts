@@ -49,7 +49,13 @@ export function getOrCreateStudentDeviceId(): string {
   return deviceId;
 }
 
-export async function startStudentDeviceSession(email: string): Promise<{
+/** Proof of identity the backend verifies before issuing a session token. */
+export type StudentLoginProof = {
+  googleCredential?: string;
+  otpTicket?: string;
+};
+
+export async function startStudentDeviceSession(email: string, proof: StudentLoginProof = {}): Promise<{
   sessionToken: string;
   deviceId: string;
 } | null> {
@@ -66,6 +72,8 @@ export async function startStudentDeviceSession(email: string): Promise<{
       email: normalizedEmail,
       device_id: deviceId,
       platform: "web",
+      google_credential: proof.googleCredential || undefined,
+      otp_ticket: proof.otpTicket || undefined,
     }),
   });
 
@@ -84,6 +92,7 @@ export async function startStudentDeviceSession(email: string): Promise<{
 /** Start backend single-device session and merge tokens into local student session. */
 export async function attachStudentDeviceSession(
   sessionOrEmail: StudentSession | string,
+  proof: StudentLoginProof = {},
 ): Promise<StudentSession | null> {
   const email = typeof sessionOrEmail === "string" ? sessionOrEmail : sessionOrEmail.email;
   const base =
@@ -96,7 +105,7 @@ export async function attachStudentDeviceSession(
   }
 
   try {
-    const started = await startStudentDeviceSession(email);
+    const started = await startStudentDeviceSession(email, proof);
     if (!started) return base || getStudentSession();
 
     const current = base || getStudentSession();

@@ -40,6 +40,7 @@ export async function verifyStudentWhatsappOtp(mobile: string, otp: string) {
   const payload = (await response.json().catch(() => ({}))) as {
     message?: string;
     verified?: boolean;
+    otp_ticket?: string;
   };
 
   if (!response.ok || !payload.verified) {

@@ -5,8 +5,8 @@ import Link from "next/link";
 import { staticPush } from "@/lib/static-nav";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
-import { getStudentProfile, loginStudent, saveStudentProfile } from "@/lib/student-auth";
-import { attachStudentDeviceSession } from "@/lib/student-session";
+import { getStudentProfile, loginStudent, logoutStudent, saveStudentProfile } from "@/lib/student-auth";
+import { attachStudentDeviceSession, type StudentLoginProof } from "@/lib/student-session";
 import { checkStudentRegistration, syncStudentWithBackend } from "@/lib/student-registration";
 import { OTP_LENGTH, isValidOtp, sendStudentWhatsappOtp, verifyStudentWhatsappOtp } from "@/lib/student-otp";
 import type { GoogleStudent } from "@/lib/google-sign-in";
@@ -53,7 +53,7 @@ export default function LoginPage() {
     stateId?: number;
     stateName?: string;
     provider?: "password" | "google" | "otp";
-  }) => {
+  }, proof: StudentLoginProof) => {
     saveStudentProfile({
       name: student.name,
       email: student.email,
@@ -79,7 +79,12 @@ export default function LoginPage() {
       // Local login should still work even if backend sync fails temporarily.
     }
 
-    await attachStudentDeviceSession(session);
+    const attached = await attachStudentDeviceSession(session, proof);
+    if (!attached?.sessionToken) {
+      logoutStudent();
+      setError("Login verification failed. Please try again.");
+      return;
+    }
 
     redirectAfterLogin();
   };
@@ -108,7 +113,7 @@ export default function LoginPage() {
         stateId: profile.stateId,
         stateName: profile.stateName,
         provider: "google",
-      });
+      }, { googleCredential: student.credential });
       return;
     }
 
@@ -185,7 +190,7 @@ export default function LoginPage() {
     setVerifyingOtp(true);
     setError("");
     try {
-      await verifyStudentWhatsappOtp(mobile, otp);
+      const verified = await verifyStudentWhatsappOtp(mobile, otp);
 
       const profile = saveStudentProfile({
         name: pendingStudent.name,
@@ -200,7 +205,7 @@ export default function LoginPage() {
         email: profile.email,
         mobile: profile.mobile,
         provider: profile.provider,
-      });
+      }, { otpTicket: verified.otp_ticket, googleCredential: pendingStudent.credential });
     } catch (verifyError) {
       setError(verifyError instanceof Error ? verifyError.message : "OTP verification failed.");
     } finally {

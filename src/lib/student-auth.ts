@@ -67,6 +67,15 @@ export function isStudentLoggedIn() {
   return Boolean(getStudentSession());
 }
 
+/** Session headers required by protected student APIs (exam, results). */
+export function studentAuthHeaders(): Record<string, string> {
+  const session = getStudentSession();
+  const headers: Record<string, string> = {};
+  if (session?.sessionToken) headers["X-Session-Token"] = session.sessionToken;
+  if (session?.deviceId) headers["X-Device-Id"] = session.deviceId;
+  return headers;
+}
+
 export function getStudentProfiles(): StudentProfile[] {
   if (typeof window === "undefined") return [];
 

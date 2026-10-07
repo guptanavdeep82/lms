@@ -49,6 +49,8 @@ export async function getGoogleClientId(): Promise<string> {
 export type GoogleStudent = {
   name: string;
   email: string;
+  /** Google ID token; the backend verifies it before starting a session. */
+  credential?: string;
 };
 
 type GoogleCredentialResponse = {
@@ -95,7 +97,7 @@ export function decodeGoogleCredential(credential: string): GoogleStudent | null
       name?: string;
       email?: string;
     };
-    return json.email ? { name: json.name || json.email.split("@")[0], email: json.email } : null;
+    return json.email ? { name: json.name || json.email.split("@")[0], email: json.email, credential } : null;
   } catch {
     return null;
   }

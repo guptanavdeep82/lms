@@ -5,7 +5,7 @@ import Link from "next/link";
 import { staticPush } from "@/lib/static-nav";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
-import { loginStudent, saveStudentProfile } from "@/lib/student-auth";
+import { loginStudent, logoutStudent, saveStudentProfile } from "@/lib/student-auth";
 import { attachStudentDeviceSession } from "@/lib/student-session";
 import { checkStudentRegistration, fetchStates, registerStudent, type StateOption } from "@/lib/student-registration";
 import { OTP_LENGTH, isValidOtp, sendStudentWhatsappOtp, verifyStudentWhatsappOtp } from "@/lib/student-otp";
@@ -44,7 +44,7 @@ export default function RegisterPage() {
   const [referralValid, setReferralValid] = useState(false);
   const [validatingReferral, setValidatingReferral] = useState(false);
 
-  const completeLogin = async (student: GoogleStudent, verifiedMobile: string) => {
+  const completeLogin = async (student: GoogleStudent, verifiedMobile: string, otpTicket?: string) => {
     const selectedState = states.find((state) => String(state.id) === stateId);
     if (!selectedState) {
       setError("Please select your state.");
@@ -88,7 +88,16 @@ export default function RegisterPage() {
         ...referral,
       });
 
-      await attachStudentDeviceSession(session);
+      const attached = await attachStudentDeviceSession(session, {
+        googleCredential: student.credential,
+        otpTicket,
+      });
+      if (!attached?.sessionToken) {
+        logoutStudent();
+        setError("Account created, but login verification failed. Please log in.");
+        window.setTimeout(() => staticPush("/login"), 1800);
+        return;
+      }
 
       const params = new URLSearchParams(window.location.search);
       staticPush(params.get("redirect") || "/student/dashboard");
@@ -206,8 +215,8 @@ export default function RegisterPage() {
     setVerifyingOtp(true);
     setError("");
     try {
-      await verifyStudentWhatsappOtp(mobile, otp);
-      await completeLogin(pendingStudent, mobile);
+      const verified = await verifyStudentWhatsappOtp(mobile, otp);
+      await completeLogin(pendingStudent, mobile, verified.otp_ticket);
     } catch (verifyError) {
       setError(verifyError instanceof Error ? verifyError.message : "OTP verification failed.");
     } finally {
