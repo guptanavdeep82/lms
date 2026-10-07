@@ -137,7 +137,7 @@ export function PublicFooter({ settings }: PublicFooterProps) {
               <MapPin size={14} className="public-site-footer-icon mt-0.5 shrink-0" />
               <span
                 dangerouslySetInnerHTML={{
-                  __html: settings?.contact_section?.address?.trim() || "KR Logics Institute, Near City Mall,<br>Jodhpur, Rajasthan — 342001",
+                  __html: settings?.contact_section?.address?.trim() || "Annai Illam, Duraisamy Nagar,<br>Madurai 625016, Tamil Nadu",
                 }}
               />
             </p>
@@ -145,13 +145,13 @@ export function PublicFooter({ settings }: PublicFooterProps) {
               <Mail size={14} className="public-site-footer-icon mt-0.5 shrink-0" />
               <span
                 dangerouslySetInnerHTML={{
-                  __html: settings?.contact_section?.email?.trim() || "admissions@krlogics.com",
+                  __html: settings?.contact_section?.email?.trim() || "support@kaneeshreenalogics.com",
                 }}
               />
             </p>
             <p className="flex items-start gap-2">
               <Phone size={14} className="public-site-footer-icon mt-0.5 shrink-0" />
-              <span>{settings?.whatsapp_number?.trim() || "+91 98765 43210"} (Mon–Sat, 9 AM – 8 PM)</span>
+              <span>{settings?.whatsapp_number?.trim() || "+91 93841 09124"} (Mon–Sat, 9 AM – 8 PM)</span>
             </p>
           </div>
         </div>

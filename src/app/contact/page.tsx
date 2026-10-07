@@ -9,26 +9,30 @@ const contactCards = [
   {
     icon: Phone,
     title: "Call Counsellor",
-    text: "+91 98765 43210",
+    text: "+91 93841 09124",
     sub: "Mon-Sat, 9:00 AM to 8:00 PM",
+    href: "tel:+919384109124",
   },
   {
     icon: Mail,
     title: "Email Support",
-    text: "admissions@krlogics.com",
+    text: "support@kaneeshreenalogics.com",
     sub: "Response within 24 hours",
+    href: "mailto:support@kaneeshreenalogics.com",
   },
   {
     icon: MapPin,
     title: "Visit Center",
-    text: "KR Logics Institute, Jodhpur",
-    sub: "Near City Mall, Rajasthan",
+    text: "Annai Illam, Duraisamy Nagar",
+    sub: "Madurai 625016, Tamil Nadu",
+    href: "https://www.google.com/maps/search/?api=1&query=Annai+Illam,+Duraisamy+Nagar,+Madurai+625016,+Tamil+Nadu",
   },
   {
     icon: MessageCircle,
     title: "WhatsApp Help",
-    text: "+91 87654 32109",
+    text: "+91 82485 61681",
     sub: "Quick course guidance",
+    href: "https://wa.me/918248561681",
   },
 ];
 
@@ -93,12 +97,18 @@ export default function ContactPage() {
               {contactCards.map((card) => {
                 const Icon = card.icon;
                 return (
-                  <div key={card.title} className="min-w-0 rounded-xl border border-slate-200 bg-[#f8f9fc] p-4">
+                  <a
+                    key={card.title}
+                    href={card.href}
+                    target={card.href.startsWith("http") ? "_blank" : undefined}
+                    rel={card.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    className="block min-w-0 rounded-xl border border-slate-200 bg-[#f8f9fc] p-4 transition hover:border-[#1b2e6b] hover:bg-white"
+                  >
                     <Icon className="mb-3 size-6 text-[#1b2e6b]" />
                     <div className="font-rajdhani text-xl font-bold text-[#1b2e6b]">{card.title}</div>
                     <div className="mt-1 break-words text-sm font-semibold text-slate-800">{card.text}</div>
                     <div className="mt-1 text-xs text-slate-500">{card.sub}</div>
-                  </div>
+                  </a>
                 );
               })}
             </div>

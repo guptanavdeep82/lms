@@ -417,8 +417,8 @@ export const defaultHomePageSettings: HomePageSettings = {
   contact_section: {
     intro:
       "Have questions about admissions or courses? Our counselling team is ready to help you choose the right path for your banking career.",
-    address: "KR Logics Institute, Near City Mall,<br>Jodhpur, Rajasthan — 342001",
-    email: "info@krlogics.com<br>admissions@krlogics.com",
+    address: "Annai Illam, Duraisamy Nagar,<br>Madurai 625016, Tamil Nadu",
+    email: "support@kaneeshreenalogics.com",
     hours: "Mon–Sat: 9:00 AM – 8:00 PM<br>Sunday: 10:00 AM – 4:00 PM",
     form_title: "Send Us a Message",
   },

@@ -136,7 +136,7 @@ export function buildFooterSocialsMarkup(settings: HomePageSettings): string {
 
 export function buildContactPhoneMarkup(whatsappNumber: string | null): string {
   if (!whatsappNumber?.trim()) {
-    return "<p>+91 98765 43210<br>+91 87654 32109</p>";
+    return "<p>+91 93841 09124<br>+91 82485 61681</p>";
   }
 
   return `<p>${escapeHtml(whatsappNumber)}</p>`;
