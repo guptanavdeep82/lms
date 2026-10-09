@@ -24,6 +24,13 @@ export type ApiCourse = {
   price: number;
   sale_price: number | null;
   duration_hours: number;
+  validity_months?: number;
+  rating?: number | null;
+  reviews_count?: number;
+  students_count?: number;
+  folder_video_count?: number;
+  folder_pdf_count?: number;
+  mock_test_count?: number;
   is_featured: boolean;
   category: string | null;
   category_slug: string | null;
@@ -73,7 +80,12 @@ export type ListingCourse = {
   price: number;
   original: number;
   hours: number;
-  tests: number;
+  lessons: number;
+  videos: number;
+  pdfs: number;
+  mockTests: number;
+  liveSessions: number;
+  validityMonths: number;
   students: number;
   rating: number;
   reviews: number;
@@ -277,10 +289,15 @@ export function mapApiCourseToListingCourse(course: ApiCourse): ListingCourse {
     price: effectivePrice,
     original,
     hours: course.duration_hours || 0,
-    tests: course.lessons_count || 0,
-    students: Math.max(course.lessons_count * 25, course.is_featured ? 500 : 120),
-    rating: course.is_featured ? 4.8 : 4.5,
-    reviews: Math.max(course.lessons_count * 8, 50),
+    lessons: course.lessons_count || 0,
+    videos: course.folder_video_count || 0,
+    pdfs: course.folder_pdf_count || 0,
+    mockTests: course.mock_test_count || 0,
+    liveSessions: course.live_sessions_count || 0,
+    validityMonths: course.validity_months ?? 12,
+    students: course.students_count || 0,
+    rating: course.rating || 0,
+    reviews: course.reviews_count || 0,
     badge: badge.badge,
     badgeStyle: badge.badgeStyle,
     icon: visuals.icon,
@@ -312,13 +329,69 @@ export function mapApiCourseToLiveSession(course: ApiCourse): LiveClassSession {
   };
 }
 
+export function countLabel(count: number, singular: string, plural = `${singular}s`) {
+  return `${count.toLocaleString("en-IN")} ${count === 1 ? singular : plural}`;
+}
+
+export function courseAccessLabel(months: number) {
+  if (months <= 0) return "Lifetime access";
+  if (months % 12 === 0) return `${countLabel(months / 12, "year")} access`;
+  return `${countLabel(months, "month")} access`;
+}
+
+/** Content lines built from what is actually attached to the course; zero counts are left out. */
+export function courseContentHighlights(course: ListingCourse): string[] {
+  const items: string[] = [];
+  if (course.videos > 0) {
+    items.push(`${countLabel(course.videos, "recorded video")}${course.hours > 0 ? ` (${course.hours}+ hours)` : ""}`);
+  } else if (course.hours > 0 && course.type !== "pdf") {
+    items.push(`${course.hours}+ hours of ${course.type === "live" ? "live classes" : "video content"}`);
+  }
+  if (course.liveSessions > 0) items.push(countLabel(course.liveSessions, "live session"));
+  if (course.lessons > 0) items.push(countLabel(course.lessons, "lesson"));
+  if (course.pdfs > 0) items.push(countLabel(course.pdfs, "downloadable PDF"));
+  if (course.mockTests > 0) items.push(countLabel(course.mockTests, "mock test"));
+  return items;
+}
+
+export type CourseStat = {
+  key: "videos" | "hours" | "live" | "lessons" | "pdfs" | "mock_tests" | "students" | "rating" | "validity";
+  value: string;
+  label: string;
+};
+
+function courseStats(course: ListingCourse): CourseStat[] {
+  const content: CourseStat[] = [];
+  if (course.videos > 0) content.push({ key: "videos", value: course.videos.toLocaleString("en-IN"), label: course.videos === 1 ? "Video" : "Videos" });
+  if (course.hours > 0 && course.type !== "pdf") content.push({ key: "hours", value: `${course.hours}+ hrs`, label: course.type === "live" ? "Live classes" : "Video content" });
+  if (course.mockTests > 0) content.push({ key: "mock_tests", value: course.mockTests.toLocaleString("en-IN"), label: course.mockTests === 1 ? "Mock Test" : "Mock Tests" });
+  if (course.pdfs > 0) content.push({ key: "pdfs", value: course.pdfs.toLocaleString("en-IN"), label: course.pdfs === 1 ? "PDF" : "PDFs" });
+  if (course.liveSessions > 0) content.push({ key: "live", value: course.liveSessions.toLocaleString("en-IN"), label: "Live Sessions" });
+  if (course.lessons > 0) content.push({ key: "lessons", value: course.lessons.toLocaleString("en-IN"), label: course.lessons === 1 ? "Lesson" : "Lessons" });
+
+  const social: CourseStat[] = [];
+  if (course.students > 0) social.push({ key: "students", value: course.students.toLocaleString("en-IN"), label: course.students === 1 ? "Student" : "Students" });
+  if (course.rating > 0) social.push({ key: "rating", value: course.rating.toFixed(1), label: course.reviews > 0 ? countLabel(course.reviews, "review") : "Rating" });
+
+  const validity: CourseStat = {
+    key: "validity",
+    value: course.validityMonths <= 0 ? "Lifetime" : course.validityMonths % 12 === 0 ? `${course.validityMonths / 12} yr` : `${course.validityMonths} mo`,
+    label: "Access",
+  };
+
+  return [...content.slice(0, 2), ...social, ...content.slice(2), validity].slice(0, 4);
+}
+
 export function mapApiCourseToCatalogItem(course: ApiCourse, lessons: ApiCourseLesson[] = []) {
   const listing = mapApiCourseToListingCourse(course);
   const effectivePrice = course.sale_price ?? course.price;
   const original = course.sale_price !== null && course.sale_price < course.price ? course.price : 0;
   const courseType = (course.course_type === "pdf" || course.course_type === "live" ? course.course_type : "video") as "video" | "pdf" | "live";
-  const isPdfCourse = courseType === "pdf";
-  const isLiveCourse = courseType === "live";
+  const autoIncludes = [
+    ...courseContentHighlights(listing),
+    course.subjects.length > 0 ? `Covers ${course.subjects.map((subject) => subject.name).join(", ")}` : "",
+    courseAccessLabel(listing.validityMonths),
+  ].filter(Boolean);
 
   return {
     slug: course.slug,
@@ -330,11 +403,7 @@ export function mapApiCourseToCatalogItem(course: ApiCourse, lessons: ApiCourseL
     level: course.level.charAt(0).toUpperCase() + course.level.slice(1),
     price: effectivePrice,
     original,
-    hours: course.duration_hours || listing.hours,
-    tests: course.lessons_count || listing.tests,
-    students: listing.students,
-    rating: listing.rating,
-    reviews: listing.reviews,
+    stats: courseStats(listing),
     badge: listing.badge || undefined,
     tags: listing.tags,
     image: course.banner_url || course.image_url || "/hero-students.png",
@@ -342,13 +411,7 @@ export function mapApiCourseToCatalogItem(course: ApiCourse, lessons: ApiCourseL
     pdfUrl: course.pdf_url || null,
     contentTypes: course.content_types ?? [],
     saleClosed: Boolean(course.is_sale_closed),
-    includes: (course.course_includes?.length ? course.course_includes : [
-      isPdfCourse ? "Downloadable PDF modules" : isLiveCourse ? `${course.duration_hours || listing.hours}+ hours live classes` : `${course.duration_hours || listing.hours}+ hours recorded videos`,
-      "Structured subject-wise learning",
-      isPdfCourse ? "Topic-wise notes and practice sheets" : "Downloadable notes and PDFs",
-      `${course.lessons_count || listing.tests}+ mock and practice tests`,
-      "Doubt support and mentoring",
-    ]),
+    includes: Array.from(new Set([...autoIncludes, ...(course.course_includes ?? [])])),
     outcomes: course.subjects.length > 0
       ? course.subjects.map((subject) => `${subject.name} preparation and practice`)
       : ["Structured syllabus coverage", "Exam-focused preparation", "Practice with expert guidance"],

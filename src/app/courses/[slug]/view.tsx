@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  BookOpen,
+  CalendarClock,
   CheckCircle2,
+  ClipboardList,
   Clock3,
   FileText,
   Loader2,
@@ -12,11 +15,25 @@ import {
   ShieldCheck,
   Star,
   UsersRound,
+  Video,
+  type LucideIcon,
 } from "lucide-react";
 import { PublicPageShell } from "@/components/PublicPageShell";
 import { CoursePurchaseActions } from "@/components/payments/CoursePurchaseActions";
-import { fetchCourseBySlug, mapApiCourseToCatalogItem, type CourseDetailResponse } from "@/lib/courses";
+import { fetchCourseBySlug, mapApiCourseToCatalogItem, type CourseDetailResponse, type CourseStat } from "@/lib/courses";
 import { useLiveParam } from "@/lib/use-live-param";
+
+const statIcons: Record<CourseStat["key"], LucideIcon> = {
+  videos: PlayCircle,
+  hours: Clock3,
+  live: Video,
+  lessons: BookOpen,
+  pdfs: FileText,
+  mock_tests: ClipboardList,
+  students: UsersRound,
+  rating: Star,
+  validity: CalendarClock,
+};
 
 function CourseImage({ src, alt }: { src: string; alt: string }) {
   if (src.startsWith("http://") || src.startsWith("https://")) {
@@ -101,18 +118,16 @@ export default function CourseDetailView() {
             <h1 className="mt-5 max-w-4xl font-['Sora'] text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">{course.title}</h1>
             <p className="mt-5 max-w-3xl text-base leading-8 text-white/70">{course.desc}</p>
             <div className="mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                [Clock3, isPdfCourse ? "Lifetime" : `${course.hours}+ hrs`, isPdfCourse ? "PDF access" : isLiveCourse ? "Live sessions" : "Video content"],
-                [FileText, `${course.tests}+`, "Tests"],
-                [UsersRound, course.students.toLocaleString("en-IN"), "Students"],
-                [Star, course.rating.toFixed(1), `${course.reviews} reviews`],
-              ].map(([Icon, value, label]) => (
-                <div key={label as string} className="rounded-lg border border-white/10 bg-white/8 p-4">
-                  <Icon className="mb-3 size-5 text-[#ffd21f]" />
-                  <div className="font-['Sora'] text-xl font-extrabold text-white">{value as string}</div>
-                  <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-white/45">{label as string}</div>
-                </div>
-              ))}
+              {course.stats.map((stat) => {
+                const Icon = statIcons[stat.key];
+                return (
+                  <div key={stat.key} className="rounded-lg border border-white/10 bg-white/8 p-4">
+                    <Icon className="mb-3 size-5 text-[#ffd21f]" />
+                    <div className="font-['Sora'] text-xl font-extrabold text-white">{stat.value}</div>
+                    <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-white/45">{stat.label}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -166,7 +181,7 @@ export default function CourseDetailView() {
               <div className="mt-5 grid gap-2 text-sm font-semibold text-slate-700">
                 <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Secure payment and student login</span>
                 <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> Course access starts after purchase</span>
-                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> {isPdfCourse ? "Downloadable study notes included" : isLiveCourse ? "Live classes and replays included" : "Mock tests and notes included"}</span>
+                <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-[#8a6500]" /> {selectedTypeLabels.length > 0 ? `${selectedTypeLabels.join(", ")} included` : isPdfCourse ? "Downloadable study notes included" : isLiveCourse ? "Live classes and replays included" : "Video lessons included"}</span>
               </div>
             </div>
           </aside>

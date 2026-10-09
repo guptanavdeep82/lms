@@ -1,4 +1,4 @@
-import type { ListingCourse } from "@/lib/courses";
+import { countLabel, courseAccessLabel, courseContentHighlights, type ListingCourse } from "@/lib/courses";
 
 export type CoursePromoTheme = {
   gradient: string;
@@ -39,30 +39,18 @@ export function getCoursePromoTheme(type: ListingCourse["type"]): CoursePromoThe
 }
 
 export function buildCoursePromoFeatures(course: ListingCourse): string[] {
-  const features: string[] = [];
+  const features = courseContentHighlights(course).slice(0, 3);
 
-  if (course.type === "pdf") {
-    features.push("Lifetime downloadable PDF access");
-    features.push("Topic-wise notes and practice sheets");
-  } else if (course.type === "live") {
-    features.push(`${course.hours || 0}+ hours of live classes with expert faculty`);
-    features.push("Session recordings available after each class");
-  } else {
-    features.push(`${course.hours || 0}+ hours of recorded video content`);
-    features.push(`${course.tests || 0}+ structured lessons and modules`);
+  if (course.price === 0) {
+    features.push("Free enrollment with instant access");
   }
-
   if (course.tags.length) {
     features.push(`Covers ${course.tags.slice(0, 2).join(", ")}`);
-  } else {
-    features.push(`Designed for ${course.category.toUpperCase()} exam preparation`);
   }
-
-  features.push(
-    course.price === 0
-      ? "Free enrollment with instant access"
-      : `Expert guidance with ${course.students.toLocaleString()}+ learners`,
-  );
+  if (course.students > 0) {
+    features.push(`${countLabel(course.students, "student")} enrolled`);
+  }
+  features.push(courseAccessLabel(course.validityMonths));
 
   return features.slice(0, 4);
 }
