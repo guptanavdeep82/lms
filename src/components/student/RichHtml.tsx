@@ -46,5 +46,5 @@ export function RichHtml({
     );
   }
 
-  return <span className={className}>{decodeHtmlEntities(value)}</span>;
+  return <span className={`whitespace-pre-line ${className ?? ""}`.trim()}>{decodeHtmlEntities(value)}</span>;
 }
