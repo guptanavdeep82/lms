@@ -71,7 +71,11 @@ export default function CourseDetailView() {
   const course = mapApiCourseToCatalogItem(payload.course, payload.lessons);
   const isPdfCourse = course.courseType === "pdf";
   const isLiveCourse = course.courseType === "live";
-  const courseTypeLabel = isPdfCourse ? "PDF Course" : isLiveCourse ? "Live Class Course" : "Video Course";
+  const contentTypeLabels: Record<string, string> = { video: "Video", pdf: "PDF", mock_test: "Mock Test", live: "Live Class" };
+  const selectedTypeLabels = course.contentTypes.filter((type) => type in contentTypeLabels).map((type) => contentTypeLabels[type]);
+  const courseTypeLabel = selectedTypeLabels.length > 1
+    ? selectedTypeLabels.join(" + ")
+    : isPdfCourse ? "PDF Course" : isLiveCourse ? "Live Class Course" : "Video Course";
   const price = course.price === 0 ? "Free" : `Rs ${course.price.toLocaleString("en-IN")}`;
   const original = course.original ? `Rs ${course.original.toLocaleString("en-IN")}` : null;
   const pdfUrl = course.pdfUrl;
@@ -122,7 +126,11 @@ export default function CourseDetailView() {
                     {original ? <span className="text-sm font-bold text-slate-400 line-through">{original}</span> : null}
                   </div>
                 </div>
-                <span className="rounded-full bg-[#fff8dc] px-3 py-1 text-xs font-extrabold text-[#050808]">Limited offer</span>
+                {course.saleClosed ? (
+                  <span className="rounded-full bg-[#fee4e2] px-3 py-1 text-xs font-extrabold text-[#b42318]">Enrollment closed</span>
+                ) : (
+                  <span className="rounded-full bg-[#fff8dc] px-3 py-1 text-xs font-extrabold text-[#050808]">Limited offer</span>
+                )}
               </div>
 
               <CoursePurchaseActions
@@ -132,6 +140,7 @@ export default function CourseDetailView() {
                 price={course.price}
                 isPdfCourse={isPdfCourse}
                 isLiveCourse={isLiveCourse}
+                saleClosed={course.saleClosed}
               />
 
               {isLiveCourse ? (

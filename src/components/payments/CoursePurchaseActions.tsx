@@ -14,6 +14,7 @@ type CoursePurchaseActionsProps = {
   price: number;
   isPdfCourse: boolean;
   isLiveCourse?: boolean;
+  saleClosed?: boolean;
 };
 
 export function CoursePurchaseActions({
@@ -23,6 +24,7 @@ export function CoursePurchaseActions({
   price,
   isPdfCourse,
   isLiveCourse = false,
+  saleClosed = false,
 }: CoursePurchaseActionsProps) {
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -58,6 +60,22 @@ export function CoursePurchaseActions({
           className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#172a69] text-sm font-extrabold text-white transition hover:bg-[#10215a]"
         >
           <PlayCircle className="size-4" /> Continue Learning
+        </Link>
+      </div>
+    );
+  }
+
+  if (saleClosed) {
+    return (
+      <div className="mt-5 grid gap-3">
+        <span className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-[#fee4e2] text-sm font-extrabold text-[#b42318]">
+          Enrollment Closed
+        </span>
+        <p className="text-center text-xs font-semibold text-slate-500">
+          This course is no longer available for purchase.
+        </p>
+        <Link href="/courses" className="inline-flex h-12 items-center justify-center rounded-lg border border-[#050808] text-sm font-extrabold text-[#050808] transition hover:bg-[#050808] hover:text-white">
+          Browse Other Courses
         </Link>
       </div>
     );

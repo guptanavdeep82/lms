@@ -17,7 +17,7 @@ export default function MockTestsPage() {
     fetch(mockTestsApiUrl())
       .then((response) => response.json())
       .then((data: MockTestsResponse) => {
-        if (mounted) setCategories(data.categories ?? []);
+        if (mounted) setCategories((data.categories ?? []).filter((category) => category.slug !== "free-quiz"));
       })
       .finally(() => {
         if (mounted) setLoading(false);

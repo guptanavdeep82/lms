@@ -11,6 +11,9 @@ export type ApiCourse = {
   title: string;
   slug: string;
   course_type: "video" | "pdf" | "live" | string;
+  content_types?: string[];
+  sale_ends_at?: string | null;
+  is_sale_closed?: boolean;
   image_url: string | null;
   banner_url?: string | null;
   pdf_url?: string | null;
@@ -337,6 +340,8 @@ export function mapApiCourseToCatalogItem(course: ApiCourse, lessons: ApiCourseL
     image: course.banner_url || course.image_url || "/hero-students.png",
     thumbnail: course.image_url || "/hero-students.png",
     pdfUrl: course.pdf_url || null,
+    contentTypes: course.content_types ?? [],
+    saleClosed: Boolean(course.is_sale_closed),
     includes: (course.course_includes?.length ? course.course_includes : [
       isPdfCourse ? "Downloadable PDF modules" : isLiveCourse ? `${course.duration_hours || listing.hours}+ hours live classes` : `${course.duration_hours || listing.hours}+ hours recorded videos`,
       "Structured subject-wise learning",

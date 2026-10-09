@@ -27,6 +27,9 @@ export type StudentLibraryCourse = {
   title: string;
   slug: string;
   course_type: string;
+  content_types?: string[];
+  sale_ends_at?: string | null;
+  is_sale_closed?: boolean;
   has_live_classes?: boolean;
   live_sessions_count?: number;
   image_url: string | null;

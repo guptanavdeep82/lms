@@ -324,7 +324,7 @@ export const defaultHomePageSettings: HomePageSettings = {
         { label: "Banking awareness", url: "/courses/banking-awareness-course", icon: "fa-building-columns" },
         { label: "Insurance awareness", url: "/courses", icon: "fa-shield-halved" },
         { label: "Computer awareness", url: "/courses/computer-awareness-for-bank-insurance", icon: "fa-laptop" },
-        { label: "Free quiz", url: "/courses/free-quiz", icon: "fa-list-check" },
+        { label: "Free quiz", url: "/mock-tests/free-quiz", icon: "fa-list-check" },
       ],
     },
     {

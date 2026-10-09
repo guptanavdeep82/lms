@@ -12,7 +12,7 @@ import { TrendingLinksBar } from "@/components/home/TrendingLinksBar";
 import { getStudentSession } from "@/lib/student-auth";
 import { logoutStudentDeviceSession } from "@/lib/student-session";
 
-type ActiveKey = "home" | "courses" | "packages" | "mock-tests" | "contact" | "live-classes" | "current-affairs" | "faq";
+type ActiveKey = "home" | "courses" | "packages" | "mock-tests" | "free-quiz" | "contact" | "live-classes" | "current-affairs" | "faq";
 
 type PublicHeaderProps = {
   active?: ActiveKey;
@@ -25,6 +25,7 @@ function activeFromPath(pathname: string): ActiveKey | undefined {
   if (pathname === "/") return "home";
   if (pathname.startsWith("/courses")) return "courses";
   if (pathname.startsWith("/packages")) return "packages";
+  if (pathname.startsWith("/mock-tests/free-quiz")) return "free-quiz";
   if (pathname.startsWith("/mock-tests")) return "mock-tests";
   if (pathname.startsWith("/live-classes")) return "live-classes";
   if (pathname.startsWith("/current-affairs")) return "current-affairs";
@@ -178,6 +179,7 @@ export function PublicHeader({ active, pages }: PublicHeaderProps) {
               </div>
             </div>
             {navLink("/mock-tests", "Mock Tests", "mock-tests")}
+            {navLink("/mock-tests/free-quiz", "Free Quiz", "free-quiz")}
             {navLink("/packages", "Packages", "packages")}
             {navLink("/current-affairs", "Current Affairs", "current-affairs")}
             {navLink("/live-classes", "Live Classes", "live-classes")}

@@ -52,7 +52,17 @@ function courseLearnHref(course: StudentLibraryCourse) {
   return `/student/courses/${course.slug}/learn`;
 }
 
+const contentTypeLabels: Record<string, string> = {
+  video: "Video",
+  pdf: "PDF",
+  mock_test: "Mock Test",
+  live: "Live Class",
+};
+
 function courseTypeLabel(course: StudentLibraryCourse) {
+  const types = (course.content_types ?? []).filter((type) => type in contentTypeLabels);
+  if (types.length > 1) return types.map((type) => contentTypeLabels[type]).join(" + ");
+  if (types.length === 1 && types[0] === "mock_test") return "Mock Test Course";
   if (course.course_type === "live" || course.has_live_classes) return "Live Class";
   if (course.course_type === "pdf") return "PDF Course";
   return "Video Course";
@@ -386,6 +396,9 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
     );
   }
 
+  const courseBuckets = scopedCourse.content_types
+    ? contentBuckets.filter((bucket) => scopedCourse.content_types?.includes(bucket.kind))
+    : contentBuckets;
   const bucketLabel = contentKind ? contentBuckets.find((bucket) => bucket.kind === contentKind)?.title || "Folder" : scopedCourse.title;
   const currentFolderName = contentKind
     ? crumbs.length > 1
@@ -422,7 +435,12 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
 
       {!contentKind ? (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {contentBuckets.map((bucket) => {
+          {courseBuckets.length === 0 ? (
+            <p className="rounded-[20px] border border-dashed border-[#dfe5ef] bg-white p-6 text-sm font-semibold text-[#7d8799] sm:col-span-2 xl:col-span-3">
+              No study material is available in this course yet.
+            </p>
+          ) : null}
+          {courseBuckets.map((bucket) => {
             const Icon = bucket.icon;
             return (
               <button
