@@ -153,6 +153,7 @@ export default function CourseDetailView() {
                 courseSlug={slug}
                 courseTitle={course.title}
                 price={course.price}
+                pricingPlans={course.pricingPlans}
                 isPdfCourse={isPdfCourse}
                 isLiveCourse={isLiveCourse}
                 saleClosed={course.saleClosed}

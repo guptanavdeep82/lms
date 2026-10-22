@@ -78,6 +78,7 @@ export async function createCheckoutOrder(input: {
   itemType: CheckoutItemType;
   itemId: number;
   couponCode?: string;
+  pricingPlanId?: number;
   name?: string;
   mobile?: string;
   state_id?: number;
@@ -98,6 +99,7 @@ export async function createCheckoutOrder(input: {
       mobile_verified: input.mobile_verified ?? profile.mobile_verified,
       item_type: input.itemType,
       item_id: input.itemId,
+      pricing_plan_id: input.pricingPlanId || undefined,
       coupon_code: input.couponCode || undefined,
     }),
   });
@@ -197,6 +199,7 @@ export async function startRazorpayCheckout(input: {
   itemId: number;
   itemTitle: string;
   couponCode?: string;
+  pricingPlanId?: number;
   onSuccess?: (purchases: StudentPurchase[]) => void;
 }): Promise<void> {
   if (!isStudentLoggedIn()) {
@@ -213,6 +216,7 @@ export async function startRazorpayCheckout(input: {
     itemType: input.itemType,
     itemId: input.itemId,
     couponCode: input.couponCode,
+    pricingPlanId: input.pricingPlanId,
   });
 
   if (checkout.free) {

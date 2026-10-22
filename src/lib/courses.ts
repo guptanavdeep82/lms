@@ -1,5 +1,14 @@
 import { publicBackendBaseUrl } from "@/lib/mock-tests";
 
+export type CoursePricingPlan = {
+  id: number;
+  label: string;
+  duration_months: number;
+  price: number;
+  sale_price: number | null;
+  discount_percent: number | null;
+};
+
 export type CourseSubject = {
   id: number;
   name: string;
@@ -25,6 +34,7 @@ export type ApiCourse = {
   sale_price: number | null;
   duration_hours: number;
   validity_months?: number;
+  pricing_plans?: CoursePricingPlan[];
   rating?: number | null;
   reviews_count?: number;
   students_count?: number;
@@ -411,6 +421,7 @@ export function mapApiCourseToCatalogItem(course: ApiCourse, lessons: ApiCourseL
     pdfUrl: course.pdf_url || null,
     contentTypes: course.content_types ?? [],
     saleClosed: Boolean(course.is_sale_closed),
+    pricingPlans: course.pricing_plans ?? [],
     includes: Array.from(new Set([...autoIncludes, ...(course.course_includes ?? [])])),
     outcomes: course.subjects.length > 0
       ? course.subjects.map((subject) => `${subject.name} preparation and practice`)
