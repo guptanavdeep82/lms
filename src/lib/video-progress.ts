@@ -25,7 +25,7 @@ export function loadVideoPosition(progressKey: string): number {
   }
 }
 
-let syncTimer: ReturnType<typeof setTimeout> | null = null;
+let syncTimer: ReturnType<typeof window.setTimeout> | null = null;
 let lastSyncedKey = "";
 let lastSyncedAt = 0;
 
