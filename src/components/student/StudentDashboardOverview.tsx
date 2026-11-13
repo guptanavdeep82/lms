@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Bookmark, CheckCircle2, Loader2, Megaphone, Newspaper, PlayCircle, Radio } from "lucide-react";
 import { getStudentSession } from "@/lib/student-auth";
+import { StudentCommunitiesPreview } from "@/components/student/StudentCommunitiesPreview";
 import { StudentPurchasedLiveClasses } from "@/components/student/StudentPurchasedLiveClasses";
 import { StudentBookmarksPanel } from "@/components/student/panels/StudentBookmarksPanel";
 import { fetchCurrentAffairs } from "@/lib/current-affairs";
@@ -129,6 +130,8 @@ export function StudentDashboardOverview() {
           ))}
         </div>
       </section>
+
+      <StudentCommunitiesPreview />
 
       <section>
         <div className="mb-4 flex items-center justify-between gap-3">

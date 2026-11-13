@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { extractYouTubeId, isDirectVideoUrl, youtubeEmbedUrl } from "@/lib/lesson-video";
-import { clearVideoPosition, loadVideoPosition, saveVideoPosition } from "@/lib/video-progress";
+import { clearVideoPosition, loadVideoPosition, saveVideoPosition, type VideoProgressMeta } from "@/lib/video-progress";
 
 export type VideoQualityOption = {
   id: string;
@@ -185,12 +185,14 @@ export function ProtectedVideoPlayer({
   autoPlay = false,
   title = "Course video",
   progressKey,
+  progressMeta,
 }: {
   url: string;
   qualities?: VideoQualityOption[];
   autoPlay?: boolean;
   title?: string;
   progressKey?: string;
+  progressMeta?: VideoProgressMeta;
 }) {
   const fileOptions = useMemo(() => uniqueVideoQualities(url, qualities), [qualities, url]);
   const youtubeId = extractYouTubeId(url);
@@ -272,13 +274,15 @@ export function ProtectedVideoPlayer({
       const current = video.currentTime;
       if (Math.abs(current - lastSaved) < 3) return;
       lastSaved = current;
-      saveVideoPosition(progressKey, current, video.duration);
+      saveVideoPosition(progressKey, current, video.duration, progressMeta);
     };
 
     video.addEventListener("timeupdate", persist);
     video.addEventListener("pause", persist);
     const onEnded = () => {
-      if (progressKey) clearVideoPosition(progressKey);
+      if (!progressKey) return;
+      saveVideoPosition(progressKey, video.duration || lastSaved, video.duration || 0, progressMeta);
+      clearVideoPosition(progressKey);
     };
     video.addEventListener("ended", onEnded);
 
@@ -291,7 +295,7 @@ export function ProtectedVideoPlayer({
       video.removeEventListener("ended", onEnded);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [playbackUrl, progressKey, speed]);
+  }, [playbackUrl, progressKey, progressMeta, speed]);
 
   useEffect(() => {
     if (!youtubeId || !youtubeHostRef.current) return;
@@ -332,9 +336,10 @@ export function ProtectedVideoPlayer({
               const current = event.target.getCurrentTime?.() ?? 0;
               const duration = event.target.getDuration?.() ?? 0;
               if (event.data === 0) {
+                saveVideoPosition(progressKey, duration || current, duration, progressMeta);
                 clearVideoPosition(progressKey);
               } else {
-                saveVideoPosition(progressKey, current, duration);
+                saveVideoPosition(progressKey, current, duration, progressMeta);
               }
             }
           },

@@ -522,6 +522,10 @@ export function PurchasedCoursesList({ compact = false }: PurchasedCoursesListPr
                   autoPlay
                   title={activeVideo.title}
                   progressKey={`media-${activeVideo.id}`}
+                  progressMeta={{
+                    courseId: scopedCourse?.id ?? null,
+                    mediaId: activeVideo.id,
+                  }}
                 />
               </div>
             </div>

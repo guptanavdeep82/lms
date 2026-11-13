@@ -32,6 +32,7 @@ export function CourseLearnViewer() {
 
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
+  const [courseId, setCourseId] = useState<number | null>(null);
   const [courseTitle, setCourseTitle] = useState("");
   const [courseImage, setCourseImage] = useState<string | null>(null);
   const [lessons, setLessons] = useState<ApiCourseLesson[]>([]);
@@ -62,6 +63,7 @@ export function CourseLearnViewer() {
 
         const access = await fetchStudentAccess(session.email, "course", payload.course.id);
         setHasAccess(access);
+        setCourseId(payload.course.id);
         setCourseTitle(payload.course.title);
         setCourseImage(payload.course.image_url);
         setLessons(payload.lessons || []);
@@ -178,6 +180,7 @@ export function CourseLearnViewer() {
                   qualities={playbackQualities}
                   title={activeLesson.title}
                   progressKey={`lesson-${activeLesson.id}`}
+                  progressMeta={{ courseId, lessonId: activeLesson.id }}
                 />
               ) : (
                 <div className="grid h-full place-items-center p-8 text-center">
